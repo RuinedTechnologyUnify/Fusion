@@ -39,7 +39,9 @@ jobs:
           git update-index --chmod=+x gradlew
 
       - name: Apply Patches
-        run: ./gradlew applyPatches --stacktrace
+        run: |
+          git update-index --chmod=+x gradlew
+          ./gradlew applyPatches --stacktrace
 
       - name: Build
         run: ./gradlew build --stacktrace
