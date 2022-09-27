@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Prismarine"
+rootProject.name = "Fusion"
 for (name in listOf("Fusion-API", "Fusion-Server")) {
     val projName = name
     include(projName)
