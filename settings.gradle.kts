@@ -1,5 +1,3 @@
-import java.util.Locale
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -8,8 +6,4 @@ pluginManagement {
 }
 
 rootProject.name = "Fusion"
-for (name in listOf("Fusion-API", "Fusion-Server")) {
-    val projName = name
-    include(projName)
-    findProject(":$projName")!!.projectDir = file(name)
-}
+include("Fusion-API", "Fusion-Server")
