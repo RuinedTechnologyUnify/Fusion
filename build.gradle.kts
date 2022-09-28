@@ -68,8 +68,12 @@ paperweight {
     remapRepo.set(paperMavenPublicUrl)
     decompileRepo.set(paperMavenPublicUrl)
 
-    usePaperUpstream(providers.gradleProperty("paperCommit")) {
-        withPaperPatcher {
+    useStandardUpstream("fusion") {
+        url.set(github("IPECTER", "Fusion"))
+        ref.set(providers.gradleProperty("fusionCommit"))
+        withStandardPatcher {
+            baseName("Fusion")
+            
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
 
