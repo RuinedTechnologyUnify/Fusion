@@ -1,16 +1,16 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 8c052e88bbfbd989e7c7cd593897f3f92dd80939 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Sun, 23 Jan 2022 17:19:54 +0900
+Date: Wed, 28 Sep 2022 21:30:09 +0900
 Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index dc00d06f9bd4cc7403e0fe89822ed40ed2e148c8..cdfc24c814f15fe8ade592192f7c6a251b5b6e3d 100644
---- a/build.gradle.kts
+index 0000000..46e5444 100644
+--- /dev/null
 +++ b/build.gradle.kts
 @@ -9,7 +9,7 @@ plugins {
  }
- 
+
  dependencies {
 -    implementation(project(":purpur-api")) // Purpur
 +    implementation(project(":Fusion-API")) // Paper // Pufferfish // Purpur // Prismarine // Fusion
@@ -36,16 +36,16 @@ index acd95cf1dc7f009b63e44e4404e1736283fd458e..5e5914610dc6e6db7d1d3368212b24fe
              if (config.getBoolean("enabled", true)) {
 -                Metrics metrics = new Metrics("Purpur", serverUUID, logFailedRequests, Bukkit.getLogger()); // Purpur
 +                Metrics metrics = new Metrics("Fusion", serverUUID, logFailedRequests, Bukkit.getLogger()); // Purpur // Prismarine // Fusion
- 
+
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
 @@ -603,7 +603,7 @@ public class Metrics {
- 
+
                  metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
                  metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() ? "bungee" : "offline"))); // Purpur
 -                metrics.addCustomChart(new Metrics.SimplePie("purpur_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown")); // Purpur
 +                metrics.addCustomChart(new Metrics.SimplePie("fusion_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown")); // Purpur // Prismarine // Fusion
- 
+
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
@@ -70,7 +70,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..27b04711cb79491c27e14e5324e19fa8
 +        String[] parts = serverVersion.substring("git-Fusion-".length()).split("[-\\s]"); // Purpur // Prismarine // Fusion
 +        final Component updateMessage = getUpdateStatusMessage("IPECTER/Fusion", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Prismarine // Fusion
          final Component history = getHistory();
- 
+
          return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
 @@ -47,7 +47,7 @@ public class PaperVersionFetcher implements VersionFetcher {
                  String result = matcher.group();
@@ -82,7 +82,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..27b04711cb79491c27e14e5324e19fa8
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
 @@ -58,6 +58,8 @@ public class PaperVersionFetcher implements VersionFetcher {
- 
+
      private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
          //int distance; // Purpur - use field
 +        // Prismarine start - disable api checking
@@ -98,13 +98,13 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..27b04711cb79491c27e14e5324e19fa8
 +        versionInfo = versionInfo.replace("\"", "");
 +        distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
 +        // Prismarine end
- 
+
          switch (distance) {
              case -1:
 @@ -83,6 +89,8 @@ public class PaperVersionFetcher implements VersionFetcher {
          }
      }
- 
+
 +    // Prismarine start
 +    /*
      private static int fetchDistanceFromSiteApi(int jenkinsBuild, @Nullable String siteApiVersion) {
@@ -116,7 +116,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..27b04711cb79491c27e14e5324e19fa8
      }
 +    */
 +    // Prismarine end
- 
+
      // Contributed by Techcable <Techcable@outlook.com> in GH-65
      private static int fetchDistanceFromGitHub(@Nonnull String repo, @Nonnull String branch, @Nonnull String hash) {
 diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
@@ -143,7 +143,7 @@ index b5b6657e52e4f7a630229bd3ba433438af293e22..e52235ae17bddc768b291a45eb449215
 -        this.systemReport.setDetail("CraftBukkit Information", new org.bukkit.craftbukkit.CraftCrashReport()); // CraftBukkit
 +        this.systemReport.setDetail("Fusion Information", new org.bukkit.craftbukkit.CraftCrashReport()); // CraftBukkit // Prismarine // Fusion
      }
- 
+
      public String getTitle() {
 @@ -125,7 +125,7 @@ public class CrashReport {
          stringbuilder.append("---- Minecraft Crash Report ----\n");
@@ -172,13 +172,13 @@ index 13399302916bbf39cd08cfcefaf3358ad58ee8c4..0c648611658c4c1fae08e867c3090c7d
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -113,7 +113,7 @@ public class RegionFileStorage implements AutoCloseable {
- 
+
      // Paper start
      private static void printOversizedLog(String msg, Path file, int x, int z) {
 -        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PURPUR - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur
 +        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO FUSION - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur // Prismarine // Fusion
      }
- 
+
      private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index db30708c5376d00a42baebf6957821798253aa64..f7c2aaff199f039daf79e39c19355d4a6d31f05e 100644
@@ -186,7 +186,7 @@ index db30708c5376d00a42baebf6957821798253aa64..f7c2aaff199f039daf79e39c19355d4a
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -248,7 +248,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
- 
+
  public final class CraftServer implements Server {
 -    private final String serverName = "Purpur"; // Paper // Purpur
 +    private final String serverName = "Fusion"; // Paper // Pufferfish // Purpur // Prismarine // Fusion
@@ -200,11 +200,11 @@ index 37bcc72ce132f7901460f25d700dba1bac6c210f..37cc1388b3cf6a49832c8504875aa04d
 @@ -866,7 +866,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
              return EntityCategory.WATER;
          }
- 
+
 -        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Purpur."); // Purpur
 +        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Fusion."); // Purpur // Prismarine // Fusion
      }
- 
+
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 index 5402098dce0d64d3dceea51f248d7d366850a74f..490f2179b0ec4a7946c79e7b5a233a8909972752 100644
@@ -226,21 +226,21 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..2d90a7cf5d5de95005724fabcf7362bf
 @@ -11,7 +11,7 @@ public final class Versioning {
      public static String getBukkitVersion() {
          String result = "Unknown-Version";
- 
+
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Purpur
 +        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/com.github.ipecter.fusion/Fusion-API/pom.properties"); // Purpur // Prismarine // Fusion
          Properties properties = new Properties();
- 
+
          if (stream != null) {
 @@ -20,7 +20,7 @@ public final class Versioning {
- 
+
                  result = properties.getProperty("version");
              } catch (IOException ex) {
 -                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
 +                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Fusion version!", ex); // Prismarine // Fusion
              }
          }
- 
+
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 index d44b8ce90db7c6c27f71aa841d6fb64b159b7b42..fe49723b5fec298d7a10a1f69211933974edf3e9 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
@@ -248,7 +248,7 @@ index d44b8ce90db7c6c27f71aa841d6fb64b159b7b42..fe49723b5fec298d7a10a1f692119339
 @@ -235,7 +235,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
- 
+
 -    public static String serverModName = "Purpur";
 +    public static String serverModName = "Fusion"; // Prismarine // Fusion
      private static void serverModName() {
@@ -298,5 +298,5 @@ index 4a88fbee3566ba54b615745a2e4801691f494557..af61231d5b76690f32ec51feae343909
 -                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH ---"); // Purpur
 +                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO FUSION - THIS IS NOT A BUG OR A CRASH ---"); // Purpur // Prismarine // Fusion
                  }
- 
+
                  log.log( Level.SEVERE, "------------------------------" );

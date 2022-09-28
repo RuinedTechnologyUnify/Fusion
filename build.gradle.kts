@@ -65,21 +65,16 @@ subprojects {
 paperweight {
     serverProject.set(project(":Fusion-Server"))
 
-    remapRepo.set("https://maven.fabricmc.net/")
-    decompileRepo.set("https://files.minecraftforge.net/maven/")
+    remapRepo.set(paperMavenPublicUrl)
+    decompileRepo.set(paperMavenPublicUrl)
 
-    useStandardUpstream("paper") {
-        url.set(github("PaperMC", "Paper"))
-        ref.set(providers.gradleProperty("paperCommit"))
-
-        withStandardPatcher {
-            baseName("Paper")
-
+    usePaperUpstream(providers.gradleProperty("paperCommit")) {
+        withPaperPatcher {
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            apiOutputDir.set(layout.projectDirectory.dir("Paper-API"))
+            apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
 
             serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-            serverOutputDir.set(layout.projectDirectory.dir("Paper-Server"))
+            serverOutputDir.set(layout.projectDirectory.dir("Fusion-Server"))
         }
     }
 }
