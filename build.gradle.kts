@@ -65,15 +65,16 @@ subprojects {
 paperweight {
     serverProject.set(project(":Fusion-Server"))
 
-    remapRepo.set(paperMavenPublicUrl)
-    decompileRepo.set(paperMavenPublicUrl)
+    remapRepo.set("https://maven.fabricmc.net/")
+    decompileRepo.set("https://files.minecraftforge.net/maven/")
 
     useStandardUpstream("fusion") {
         url.set(github("IPECTER", "Fusion"))
         ref.set(providers.gradleProperty("fusionCommit"))
+
         withStandardPatcher {
             baseName("Fusion")
-            
+
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
 
