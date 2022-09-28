@@ -68,9 +68,9 @@ paperweight {
     remapRepo.set("https://maven.fabricmc.net/")
     decompileRepo.set("https://files.minecraftforge.net/maven/")
 
-    useStandardUpstream("fusion") {
-        url.set(github("IPECTER", "Fusion"))
-        ref.set(providers.gradleProperty("fusionCommit"))
+    useStandardUpstream("paper") {
+        url.set(github("PaperMC", "Paper"))
+        ref.set(providers.gradleProperty("paperCommit"))
 
         withStandardPatcher {
             baseName("Fusion")
