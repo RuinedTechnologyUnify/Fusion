@@ -1,0 +1,26 @@
+From aea9c72c03637ace1c0169dc1bc54dfe8375a75e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?IPECTER=20=EC=9D=B4=ED=8C=A9=ED=84=B0?=
+ <80433772+IPECTER@users.noreply.github.com>
+Date: Wed, 28 Sep 2022 17:26:17 +0900
+Subject: [PATCH] Update build.gradle.kts
+
+---
+ build.gradle.kts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 8868545..2f83a1d 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -73,7 +73,7 @@ paperweight {
+         ref.set(providers.gradleProperty("paperCommit"))
+ 
+         withStandardPatcher {
+-            baseName("Fusion")
++            baseName("Paper")
+ 
+             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
+             apiOutputDir.set(layout.projectDirectory.dir("Paper-API"))
+-- 
+2.35.1.windows.2
+
