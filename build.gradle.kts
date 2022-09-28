@@ -73,7 +73,7 @@ paperweight {
         ref.set(providers.gradleProperty("paperCommit"))
 
         withStandardPatcher {
-            baseName("Fusion")
+            baseName("Paper")
 
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Paper-API"))
