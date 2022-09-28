@@ -76,10 +76,10 @@ paperweight {
             baseName("Fusion")
 
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
+            apiOutputDir.set(layout.projectDirectory.dir("Paper-API"))
 
             serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-            serverOutputDir.set(layout.projectDirectory.dir("Fusion-Server"))
+            serverOutputDir.set(layout.projectDirectory.dir("Paper-Server"))
         }
     }
 }
