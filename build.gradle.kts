@@ -1,18 +1,20 @@
 import io.papermc.paperweight.util.constants.PAPERCLIP_CONFIG
-import java.nio.charset.StandardCharsets
+
+val paperMavenPublicUrl = "https://papermc.io/repo/repository/maven-public/"
 
 plugins {
     java
+    `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
     id("io.papermc.paperweight.patcher") version "1.3.8"
 }
 
-val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-
 repositories {
     mavenCentral()
-    maven("https://papermc.io/repo/repository/maven-public/") {
-        content { onlyForConfigurations(PAPERCLIP_CONFIG) }
+    maven(paperMavenPublicUrl) {
+        content {
+            onlyForConfigurations(PAPERCLIP_CONFIG)
+        }
     }
 }
 
@@ -34,26 +36,15 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "java")
-
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
-    }
-
-    tasks.withType<JavaCompile>().configureEach {
-        options.encoding = StandardCharsets.UTF_8.name()
-        options.release.set(17)
-    }
-
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
     }
+
     tasks.withType<Javadoc> {
         options.encoding = Charsets.UTF_8.name()
     }
+
     tasks.withType<ProcessResources> {
         filteringCharset = Charsets.UTF_8.name()
     }
@@ -61,14 +52,12 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
-        mavenLocal()
-        mavenCentral()
         maven("https://oss.sonatype.org/content/groups/public/")
-        maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://ci.emc.gs/nexus/content/groups/aikar/")
         maven("https://repo.aikar.co/content/groups/aikar")
         maven("https://repo.md-5.net/content/repositories/releases/")
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://jitpack.io")
     }
 }
