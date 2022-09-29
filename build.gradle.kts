@@ -7,6 +7,8 @@ plugins {
     id("io.papermc.paperweight.patcher") version "1.3.8"
 }
 
+val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
+
 repositories {
     mavenCentral()
     maven("https://papermc.io/repo/repository/maven-public/") {
@@ -50,21 +52,15 @@ subprojects {
 paperweight {
     serverProject.set(project(":Fusion-Server"))
 
-    remapRepo.set("https://maven.fabricmc.net/")
-    decompileRepo.set("https://files.minecraftforge.net/maven/")
+    remapRepo.set(paperMavenPublicUrl)
+    decompileRepo.set(paperMavenPublicUrl)
 
-    useStandardUpstream("purpur") {
-        url.set(github("PurpurMC", "Purpur"))
-        ref.set(providers.gradleProperty("purpurRef"))
-
-        withStandardPatcher {
-            apiSourceDirPath.set("Purpur-API")
-            serverSourceDirPath.set("Purpur-Server")
-
+    usePaperUpstream(providers.gradleProperty("paperCommit")) {
+        withPaperPatcher {
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-
             apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
+
+            serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
             serverOutputDir.set(layout.projectDirectory.dir("Fusion-Server"))
         }
     }
