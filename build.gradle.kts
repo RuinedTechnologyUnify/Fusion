@@ -55,7 +55,7 @@ paperweight {
 
     useStandardUpstream("purpur") {
         url.set(github("PurpurMC", "Purpur"))
-        ref.set(providers.gradleProperty("purpur"))
+        ref.set(providers.gradleProperty("purpurRef"))
 
         withStandardPatcher {
             apiSourceDirPath.set("Purpur-API")
