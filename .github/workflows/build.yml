@@ -12,9 +12,9 @@ jobs:
   release:
     strategy:
       matrix:
-        jdk: [18.0.2]
-        java: ['temurin']
-        os: [ubuntu-20.04]
+        jdk: ['17']
+        java: ['Java']
+        os: ['ubuntu-latest']
 
     if: "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
     runs-on: ${{ matrix.os }}
@@ -26,10 +26,11 @@ jobs:
         uses: gradle/wrapper-validation-action@master
 
       - name: Set up JDK ${{ matrix.java }} ${{ matrix.jdk }}
-        uses: actions/setup-java@main
+        uses: graalvm/setup-graalvm@v1
         with:
-          distribution: ${{ matrix.java }}
           java-version: ${{ matrix.jdk }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: 'latest'
           cache: 'gradle'
 
       - name: Configure Git
@@ -37,9 +38,9 @@ jobs:
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
           chmod +x gradlew
+
       - name: Apply Patches
         run: |
-          
           ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" applyPatches --stacktrace --no-daemon
 
       - name: Build
