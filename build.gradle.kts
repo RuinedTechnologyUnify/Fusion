@@ -22,6 +22,17 @@ dependencies {
     paperclip("io.papermc:paperclip:3.0.2")
 }
 
+allprojects {
+    apply(plugin = "java")
+    apply(plugin = "maven-publish")
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+}
+
 subprojects {
     apply(plugin = "java")
 
@@ -36,7 +47,20 @@ subprojects {
         options.release.set(17)
     }
 
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(17)
+    }
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
+
     repositories {
+        mavenCentral()
+        maven(paperMavenPublicUrl)
         mavenLocal()
         mavenCentral()
         maven("https://oss.sonatype.org/content/groups/public/")
