@@ -50,7 +50,7 @@ jobs:
           chmod +x gradlew
           git add Fusion-Server
           git add Fusion-API
-          git commit -F -
+          git commit -m commit
 
       - name: Push changes
         uses: ad-m/github-push-action@master
