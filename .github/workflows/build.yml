@@ -48,10 +48,9 @@ jobs:
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           
           chmod +x gradlew
-          git add .
-          log="Updated Upstream Purpur\n\nUpstream has released updates that appear to apply and compile correctly$log"
-          
-          printf "$log" | git commit -F -
+          git add ../Fusion/Fusion-Server
+          git add ../Fusion/Fusion-API
+          git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -60,6 +59,22 @@ jobs:
           directory: ../Fusion
           repository: IPECTER/Fusion
           branch: Built
+
+      - name: Push changes API
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ../Fusion/Fusion-API
+          repository: IPECTER/Fusion-API
+          branch: main
+
+      - name: Push changes Server
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ../Fusion/Fusion-Server
+          repository: IPECTER/Fusion-Server
+          branch: main
 
       - name: Build
         run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" build --stacktrace
