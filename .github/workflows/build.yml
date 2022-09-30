@@ -79,7 +79,7 @@ jobs:
           files: build/libs/*.jar
           prerelease: false
 
-      - name: [ Patch ] Commit changes
+      - name: ( Patch ) Commit changes
         run: |
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           
@@ -88,7 +88,7 @@ jobs:
           git add Fusion-API
           git commit -m Patch
 
-      - name: [ Patch ] Push changes API
+      - name: ( Patch ) Push changes API
         uses: ad-m/github-push-action@master
         with:
           force: true
@@ -97,7 +97,7 @@ jobs:
           repository: IPECTER/Fusion-API
           branch: main
 
-      - name: [ Patch ] Push changes Server
+      - name: ( Patch ) Push changes Server
         uses: ad-m/github-push-action@master
         with:
           force: true
