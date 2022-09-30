@@ -48,8 +48,8 @@ jobs:
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           
           chmod +x gradlew
-          git add ../Fusion/Fusion-Server
-          git add ../Fusion/Fusion-API
+          git add Fusion-Server
+          git add Fusion-API
           git commit -F -
 
       - name: Push changes
