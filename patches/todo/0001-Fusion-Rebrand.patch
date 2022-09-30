@@ -59,7 +59,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..3f9aa4292ff45c6b6af0ddfeecb645f8
 -        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Purpur
 -        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur
 +        String[] parts = serverVersion.substring("git-Fusion-".length()).split("[-\\s]"); // Purpur // Fusion
-+        final Component updateMessage = getUpdateStatusMessage("Bloom-host/petal", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Fusion
++        final Component updateMessage = getUpdateStatusMessage("IPECTER/Fusion", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Fusion
          final Component history = getHistory();
  
          return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
@@ -92,7 +92,7 @@ index 24f767663b1190dcada3da554375e3a01064c462..f996609e8f478845f850daefc4e611e4
          org.spigotmc.WatchdogThread.doStop(); // Paper
          if (!isSameThread()) {
 -            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PURPUR)"); // Purpur
-+            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PETAL)"); // Purpur // petal
++            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO FUSION)"); // Purpur // Fusion
              while (this.getRunningThread().isAlive()) {
                  this.getRunningThread().stop();
                  try {
@@ -101,14 +101,14 @@ index 24f767663b1190dcada3da554375e3a01064c462..f996609e8f478845f850daefc4e611e4
      @DontObfuscate
      public String getServerModName() {
 -        return org.purpurmc.purpur.PurpurConfig.serverModName; // Purpur - Purpur > // Paper - Paper > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
-+        // petal start
++        // Fusion start
 +        final String purpurModName = org.purpurmc.purpur.PurpurConfig.serverModName; // Purpur - Purpur > // Paper - Paper > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
 +
 +        return switch (purpurModName) {
-+            case "Purpur" -> "petal";
++            case "Purpur" -> "Fusion";
 +            default -> purpurModName;
 +        };
-+        // petal end
++        // Fusion end
      }
  
      public SystemReport fillSystemReport(SystemReport details) {
