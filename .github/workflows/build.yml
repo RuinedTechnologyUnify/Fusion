@@ -57,7 +57,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Fusion
+          directory: ../Fusion
           repository: IPECTER/Fusion
           branch: Built
 
