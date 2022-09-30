@@ -47,7 +47,7 @@ jobs:
         run: |
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           
-          chmod +x gradlew/
+          chmod +x gradlew
           git add .
           log="Updated Upstream Purpur\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
