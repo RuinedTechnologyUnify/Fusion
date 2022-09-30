@@ -48,8 +48,8 @@ jobs:
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           
           chmod +x gradlew
-          git add Fusion-Server/*
-          git add Fusion-API/*
+          git add Fusion-Server
+          git add Fusion-API
           git commit -m commit
 
       - name: Push changes
@@ -76,8 +76,8 @@ jobs:
           repository: IPECTER/Fusion-Server
           branch: main
 
-      - name: Build
-        run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" build --stacktrace
+      #- name: Build
+      #  run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" build --stacktrace
 
       - name: Create Reobf Jar
         run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" createReobfPaperclipJar --stacktrace
