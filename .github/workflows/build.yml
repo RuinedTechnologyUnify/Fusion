@@ -1,4 +1,4 @@
-name: Build Fusion
+name: Build Fusion Built
 on:
   push:
   workflow_dispatch:
