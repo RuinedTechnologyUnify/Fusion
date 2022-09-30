@@ -1,5 +1,5 @@
 @echo off
-cd Prismarine-Server >> NUL
+cd Fusion-Server >> NUL
 git add . >> NUL
 git commit -m "fixup" >> NUL
 git format-patch -1 >> NUL
