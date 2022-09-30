@@ -63,6 +63,7 @@ jobs:
       - name: Push changes API
         uses: ad-m/github-push-action@master
         with:
+          git_push_flags: '--force'
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ../Fusion/Fusion-API
           repository: IPECTER/Fusion-API
@@ -71,6 +72,7 @@ jobs:
       - name: Push changes Server
         uses: ad-m/github-push-action@master
         with:
+          git_push_flags: '--force'
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ../Fusion/Fusion-Server
           repository: IPECTER/Fusion-Server
