@@ -1,0 +1,40 @@
+{
+  "vanillaJar": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/downloadServerJar.jar",
+  "remappedJar": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/minecraft.jar",
+  "decompiledJar": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/decompileJar.jar",
+  "mcVersion": "1.19.2",
+  "libDir": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/jars/minecraft",
+  "libSourceDir": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/jars/minecraft-sources",
+  "libFile": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/data/bundler/ServerLibraries.txt",
+  "mappings": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/mappings/spigot-mojang+yarn-patched.tiny",
+  "notchToSpigotMappings": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/mappings/official-spigot.tiny",
+  "sourceMappings": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/mappings/official-mojang+yarn.tiny",
+  "reobfPackagesToFix": [
+    "co.aikar.timings",
+    "com.destroystokyo.paper",
+    "com.mojang",
+    "io.papermc.paper",
+    "ca.spottedleaf",
+    "net.kyori.adventure.bossbar",
+    "net.minecraft",
+    "org.bukkit.craftbukkit",
+    "org.spigotmc"
+  ],
+  "reobfMappingsPatch": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/build-data/reobf-mappings-patch.tiny",
+  "vanillaIncludes": [
+    "/*.class",
+    "/net/minecraft/**",
+    "/com/mojang/math/**"
+  ],
+  "paramMappings": {
+    "url": "https://repo.papermc.io/repository/maven-public/",
+    "coordinates": [
+      "net.fabricmc:yarn:1.19.2+build.1:mergedv2"
+    ]
+  },
+  "accessTransform": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/mergeAdditionalAts.at",
+  "spigotRecompiledClasses": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/spigotRecompiledClasses.txt",
+  "bundlerVersionJson": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/data/bundler/version.json",
+  "serverLibrariesTxt": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/data/bundler/ServerLibraries.txt",
+  "serverLibrariesList": "/home/runner/work/Fusion/Fusion/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/data/bundler/libraries.list"
+}
