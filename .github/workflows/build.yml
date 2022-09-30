@@ -35,7 +35,7 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
           chmod +x gradlew
 
@@ -47,7 +47,6 @@ jobs:
         run: |
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
           
-          cd Fusion
           chmod +x gradlew/
           git add .
           log="Updated Upstream Purpur\n\nUpstream has released updates that appear to apply and compile correctly$log"
