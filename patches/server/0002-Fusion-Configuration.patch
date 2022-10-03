@@ -11,10 +11,10 @@ index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..49360a63919b51f47722ecc491c199c6
 @@ -243,6 +243,7 @@ public class TimingsExport extends Thread {
              pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
              pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
-             pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
+             pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
 +            pair("fusion", mapAsJSON(com.github.ipecter.fusion.FusionConfig.getConfigCopy(), null)) // Fusion
          ));
- 
+
          new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionCommand.java b/src/main/java/com/github/ipecter/fusion/FusionCommand.java
 new file mode 100644
@@ -244,6 +244,6 @@ index a029f51983bcfe49beab1359f282f0f957723ef2..375cc1fd250d93f4b3fdd746d52131ba
          gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
 +        com.github.ipecter.fusion.FusionConfig.load(); // Fusion
 +        com.github.ipecter.fusion.FusionCommand.init(); // Fusion
- 
+
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
