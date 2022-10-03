@@ -10,8 +10,9 @@ index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..49360a63919b51f47722ecc491c199c6
 +++ b/src/main/java/co/aikar/timings/TimingsExport.java
 @@ -243,6 +243,7 @@ public class TimingsExport extends Thread {
              pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
-             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
-             pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
+             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfis
+-            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
++            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
 +            pair("fusion", mapAsJSON(com.github.ipecter.fusion.FusionConfig.getConfigCopy(), null)) // Fusion
          ));
 
@@ -30,7 +31,7 @@ index 0000000000000000000000000000000000000000..086fe09f49bd8dd081d89609aac1e3be
 +import net.minecraft.server.MinecraftServer;
 +import org.bukkit.Bukkit;
 +import org.bukkit.Location;
-+import org.bukkit.command.Command;
++import org.bukkit.command.Command;[ Patch
 +import org.bukkit.command.CommandSender;
 +
 +import java.io.IOException;
