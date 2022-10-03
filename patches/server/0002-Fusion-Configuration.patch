@@ -8,11 +8,11 @@ diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/c
 index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..49360a63919b51f47722ecc491c199c6c07bd488 100644
 --- a/src/main/java/co/aikar/timings/TimingsExport.java
 +++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -243,6 +243,7 @@ public class TimingsExport extends Thread {
+@@ -242,7 +242,8 @@ public class TimingsExport extends Thread {
              pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
              pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfis
 -            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
-+            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
++            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish // Fusion
 +            pair("fusion", mapAsJSON(com.github.ipecter.fusion.FusionConfig.getConfigCopy(), null)) // Fusion
          ));
 
