@@ -220,4 +220,3 @@ index a810bfd3b8d6bd4d8f2ef8797e4281ae4fe8a67f..ba176ed3e4419bfbf99728534988034b
                  }
  
                  log.log( Level.SEVERE, "------------------------------" );
-
