@@ -22,3 +22,6 @@
 
 ## License
 - This project will be granted license following [GPL-3.0](https://github.com/IPECTER/Fusion/blob/main/LICENSE). 
+
+## bStats
+[![](https://bstats.org/signatures/server-implementation/fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion)
