@@ -1,6 +1,7 @@
 <div align="center">
-<h1>Fusion</h1>
-<h4>❗ Work In Progress / For Personal Practice ❗</h4>
+
+![title](https://user-images.githubusercontent.com/80433772/193821205-555bdf0b-e245-4bae-a6dd-d43dced53937.png)
+
 <h3>A Crazy Minecraft Server Software Fusing Amazing Bukkits</h3>
 
 
