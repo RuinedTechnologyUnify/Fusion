@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 env:
-  version: 1.19.2
+  version: '1.19.2'
   branch: ver/1.19.2
   debug: 'false'
 
@@ -65,7 +65,7 @@ jobs:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: release-${{ env.workflow }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/*.jar
+          files: build/libs/Fusion-paperclip-1.19.2-R0.1-SNAPSHOT-reobf.jar
           prerelease: false
           
       - name: Release Artifacts (Latest)
@@ -75,7 +75,7 @@ jobs:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: latest-${{ env.version }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/*.jar
+          files: build/libs/Fusion-paperclip-1.19.2-R0.1-SNAPSHOT-reobf.jar
           prerelease: false
 
       - name: ( Patch ) Commit changes
