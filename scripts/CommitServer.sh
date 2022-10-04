@@ -8,4 +8,3 @@ cd ../Fusion-Server
 
 git add .
 git commit -m $1
-git format-patch -1
