@@ -248,10 +248,10 @@ index 0000000000000000000000000000000000000000..a23954eb289b54b55dce4005dc901da9
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8151603e5140b2cd677f22b702ddd841aae76f43
+index 0000000000000000000000000000000000000000..d37d72970fc6028525375a2a01e15520602da64f
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,69 @@
 +package com.github.ipecter.fusion.command;
 +
 +
@@ -263,6 +263,7 @@ index 0000000000000000000000000000000000000000..8151603e5140b2cd677f22b702ddd841
 +import org.bukkit.command.CommandSender;
 +import com.github.ipecter.fusion.FusionConfig;
 +
++import java.awt.*;
 +import java.io.File;
 +import java.util.Collections;
 +import java.util.List;
@@ -290,7 +291,7 @@ index 0000000000000000000000000000000000000000..8151603e5140b2cd677f22b702ddd841
 +    @Override
 +    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
 +        if (!testPermission(sender)) return true;
-+        String prefix = ChatColor.of("0056ff") + "《" + ChatColor.of("164cff") + " " + ChatColor.of("2b43ff") + "F" + ChatColor.of("4139ff") + "u" + ChatColor.of("5730ff") + "s" + ChatColor.of("6c26ff") + "i" + ChatColor.of("821dff") + "o" + ChatColor.of("9813ff") + "n" + ChatColor.of("ad0aff") + " " + ChatColor.of("c300ff") + "》";
++        String prefix = ChatColor.of(Color.decode("#ff7100")) + "《" + ChatColor.of(Color.decode("#0f00ff")) + " " + ChatColor.of(Color.decode("#2a00ff")) + ChatColor.BOLD + "F" + ChatColor.of(Color.decode("#4600ff")) + ChatColor.BOLD + "u" + ChatColor.of(Color.decode("#6100ff")) + ChatColor.BOLD + "s" + ChatColor.of(Color.decode("#7c00ff")) + ChatColor.BOLD + "i" + ChatColor.of(Color.decode("#9700ff")) + ChatColor.BOLD + "o" + ChatColor.of(Color.decode("#b300ff")) + ChatColor.BOLD + "n" + ChatColor.of(Color.decode("#ce00ff")) + " " + ChatColor.RESET +  ChatColor.of(Color.decode("#ff7100")) + "》";
 +
 +        if (args.length != 1) {
 +            sender.sendMessage(prefix + ChatColor.RED + "Usage: " + usageMessage);
@@ -342,7 +343,7 @@ index a029f51983bcfe49beab1359f282f0f957723ef2..a7ac224a45cc4daf58ef11cd8f4435a4
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index cf8693d02de53f1e02d55936f889c5724889e3f5..c8f0b1015d9cb0109818a9a5e3ff6a016c0ac458 100644
+index 8c10ecf293a4dec725b650f0820916256c2c3c4e..69c126bc8e29d0fc2c13dc421791daf2177c3173 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -175,6 +175,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
