@@ -1,6 +1,6 @@
 <div align="center">
 
-![title](https://user-images.githubusercontent.com/80433772/193821205-555bdf0b-e245-4bae-a6dd-d43dced53937.png)
+![title](https://user-images.githubusercontent.com/80433772/193827393-d3b38086-1a0e-4ca9-9313-e5272fa8c554.png)
 
 <h3>A Crazy Minecraft Server Software Fusing Amazing Bukkits</h3>
 
