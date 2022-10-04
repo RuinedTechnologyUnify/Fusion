@@ -291,7 +291,7 @@ index 0000000000000000000000000000000000000000..d37d72970fc6028525375a2a01e15520
 +    @Override
 +    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
 +        if (!testPermission(sender)) return true;
-+        String prefix = ChatColor.of(Color.decode("#ff7100")) + "《" + ChatColor.of(Color.decode("#00afff")) + " " + ChatColor.of(Color.decode("#2196ff")) + ChatColor.BOLD + "F" + ChatColor.of(Color.decode("#427dff")) + ChatColor.BOLD + "u" + ChatColor.of(Color.decode("#6364ff")) + ChatColor.BOLD + "s" + ChatColor.of(Color.decode("#834bff")) + ChatColor.BOLD + "i" + ChatColor.of(Color.decode("#a432ff")) + ChatColor.BOLD + "o" + ChatColor.of(Color.decode("#c519ff")) + ChatColor.BOLD + "n" + ChatColor.of(Color.decode("#e600ff")) + " " + ChatColor.RESET +  ChatColor.of(Color.decode("#ff7100")) + "》";
++        String prefix = ChatColor.of(Color.decode("#2196ff")) + "F" + ChatColor.of(Color.decode("#427dff")) + "u" + ChatColor.of(Color.decode("#6364ff")) + "s" + ChatColor.of(Color.decode("#834bff")) + "i" + ChatColor.of(Color.decode("#a432ff")) + "o" + ChatColor.of(Color.decode("#c519ff")) + "n" + ChatColor.RESET +  ChatColor.of(Color.decode("#ff7100")) + ChatColor.BOLD + " · ";
 +
 +        if (args.length != 1) {
 +            sender.sendMessage(prefix + ChatColor.RED + "Usage: " + usageMessage);
