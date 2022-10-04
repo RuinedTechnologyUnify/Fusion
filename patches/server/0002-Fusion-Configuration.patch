@@ -357,7 +357,7 @@ index cf8693d02de53f1e02d55936f889c5724889e3f5..c8f0b1015d9cb0109818a9a5e3ff6a01
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
          this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
-+        this.fusionConfig = new com.github.ipecter.fusion.FusionWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Fusion
++        this.fusionConfig = new com.github.ipecter.fusion.FusionWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Fusion
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
