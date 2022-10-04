@@ -8,6 +8,15 @@ upstream=$(git ls-remote https://github.com/PurpurMC/Purpur | grep ver/1.19.2 | 
 
 purpur=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/$current...$upstream | jq -r '.commits[] | "PurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
 
+echo "Current: $current"
+echo "Upstream: $upstream"
+
+
+if [ $current == $upstream ]; then
+    echo "Equal"
+    exit 0
+fi
+
 updated=""
 logsuffix=""
 
