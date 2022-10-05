@@ -81,8 +81,8 @@ jobs:
       - name: ( Patch ) Commit changes
         run: |
           mkdir zip
-          cp -rf .gradle/paperweight paperweight
-          zip zip/gradle.zip paperweight
+          cp -rf .gradle/caches caches
+          zip zip/gradle.zip caches
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           
           chmod +x gradlew
