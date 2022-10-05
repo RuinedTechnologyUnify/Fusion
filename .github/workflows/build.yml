@@ -113,6 +113,6 @@ jobs:
         with:
           force: true
           github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./.gradle
+          directory: ./.gradle/caches/paperweight
           repository: IPECTER/Fusion-Cache
           branch: main
