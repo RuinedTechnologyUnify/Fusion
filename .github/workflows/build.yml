@@ -83,35 +83,17 @@ jobs:
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           
           chmod +x gradlew
-          git add Fusion-Server
-          git add Fusion-API
-          cp -rf .gradle gradleFolder
-          git add gradleFolder
+          mv -f Fusion-Server download
+          mv -f Fusion-API download
+          mv -f .gradle download
+          git add download
           git commit -m Patch
 
-      - name: ( Patch ) Push changes API
+      - name: ( Patch ) Push changes
         uses: ad-m/github-push-action@master
         with:
           force: true
           github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Fusion-API
-          repository: IPECTER/Fusion-API
-          branch: main
-
-      - name: ( Patch ) Push changes Server
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Fusion-Server
+          directory: ./download
           repository: IPECTER/Fusion-Server
-          branch: main
-          
-      - name: ( Patch ) Push changes .gradle
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./gradleFolder
-          repository: IPECTER/Fusion-Cache
           branch: main
