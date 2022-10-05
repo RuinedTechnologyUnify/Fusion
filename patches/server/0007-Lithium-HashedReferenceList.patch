@@ -1,12 +1,28 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Tue, 4 Oct 2022 22:04:57 +0900
+Date: Wed, 5 Oct 2022 17:23:25 +0900
 Subject: [PATCH] Lithium-HashedReferenceList
 
 Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index f6a06326f9ce44fdb7d829cefa10369689c1ba3a..5a30f0439552ab6f80bdcc873f287f2fd07b5829 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -197,8 +197,10 @@ public class FusionConfig {
+ 
+     public static boolean lithiumEnable = true;
+     public static boolean lithiumFastUtil = true;
++    public static boolean lithiumHashedReferenceList = true;
+     private static void lithiumSettings() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
+         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
++        lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
+     }
+ }
+\ No newline at end of file
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java b/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..4128567173d3985257a1bdd4412c7db0ff81535d
@@ -296,7 +312,7 @@ index 0000000000000000000000000000000000000000..4128567173d3985257a1bdd4412c7db0
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 69c126bc8e29d0fc2c13dc421791daf2177c3173..ff45ceea9b74a19d96abd96c18ab4a04ff7ab2dd 100644
+index 69c126bc8e29d0fc2c13dc421791daf2177c3173..9f20a751996fd82d40cba967ef34e428df5910e0 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -117,9 +117,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -304,10 +320,10 @@ index 69c126bc8e29d0fc2c13dc421791daf2177c3173..ff45ceea9b74a19d96abd96c18ab4a04
      public static final int MAX_ENTITY_SPAWN_Y = 20000000;
      public static final int MIN_ENTITY_SPAWN_Y = -20000000;
 -    protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper
-+    protected final List<TickingBlockEntity> blockEntityTickers = me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()); public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper // Fusion - Jettpack - Lithium: HashedReferenceList
++    protected final List<TickingBlockEntity> blockEntityTickers = com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumHashedReferenceList ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList(); public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper // Fusion - Lithium: HashedReferenceList
      protected final NeighborUpdater neighborUpdater;
 -    private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
-+    private final List<TickingBlockEntity> pendingBlockEntityTickers = me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()); // Fusion - Jettpack - Lithium: HashedReferenceList
++    private final List<TickingBlockEntity> pendingBlockEntityTickers = com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumHashedReferenceList ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList(); // Fusion - Lithium: HashedReferenceList
      private boolean tickingBlockEntities;
      public final Thread thread;
      private final boolean isDebug;

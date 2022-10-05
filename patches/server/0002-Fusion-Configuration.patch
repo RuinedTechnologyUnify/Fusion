@@ -456,7 +456,7 @@ index 8c10ecf293a4dec725b650f0820916256c2c3c4e..69c126bc8e29d0fc2c13dc421791daf2
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 02487d0d99ccae693815cd049a8e32a0ab20c8b1..1e2125013de7e2fe1a60e786592c8924a8822d5a 100644
+index 02487d0d99ccae693815cd049a8e32a0ab20c8b1..0f71a0d9128cb6d0beccc3a3bea5e7c8d67ebe5f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -998,6 +998,7 @@ public final class CraftServer implements Server {
@@ -481,8 +481,8 @@ index 02487d0d99ccae693815cd049a8e32a0ab20c8b1..1e2125013de7e2fe1a60e786592c8924
  
 +        // Fusion start
 +        @Override
-+        public org.simpleyaml.configuration.file.YamlFile getFusionConfig() {
-+            return com.github.ipecter.fusion.FusionConfig.config;
++        public YamlConfiguration getFusionConfig() {
++            return YamlConfiguration.loadConfiguration(com.github.ipecter.fusion.FusionConfig.config.getConfigurationFile());
 +        }
 +        // Fusion end
 +

@@ -1,0 +1,140 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 5 Oct 2022 18:08:54 +0900
+Subject: [PATCH] Lithium-FastRetrieval
+
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index fe2e3b42c95c04114f6a045a11f35ad01af95432..3719ad9b1d327f055170da163f10c91303907b3c 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -199,10 +199,12 @@ public class FusionConfig {
+     public static boolean lithiumFastUtil = true;
+     public static boolean lithiumHashedReferenceList = true;
+     public static boolean lithiumCompactSineLUT = true;
++    public static boolean lithiumFastRetrieval = true;
+     private static void lithiumSettings() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
+         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
+         lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
+         lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT);
++        lithiumFastRetrieval = getBoolean("lithium.fast-retrieval", lithiumFastRetrieval);
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
+index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..6dde3cf15a4afc037344babe048853eeca4abc5f 100644
+--- a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
++++ b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
+@@ -33,33 +33,94 @@ public class EntitySectionStorage<T extends EntityAccess> {
+     }
+
+     public void forEachAccessibleNonEmptySection(AABB box, Consumer<EntitySection<T>> action) {
+-        int i = 2;
++        // Fusion start - Lithium: FastRetrieval
+         int j = SectionPos.posToSectionCoord(box.minX - 2.0D);
+         int k = SectionPos.posToSectionCoord(box.minY - 4.0D);
+         int l = SectionPos.posToSectionCoord(box.minZ - 2.0D);
+         int m = SectionPos.posToSectionCoord(box.maxX + 2.0D);
+         int n = SectionPos.posToSectionCoord(box.maxY + 0.0D);
+         int o = SectionPos.posToSectionCoord(box.maxZ + 2.0D);
++        if (com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastRetrieval) {
++            if (m >= j + 4 || o >= l + 4) {
++                // Vanilla is likely more optimized when shooting entities with TNT cannons over huge distances.
++                // Choosing a cutoff of 4 chunk size, as it becomes more likely that these entity sections do not exist when
++                // they are far away from the shot entity (player despawn range, position maybe not on the ground, etc)
++                for (int p = j; p <= m; p++) {
++                    long q = SectionPos.asLong(p, 0, 0);
++                    long r = SectionPos.asLong(p, -1, -1);
++                    LongIterator longIterator = this.sectionIds.subSet(q, r + 1L).iterator();
++
++                    while (longIterator.hasNext()) {
++                        long s = longIterator.nextLong();
++                        int t = SectionPos.y(s);
++                        int u = SectionPos.z(s);
++                        if (t >= k && t <= n && u >= l && u <= o) {
++                            EntitySection<T> entitySection = this.sections.get(s);
++                            if (entitySection != null && !entitySection.isEmpty() && entitySection.getStatus().isAccessible()) {
++                                action.accept(entitySection);
++                            }
++                        }
++                    }
++                }
++            } else {
++                // Vanilla order of the AVL long set is sorting by ascending long value. The x, y, z positions are packed into
++                // a long with the x position's lowest 22 bits placed at the MSB.
++                // Therefore the long is negative iff the 22th bit of the x position is set, which happens iff the x position
++                // is negative. A positive x position will never have its 22th bit set, as these big coordinates are far outside
++                // the world. y and z positions are treated as unsigned when sorting by ascending long value, as their sign bits
++                // are placed somewhere inside the packed long
++                for (int x = j; x <= m; x++) {
++                    for (int z = Math.max(l, 0); z <= o; z++) {
++                        this.forEachInColumn(x, k, n, z, action);
++                    }
+
+-        for(int p = j; p <= m; ++p) {
+-            long q = SectionPos.asLong(p, 0, 0);
+-            long r = SectionPos.asLong(p, -1, -1);
+-            LongIterator longIterator = this.sectionIds.subSet(q, r + 1L).iterator();
+-
+-            while(longIterator.hasNext()) {
+-                long s = longIterator.nextLong();
+-                int t = SectionPos.y(s);
+-                int u = SectionPos.z(s);
+-                if (t >= k && t <= n && u >= l && u <= o) {
+-                    EntitySection<T> entitySection = this.sections.get(s);
+-                    if (entitySection != null && !entitySection.isEmpty() && entitySection.getStatus().isAccessible()) {
+-                        action.accept(entitySection);
++                    int bound = Math.min(-1, o);
++                    for (int z = l; z <= bound; z++) {
++                        this.forEachInColumn(x, k, n, z, action);
++                    }
++                }
++            }
++        } else {
++            for(int p = j; p <= m; ++p) {
++                long q = SectionPos.asLong(p, 0, 0);
++                long r = SectionPos.asLong(p, -1, -1);
++                LongIterator longIterator = this.sectionIds.subSet(q, r + 1L).iterator();
++
++                while(longIterator.hasNext()) {
++                    long s = longIterator.nextLong();
++                    int t = SectionPos.y(s);
++                    int u = SectionPos.z(s);
++                    if (t >= k && t <= n && u >= l && u <= o) {
++                        EntitySection<T> entitySection = this.sections.get(s);
++                        if (entitySection != null && !entitySection.isEmpty() && entitySection.getStatus().isAccessible()) {
++                            action.accept(entitySection);
++                        }
+                     }
+                 }
+             }
+         }
++        // Fusion end
++    }
++
++    // Fusion start - Lithium: FastRetrieval
++    private void forEachInColumn(int x, int k, int n, int z, Consumer<EntitySection<T>> action) {
++        //y from negative to positive, but y is treated as unsigned
++        for (int y = Math.max(k, 0); y <= n; y++) {
++            this.consumeSection(SectionPos.asLong(x, y, z), action);
++        }
++        int bound = Math.min(-1, n);
++        for (int y = k; y <= bound; y++) {
++            this.consumeSection(SectionPos.asLong(x, y, z), action);
++        }
++    }
+
++    private void consumeSection(long pos, Consumer<EntitySection<T>> action) {
++        EntitySection<T> entitySection = this.getSection(pos);
++        if (entitySection != null && 0 != entitySection.size() && entitySection.getStatus().isAccessible()) {
++            action.accept(entitySection);
++        }
+     }
++    // Fusion end
+
+     public LongStream getExistingSectionPositionsInChunk(long chunkPos) {
+         int i = ChunkPos.getX(chunkPos);

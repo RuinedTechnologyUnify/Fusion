@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 5 Oct 2022 16:13:46 +0900
+Subject: [PATCH] Fusion-LithiumConfiguration
+
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index b354129dfd8d71ea1d4fbfc5953fdcad208d70c4..15ffa31bc1f28c6a907b9824f43d928a74c681a9 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -194,4 +194,9 @@ public class FusionConfig {
+         }
+         return builder.build();
+     }
++
++    public static boolean lithiumEnable = true;
++    private static void lithiumSettings() {
++        lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
++    }
+ }
+\ No newline at end of file

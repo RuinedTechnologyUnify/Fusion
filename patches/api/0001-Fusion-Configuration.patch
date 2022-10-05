@@ -14,7 +14,7 @@ index a7e2fab3e174fe2c1d79d904f7eaff88dd0c3c82..0ca7d8cef78e4ad204240f3372537935
  
 +        // Fusion start
 +        @NotNull
-+        public org.simpleyaml.configuration.file.YamlFile getFusionConfig() {
++        public org.bukkit.configuration.file.YamlConfiguration getFusionConfig() {
 +            throw new UnsupportedOperationException("Not supported yet.");
 +        }
 +        // Fusion end
