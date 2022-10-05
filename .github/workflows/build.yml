@@ -83,6 +83,7 @@ jobs:
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           
           chmod +x gradlew
+          mkdir download
           mv -f Fusion-Server download/Fusion-Server
           mv -f Fusion-API download/Fusion-API
           mv -f .gradle download/.gradle
