@@ -85,10 +85,9 @@ jobs:
           chmod +x gradlew
           git add Fusion-Server
           git add Fusion-API
+          cp -rf .gradle gradleFolder
+          git add gradleFolder
           git commit -m Patch
-          git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
-          git add .gradle/caches/paperweight
-          git commit -m gradle
 
       - name: ( Patch ) Push changes API
         uses: ad-m/github-push-action@master
@@ -113,6 +112,6 @@ jobs:
         with:
           force: true
           github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./.gradle/caches/paperweight
+          directory: ./gradleFolder
           repository: IPECTER/Fusion-Cache
           branch: main
