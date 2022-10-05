@@ -87,7 +87,7 @@ jobs:
           git add Fusion-API
           git commit -m Patch
           git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
-          git add .gradle
+          git add .gradle/caches/paperweight
           git commit -m gradle
 
       - name: ( Patch ) Push changes API
