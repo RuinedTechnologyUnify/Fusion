@@ -6,4 +6,4 @@ pluginManagement {
 }
 
 rootProject.name = "Fusion"
-include("Fusion-API", "Fusion-Server")
+include("Fusion-API", "Fusion-Server", "spigot")
