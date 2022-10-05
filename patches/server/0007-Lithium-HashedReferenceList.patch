@@ -3,9 +3,6 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 5 Oct 2022 17:23:25 +0900
 Subject: [PATCH] Lithium-HashedReferenceList
 
-Mirai - etil2jz - GPL 3.0
-JettPack - Titaniumtown - GPL 3.0
-Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index f6a06326f9ce44fdb7d829cefa10369689c1ba3a..5a30f0439552ab6f80bdcc873f287f2fd07b5829 100644

@@ -3,12 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 5 Oct 2022 18:08:54 +0900
 Subject: [PATCH] Lithium-FastRetrieval
 
-Mirai - etil2jz - GPL 3.0
-JettPack - Titaniumtown - GPL 3.0
-Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index fe2e3b42c95c04114f6a045a11f35ad01af95432..3719ad9b1d327f055170da163f10c91303907b3c 100644
+index 6227ed44abbf3b316924c1f2242419b8f909bb1a..7d10d045be3c81b7b985c3eadc1e43d7988c55e6 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -199,10 +199,12 @@ public class FusionConfig {
@@ -31,7 +28,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..6dde3cf15a4afc037344babe048853ee
 +++ b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 @@ -33,33 +33,94 @@ public class EntitySectionStorage<T extends EntityAccess> {
      }
-
+ 
      public void forEachAccessibleNonEmptySection(AABB box, Consumer<EntitySection<T>> action) {
 -        int i = 2;
 +        // Fusion start - Lithium: FastRetrieval
@@ -74,7 +71,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..6dde3cf15a4afc037344babe048853ee
 +                    for (int z = Math.max(l, 0); z <= o; z++) {
 +                        this.forEachInColumn(x, k, n, z, action);
 +                    }
-
+ 
 -        for(int p = j; p <= m; ++p) {
 -            long q = SectionPos.asLong(p, 0, 0);
 -            long r = SectionPos.asLong(p, -1, -1);
@@ -127,7 +124,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..6dde3cf15a4afc037344babe048853ee
 +            this.consumeSection(SectionPos.asLong(x, y, z), action);
 +        }
 +    }
-
+ 
 +    private void consumeSection(long pos, Consumer<EntitySection<T>> action) {
 +        EntitySection<T> entitySection = this.getSection(pos);
 +        if (entitySection != null && 0 != entitySection.size() && entitySection.getStatus().isAccessible()) {
@@ -135,6 +132,6 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..6dde3cf15a4afc037344babe048853ee
 +        }
      }
 +    // Fusion end
-
+ 
      public LongStream getExistingSectionPositionsInChunk(long chunkPos) {
          int i = ChunkPos.getX(chunkPos);
