@@ -106,11 +106,11 @@ jobs:
           repository: IPECTER/Fusion-Server
           branch: main
           
-      - name: ( Patch ) Push changes .Gradle
+      - name: ( Patch ) Push changes .gradle
         uses: ad-m/github-push-action@master
         with:
           force: true
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./.gradle
-          repository: IPECTER/Fusion-.Gradle
+          repository: IPECTER/Fusion-Gradle
           branch: main
