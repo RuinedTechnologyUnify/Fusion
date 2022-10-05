@@ -85,8 +85,10 @@ jobs:
           chmod +x gradlew
           git add Fusion-Server
           git add Fusion-API
-          git add .gradle
           git commit -m Patch
+          git config --global user.email "ipectert@gmail.com" && git config --global user.name "IPECTER"
+          git add .gradle
+          git commit -m gradle
 
       - name: ( Patch ) Push changes API
         uses: ad-m/github-push-action@master
@@ -112,5 +114,5 @@ jobs:
           force: true
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./.gradle
-          repository: IPECTER/Fusion-Gradle
+          repository: IPECTER/Fusion-Cache
           branch: main
