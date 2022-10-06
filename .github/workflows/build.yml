@@ -80,11 +80,15 @@ jobs:
 
       - name: ( Patch ) Commit changes
         run: |
+          mkdir zip
+          cp -rf .gradle/caches caches
+          zip zip/gradle.zip caches
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
           
           chmod +x gradlew
           git add Fusion-Server
           git add Fusion-API
+          git add zip
           git commit -m Patch
 
       - name: ( Patch ) Push changes API
@@ -103,4 +107,13 @@ jobs:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Fusion-Server
           repository: IPECTER/Fusion-Server
+          branch: main
+          
+      - name: ( Patch ) Push changes .Gradle
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./zip
+          repository: IPECTER/Fusion-Gradle
           branch: main
