@@ -10,11 +10,12 @@ index a61a0f4f1ce89681336d2ed246e6b616aa6fe73d..000c32f1fd81b411415c02e234888b97
 +++ b/build.gradle.kts
 @@ -9,7 +9,8 @@ plugins {
  }
- 
+-
++sourceSets["main"].java.srcDir(file("${rootDir.absolutePath}/.gradle/caches/paperweight/upstreams/paper/work/Spigot/Spigot-Server/src/main/java"))
  dependencies {
 -    implementation(project(":purpur-api")) // Purpur
 +    implementation(project(":Fusion-API")) // Purpur // Fusion
-+
++    compileOnly(files("${rootDir.absolutePath}/.gradle/caches/paperweight/upstreams/paper/.gradle/caches/paperweight/taskCache/spigotRemapJar.jar"))
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.19.2-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
