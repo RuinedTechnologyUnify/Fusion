@@ -6,7 +6,7 @@ Subject: [PATCH] Fusion-Configuration
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b354129dfd8d71ea1d4fbfc5953fdcad208d70c4
+index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd9de0d9b8
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -0,0 +1,197 @@
@@ -40,7 +40,7 @@ index 0000000000000000000000000000000000000000..b354129dfd8d71ea1d4fbfc5953fdcad
 +            + "with caution, and make sure you know what each option does before configuring.\n"
 +            + "\n"
 +            + "If you need help with the configuration or have any questions related to Fusion,\n"
-+            + "join us in our Discord guild.\n";
++            + "join us in our Discord guild.";
 +    private static File CONFIG_FILE;
 +    public static YamlFile config;
 +

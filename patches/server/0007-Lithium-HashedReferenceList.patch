@@ -5,16 +5,17 @@ Subject: [PATCH] Lithium-HashedReferenceList
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index f6a06326f9ce44fdb7d829cefa10369689c1ba3a..5a30f0439552ab6f80bdcc873f287f2fd07b5829 100644
+index 6bd1f2a7fc4de04ba11b687b7e09ce00c59e1c0a..623ba2529c1be0f1168b6f3ca81c35bd7e1b787a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -197,8 +197,10 @@ public class FusionConfig {
+@@ -197,9 +197,11 @@ public class FusionConfig {
  
      public static boolean lithiumEnable = true;
      public static boolean lithiumFastUtil = true;
 +    public static boolean lithiumHashedReferenceList = true;
      private static void lithiumSettings() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
 +        lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
      }

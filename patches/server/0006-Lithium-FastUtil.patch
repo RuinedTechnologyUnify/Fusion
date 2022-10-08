@@ -5,16 +5,17 @@ Subject: [PATCH] Lithium-FastUtil
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 15ffa31bc1f28c6a907b9824f43d928a74c681a9..f6a06326f9ce44fdb7d829cefa10369689c1ba3a 100644
+index 3f718ec4fdcafff8c0cf878184c2830dac202a50..6bd1f2a7fc4de04ba11b687b7e09ce00c59e1c0a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -196,7 +196,9 @@ public class FusionConfig {
+@@ -196,8 +196,10 @@ public class FusionConfig {
      }
  
      public static boolean lithiumEnable = true;
 +    public static boolean lithiumFastUtil = true;
      private static void lithiumSettings() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +        lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
      }
  }

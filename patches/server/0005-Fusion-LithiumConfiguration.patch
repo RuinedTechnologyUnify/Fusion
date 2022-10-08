@@ -5,17 +5,18 @@ Subject: [PATCH] Fusion-LithiumConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index b354129dfd8d71ea1d4fbfc5953fdcad208d70c4..15ffa31bc1f28c6a907b9824f43d928a74c681a9 100644
+index d1999cf58c4a39f74464d8c055d7a8cd9de0d9b8..3f718ec4fdcafff8c0cf878184c2830dac202a50 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -194,4 +194,9 @@ public class FusionConfig {
+@@ -194,4 +194,10 @@ public class FusionConfig {
          }
          return builder.build();
      }
 +
 +    public static boolean lithiumEnable = true;
 +    private static void lithiumSettings() {
-+        lithiumEnable = getBoolean("lithium.enable", lithiumEnable,"Fabric Mod: Lithium");
++        setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
++        lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +    }
  }
 \ No newline at end of file

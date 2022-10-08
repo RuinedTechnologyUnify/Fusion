@@ -29,6 +29,19 @@ index c9ae76401278057f87ebef13619a114722e81a1d..eb6c03d5407677a2aacd3bb917a7f80e
                  "This value defines how much distance modifies an entity's",
                  "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
                  "If you want further away entities to tick less often, use 7.",
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index a7f4b791894c5d8b7af4b0c067cf167b29272a27..17c53d6a92783b9ee3858c07a5850c7dd275c82a 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -114,7 +114,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     public class Watchdog extends ConfigurationPart {
+         public int earlyWarningEvery = 5000;
+-        public int earlyWarningDelay = 10000;
++        public int earlyWarningDelay = 180000; // Fusion - Optimize Default Configuration
+     }
+ 
+     public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c325286e2a9 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
@@ -153,6 +166,19 @@ index cba660a0506994f66cbcb890ccd464bd412a6211..9150d46bb379e2e9b6d529488e28d914
              default -> throw new UnsupportedOperationException("Unknown Config value " + spawnCategory + " for ticks-per");
          };
      }
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index 8a369dbdf8d51c7545b6814149ff406b1e216946..a1ac970f6ac2426c7b11df1c61f9072dd1089a4f 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -254,7 +254,7 @@ public class PurpurConfig {
+         laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
+     }
+ 
+-    public static boolean useAlternateKeepAlive = false;
++    public static boolean useAlternateKeepAlive = true; // Fusion - Optimize Default Configuration
+     private static void useAlternateKeepAlive() {
+         useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
+     }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 index df0668c1f35c1acca1de7f81c8afaa06c2e21082..1f334a9cce279e69f21a9f3248e0ddc510e58e4b 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
@@ -241,29 +267,3 @@ index bbf15fbb889670e57bd86377590a1b3abe80b96d..8e9e62e9a4dff0b26db1bdfae25f8585
          this.hopperAmount = this.getInt( "hopper-amount", 1 );
          this.hopperCanLoadChunks = this.getBoolean( "hopper-can-load-chunks", false );
          this.log( "Hopper Transfer: " + this.hopperTransfer + " Hopper Check: " + this.hopperCheck + " Hopper Amount: " + this.hopperAmount + " Hopper Can Load Chunks: " + this.hopperCanLoadChunks );
-diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index a7f4b791894c5d8b7af4b0c067cf167b29272a27..17c53d6a92783b9ee3858c07a5850c7dd275c82a 100644
---- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-+++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-@@ -114,7 +114,7 @@ public class GlobalConfiguration extends ConfigurationPart {
-
-     public class Watchdog extends ConfigurationPart {
-         public int earlyWarningEvery = 5000;
--        public int earlyWarningDelay = 10000;
-+        public int earlyWarningDelay = 180000; // Fusion - Optimize Default Configuration
-     }
-
-     public SpamLimiter spamLimiter;
-diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 8a369dbdf8d51c7545b6814149ff406b1e216946..a1ac970f6ac2426c7b11df1c61f9072dd1089a4f 100644
---- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-+++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -254,7 +254,7 @@ public class PurpurConfig {
-         laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
-     }
-
--    public static boolean useAlternateKeepAlive = false;
-+    public static boolean useAlternateKeepAlive = true; // Fusion - Optimize Default Configuration
-     private static void useAlternateKeepAlive() {
-         useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
-     }
