@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Wed, 5 Oct 2022 17:15:58 +0900
+Date: Mon, 17 Oct 2022 21:06:24 +0900
 Subject: [PATCH] Lithium-FastUtil
 
 
-diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 3f718ec4fdcafff8c0cf878184c2830dac202a50..6bd1f2a7fc4de04ba11b687b7e09ce00c59e1c0a 100644
---- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -196,8 +196,10 @@ public class FusionConfig {
+diff --git a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
+index c9ba665e2ade6c29168ada8da8b49ec6c64ecbcf..940c4f882f07d82eb642005a7d208c446379f06c 100644
+--- a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
+@@ -9,9 +9,11 @@ public class LithiumConfig extends FusionConfig {
      }
  
      public static boolean lithiumEnable = true;
@@ -18,10 +18,10 @@ index 3f718ec4fdcafff8c0cf878184c2830dac202a50..6bd1f2a7fc4de04ba11b687b7e09ce00
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +        lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
      }
+ 
  }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/core/Direction.java b/src/main/java/net/minecraft/core/Direction.java
-index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..e196f5d3b01d88bce3da6291307d457b031e73fb 100644
+index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..c9c0535ef4c84158400e8245a46ccf82a032de93 100644
 --- a/src/main/java/net/minecraft/core/Direction.java
 +++ b/src/main/java/net/minecraft/core/Direction.java
 @@ -196,7 +196,7 @@ public enum Direction implements StringRepresentable {
@@ -29,7 +29,7 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..e196f5d3b01d88bce3da6291307d457b
  
      public Direction getOpposite() {
 -        return from3DDataValue(this.oppositeIndex);
-+        return com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[this.oppositeIndex] : from3DDataValue(this.oppositeIndex); // Fusion - Lithium: FastUtil
++        return com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumFastUtil ? VALUES[this.oppositeIndex] : from3DDataValue(this.oppositeIndex); // Fusion - Lithium: FastUtil
      }
  
      public Direction getClockWise(Direction.Axis axis) {
@@ -38,12 +38,12 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..e196f5d3b01d88bce3da6291307d457b
  
      public static Direction getRandom(RandomSource random) {
 -        return Util.getRandom(VALUES, random);
-+        return com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[random.nextInt(VALUES.length)] :Util.getRandom(VALUES, random); // Fusion - Lithium: FastUtil
++        return com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumFastUtil ? VALUES[random.nextInt(VALUES.length)] :Util.getRandom(VALUES, random); // Fusion - Lithium: FastUtil
      }
  
      public static Direction getNearest(double x, double y, double z) {
 diff --git a/src/main/java/net/minecraft/world/phys/AABB.java b/src/main/java/net/minecraft/world/phys/AABB.java
-index cfb2e46b34b2982d6724f18214557fc80cf4adfa..a6128f75244db124547d05046bec0f879395b2aa 100644
+index cfb2e46b34b2982d6724f18214557fc80cf4adfa..5ac81cbd7a09dac672cddc18eb2f150b71f34b9e 100644
 --- a/src/main/java/net/minecraft/world/phys/AABB.java
 +++ b/src/main/java/net/minecraft/world/phys/AABB.java
 @@ -16,6 +16,17 @@ public class AABB {
@@ -52,7 +52,7 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..a6128f75244db124547d05046bec0f87
  
 +    // Fusion start - Lithium: FastUtil
 +    static {
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastUtil) {
++        if (com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumFastUtil) {
 +            assert Direction.Axis.X.ordinal() == 0;
 +            assert Direction.Axis.Y.ordinal() == 1;
 +            assert Direction.Axis.Z.ordinal() == 2;
@@ -70,10 +70,10 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..a6128f75244db124547d05046bec0f87
      public double min(Direction.Axis axis) {
 -        return axis.choose(this.minX, this.minY, this.minZ);
 +        // Fusion start - Lithium: FastUtil
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastUtil){
++        if (com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumFastUtil){
 +            switch (axis.ordinal()) {
 +                case 0: //X
-+                    return this.minX;
++                   return this.minX;
 +                case 1: //Y
 +                    return this.minY;
 +                case 2: //Z
@@ -90,7 +90,7 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..a6128f75244db124547d05046bec0f87
      public double max(Direction.Axis axis) {
 -        return axis.choose(this.maxX, this.maxY, this.maxZ);
 +        // Fusion start - Lithium: FastUtil
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastUtil){
++        if (com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumFastUtil){
 +            switch (axis.ordinal()) {
 +                case 0: //X
 +                    return this.maxX;

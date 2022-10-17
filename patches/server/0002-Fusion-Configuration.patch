@@ -6,7 +6,7 @@ Subject: [PATCH] Fusion-Configuration
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd9de0d9b8
+index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949a23a8f8f
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -0,0 +1,197 @@
@@ -35,16 +35,16 @@ index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd
 +
 +@SuppressWarnings("unused")
 +public class FusionConfig {
-+    private static final String HEADER = "This is the main configuration file for Fusion.\n"
++    protected static final String HEADER = "This is the main configuration file for Fusion.\n"
 +            + "As you can see, there's tons to configure. Some options may impact gameplay, so use\n"
 +            + "with caution, and make sure you know what each option does before configuring.\n"
 +            + "\n"
 +            + "If you need help with the configuration or have any questions related to Fusion,\n"
 +            + "join us in our Discord guild.";
-+    private static File CONFIG_FILE;
++    protected static File CONFIG_FILE;
 +    public static YamlFile config;
 +
-+    private static Map<String, Command> commands;
++    protected static Map<String, Command> commands;
 +
 +    public static int version;
 +    static boolean verbose;
@@ -113,40 +113,40 @@ index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd
 +        }
 +    }
 +
-+    private static void setComment(String path, String... comment){
++    protected static void setComment(String path, String... comment){
 +        config.setComment(path, String.join("\n", comment), CommentType.BLOCK);
 +    }
 +
-+    private static void set(String path, Object val) {
++    protected static void set(String path, Object val) {
 +        config.addDefault(path, val);
 +        config.set(path, val);
 +    }
 +
-+    private static String getString(String path, String def, String... comment) {
++    protected static String getString(String path, String def, String... comment) {
 +        config.addDefault(path, def);
 +        setComment(path, comment);
 +        return config.getString(path, config.getString(path));
 +    }
 +
-+    private static boolean getBoolean(String path, boolean def, String... comment) {
++    protected static boolean getBoolean(String path, boolean def, String... comment) {
 +        config.addDefault(path, def);
 +        setComment(path, comment);
 +        return config.getBoolean(path, config.getBoolean(path));
 +    }
 +
-+    private static double getDouble(String path, double def, String... comment) {
++    protected static double getDouble(String path, double def, String... comment) {
 +        config.addDefault(path, def);
 +        setComment(path, comment);
 +        return config.getDouble(path, config.getDouble(path));
 +    }
 +
-+    private static int getInt(String path, int def, String... comment) {
++    protected static int getInt(String path, int def, String... comment) {
 +        config.addDefault(path, def);
 +        setComment(path, comment);
 +        return config.getInt(path, config.getInt(path));
 +    }
 +
-+    private static <T> List getList(String path, T def, String... comment) {
++    protected static <T> List getList(String path, T def, String... comment) {
 +        config.addDefault(path, def);
 +        setComment(path, comment);
 +        return config.getList(path, config.getList(path));
@@ -161,27 +161,27 @@ index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd
 +        return toMap(config.getConfigurationSection(path));
 +    }
 +
-+    private static String getString(String path, String def) {
++    protected static String getString(String path, String def) {
 +        config.addDefault(path, def);
 +        return config.getString(path, config.getString(path));
 +    }
 +
-+    private static boolean getBoolean(String path, boolean def) {
++    protected static boolean getBoolean(String path, boolean def) {
 +        config.addDefault(path, def);
 +        return config.getBoolean(path, config.getBoolean(path));
 +    }
 +
-+    private static double getDouble(String path, double def) {
++    protected static double getDouble(String path, double def) {
 +        config.addDefault(path, def);
 +        return config.getDouble(path, config.getDouble(path));
 +    }
 +
-+    private static int getInt(String path, int def) {
++    protected static int getInt(String path, int def) {
 +        config.addDefault(path, def);
 +        return config.getInt(path, config.getInt(path));
 +    }
 +
-+    private static <T> List getList(String path, T def) {
++    protected static <T> List getList(String path, T def) {
 +        config.addDefault(path, def);
 +        return config.getList(path, config.getList(path));
 +    }
@@ -194,7 +194,7 @@ index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd
 +        return toMap(config.getConfigurationSection(path));
 +    }
 +
-+    private static Map<String, Object> toMap(ConfigurationSection section) {
++    protected static Map<String, Object> toMap(ConfigurationSection section) {
 +        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 +        if (section != null) {
 +            for (String key : section.getKeys(false)) {
@@ -210,7 +210,7 @@ index 0000000000000000000000000000000000000000..d1999cf58c4a39f74464d8c055d7a8cd
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..fda3f5afaa76c7b08fe91eb72ca27ed12ab4410a
+index 0000000000000000000000000000000000000000..29715bcbad34d2cbdfab67d0db1739a408d564a8
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -0,0 +1,124 @@
@@ -241,7 +241,7 @@ index 0000000000000000000000000000000000000000..fda3f5afaa76c7b08fe91eb72ca27ed1
 +        FusionConfig.readConfig(FusionWorldConfig.class, this);
 +    }
 +
-+    private static void setComment(String path, String... comment){
++    protected static void setComment(String path, String... comment){
 +        FusionConfig.config.setComment(path, String.join("\n", comment), CommentType.BLOCK);
 +    }
 +
@@ -254,59 +254,59 @@ index 0000000000000000000000000000000000000000..fda3f5afaa76c7b08fe91eb72ca27ed1
 +        }
 +    }
 +
-+    private ConfigurationSection getConfigurationSection(String path) {
++    protected ConfigurationSection getConfigurationSection(String path) {
 +        ConfigurationSection section = FusionConfig.config.getConfigurationSection("world-settings." + worldName + "." + path);
 +        return section != null ? section : FusionConfig.config.getConfigurationSection("world-settings.default." + path);
 +    }
 +
-+    private String getString(String path, String def, String... comment) {
++    protected String getString(String path, String def, String... comment) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        setComment(path, comment);
 +        return FusionConfig.config.getString("world-settings." + worldName + "." + path, FusionConfig.config.getString("world-settings.default." + path));
 +    }
 +
-+    private boolean getBoolean(String path, boolean def, String... comment) {
++    protected boolean getBoolean(String path, boolean def, String... comment) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        setComment(path, comment);
 +        return FusionConfig.config.getBoolean("world-settings." + worldName + "." + path, FusionConfig.config.getBoolean("world-settings.default." + path));
 +    }
 +
-+    private boolean getBoolean(String path, Predicate<Boolean> predicate, String... comment) {
++    protected boolean getBoolean(String path, Predicate<Boolean> predicate, String... comment) {
 +        String val = getString(path, "default", comment).toLowerCase();
 +        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
 +        return predicate.test(bool);
 +    }
 +
-+    private double getDouble(String path, double def, String... comment) {
++    protected double getDouble(String path, double def, String... comment) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        setComment(path, comment);
 +        return FusionConfig.config.getDouble("world-settings." + worldName + "." + path, FusionConfig.config.getDouble("world-settings.default." + path));
 +    }
 +
-+    private int getInt(String path, int def, String... comment) {
++    protected int getInt(String path, int def, String... comment) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        setComment(path, comment);
 +        return FusionConfig.config.getInt("world-settings." + worldName + "." + path, FusionConfig.config.getInt("world-settings.default." + path));
 +    }
 +
-+    private <T> List<?> getList(String path, T def, String... comment) {
++    protected <T> List<?> getList(String path, T def, String... comment) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        setComment(path, comment);
 +        return FusionConfig.config.getList("world-settings." + worldName + "." + path, FusionConfig.config.getList("world-settings.default." + path));
 +    }
 +
-+    private Map<String, Object> getMap(String path, Map<String, Object> def, String... comment) {
++    protected Map<String, Object> getMap(String path, Map<String, Object> def, String... comment) {
 +        final Map<String, Object> fallback = FusionConfig.getMap("world-settings.default." + path, def, comment);
 +        final Map<String, Object> value = FusionConfig.getMap("world-settings." + worldName + "." + path, null, comment);
 +        return value.isEmpty() ? fallback : value;
 +    }
 +
-+    private String getString(String path, String def) {
++    protected String getString(String path, String def) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        return FusionConfig.config.getString("world-settings." + worldName + "." + path, FusionConfig.config.getString("world-settings.default." + path));
 +    }
 +
-+    private boolean getBoolean(String path, boolean def) {
++    protected boolean getBoolean(String path, boolean def) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        return FusionConfig.config.getBoolean("world-settings." + worldName + "." + path, FusionConfig.config.getBoolean("world-settings.default." + path));
 +    }
@@ -317,22 +317,22 @@ index 0000000000000000000000000000000000000000..fda3f5afaa76c7b08fe91eb72ca27ed1
 +        return predicate.test(bool);
 +    }
 +
-+    private double getDouble(String path, double def) {
++    protected double getDouble(String path, double def) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        return FusionConfig.config.getDouble("world-settings." + worldName + "." + path, FusionConfig.config.getDouble("world-settings.default." + path));
 +    }
 +
-+    private int getInt(String path, int def) {
++    protected int getInt(String path, int def) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        return FusionConfig.config.getInt("world-settings." + worldName + "." + path, FusionConfig.config.getInt("world-settings.default." + path));
 +    }
 +
-+    private <T> List<?> getList(String path, T def) {
++    protected <T> List<?> getList(String path, T def) {
 +        FusionConfig.config.addDefault("world-settings.default." + path, def);
 +        return FusionConfig.config.getList("world-settings." + worldName + "." + path, FusionConfig.config.getList("world-settings.default." + path));
 +    }
 +
-+    private Map<String, Object> getMap(String path, Map<String, Object> def) {
++    protected Map<String, Object> getMap(String path, Map<String, Object> def) {
 +        final Map<String, Object> fallback = FusionConfig.getMap("world-settings.default." + path, def);
 +        final Map<String, Object> value = FusionConfig.getMap("world-settings." + worldName + "." + path, null);
 +        return value.isEmpty() ? fallback : value;
