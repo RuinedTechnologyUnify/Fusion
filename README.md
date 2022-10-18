@@ -22,7 +22,8 @@
 - Anyway It is Crazy
 
 ## License
-- This project will be granted license following [GPL-3.0](https://github.com/IPECTER/Fusion/blob/main/LICENSE). 
+- This project will be granted license following [GPL-3.0](LICENSE). 
+- [Author and License of Patches](PATCH)
 
 ## bStats
 [![](https://bstats.org/signatures/server-implementation/fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion)
