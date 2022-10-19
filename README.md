@@ -14,12 +14,11 @@
 
 ## Features
 - ❗ Work In Progress ❗ 
-- **ZeroChunk**: Extreme Optimized MultiThread View-Distance System with 0 Server View-Distance to replace Vanilla System. 
-  It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance. (Thx FVD's Dev, XUAN for providing FVD source!)
-  I will explain this in wiki.
+- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
+- **ZeroChunk**: Extreme Optimized MultiThread View-Distance System to replace Vanilla System. 
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
 - Bukkit Server Based on [Bukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse) / [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) / [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
-- Upstream & Patched Bukkits: [Paper](https://github.com/PaperMC/Paper) / [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) / [Purpur](https://github.com/PurpurMC/Purpur) / [Mirai](https://github.com/etil2jz/Mirai) / [Prismarine](https://github.com/PrismarineTeam/Prismarine) / [Petal](https://github.com/Bloom-host/Petal) / [Patina](https://github.com/PatinaMC/Patina) / [JettPack](https://gitlab.com/Titaniumtown/JettPack) / [EmpireCraft](https://github.com/starlis/EmpireCraft) / [Akarin](https://github.com/Akarin-project/Akarin) / [Slice](https://github.com/Cryptite/Slice)
+- Upstream & Patched Bukkits: [Paper](https://github.com/PaperMC/Paper) / [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) / [Purpur](https://github.com/PurpurMC/Purpur) / [Mirai](https://github.com/etil2jz/Mirai) / [Prismarine](https://github.com/PrismarineTeam/Prismarine) / [Petal](https://github.com/Bloom-host/Petal) / [Patina](https://github.com/PatinaMC/Patina) / [JettPack](https://gitlab.com/Titaniumtown/JettPack) / [EmpireCraft](https://github.com/starlis/EmpireCraft) / [Akarin](https://github.com/Akarin-project/Akarin) / [Slice](https://github.com/Cryptite/Slice) / [Suki](https://github.com/SuCraft/Suki)
 - Patched Mods: [StarLight](https://github.com/PaperMC/Starlight) / [Lithium](https://github.com/CaffeineMC/lithium-fabric) / [Alternate Current](https://github.com/SpaceWalkerRS/alternate-current)
 - Patched Extensions: [Spark](https://github.com/lucko/spark) / [FVD](https://www.spigotmc.org/resources/fartherviewdistance.84950/)(WIP) / [MCAntiMalware](https://github.com/OpticFusion1/MCAntiMalware)(WIP)
 - Anyway It is Crazy
