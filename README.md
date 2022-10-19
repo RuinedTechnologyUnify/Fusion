@@ -23,7 +23,7 @@
 
 ## License
 - This project will be granted license following [GPL-3.0](LICENSE). 
-- [Author and License of Patches](PATCH)
+- [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
 
 ## bStats
 [![](https://bstats.org/signatures/server-implementation/fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion)
