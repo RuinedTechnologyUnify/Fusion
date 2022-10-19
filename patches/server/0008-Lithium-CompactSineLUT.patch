@@ -3,7 +3,27 @@ From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:16:24 +0900
 Subject: [PATCH] Lithium-CompactSineLUT
 
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+index 335f37ba7283bdfdd2229a0d1ec30545924c6525..512e33b9a889347c1e52cf30a6b234cc86d4c3db 100644
+--- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+@@ -9,10 +9,12 @@ public class LithiumConfig extends FusionConfig {
+         enable = getBoolean("lithium.enable", true);
+         fastUtil = getBoolean("lithium.fast-util", true);
+         hashedReferenceList = getBoolean("lithium.hashed-reference-list", true);
++        compactSineLUT = getBoolean("lithium.compact-sine-lut", true);
+     }
+ 
+     public boolean enable;
+     public boolean fastUtil;
+     public boolean hashedReferenceList;
++    public boolean compactSineLUT;
+ 
+ }
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java b/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..c8c85140d1ad0a647f25aa218a56f9e70a0a790b

@@ -3,7 +3,26 @@ From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:12:21 +0900
 Subject: [PATCH] Lithium-HashedReferenceList
 
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+index cb01bddee1a5138a1cc79a393f43bca73e0491f9..335f37ba7283bdfdd2229a0d1ec30545924c6525 100644
+--- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+@@ -8,9 +8,11 @@ public class LithiumConfig extends FusionConfig {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         enable = getBoolean("lithium.enable", true);
+         fastUtil = getBoolean("lithium.fast-util", true);
++        hashedReferenceList = getBoolean("lithium.hashed-reference-list", true);
+     }
+ 
+     public boolean enable;
+     public boolean fastUtil;
++    public boolean hashedReferenceList;
+ 
+ }
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java b/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..cf5dc984fcd5eedbda06752819e5c2fcecdf9770

@@ -5,7 +5,7 @@ Subject: [PATCH] Fusion-LithiumConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d5d55674f77d4ddd4a8f12b68ea882d1f2828b2b 100644
+index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..455dbb85d17b9ff5685162c3feffdd97c5907100 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -1,5 +1,6 @@
@@ -15,17 +15,19 @@ index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d5d55674f77d4ddd4a8f12b68ea882d1
  import com.google.common.base.Throwables;
  import com.google.common.collect.ImmutableMap;
  import net.minecraft.server.MinecraftServer;
-@@ -194,4 +195,7 @@ public class FusionConfig {
+@@ -194,4 +195,9 @@ public class FusionConfig {
          }
          return builder.build();
      }
 +
-+    public static LithiumConfig lithiumConfig = new LithiumConfig();
-+
++    public static LithiumConfig lithiumConfig;
++    private void lithiumConfig(){
++        lithiumConfig = new LithiumConfig();
++    }
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 29715bcbad34d2cbdfab67d0db1739a408d564a8..659d3e4e9b308ac7efb41f762d6a41fb9cb0fcd1 100644
+index 29715bcbad34d2cbdfab67d0db1739a408d564a8..07f1d11cd5adc814a2c13fe6626f12fd79a13e7a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -1,5 +1,6 @@
@@ -35,7 +37,7 @@ index 29715bcbad34d2cbdfab67d0db1739a408d564a8..659d3e4e9b308ac7efb41f762d6a41fb
  import org.apache.commons.lang.BooleanUtils;
  import org.simpleyaml.configuration.ConfigurationSection;
  import org.simpleyaml.configuration.comments.CommentType;
-@@ -14,9 +15,11 @@ import static com.github.ipecter.fusion.FusionConfig.log;
+@@ -14,10 +15,12 @@ import static com.github.ipecter.fusion.FusionConfig.log;
  public class FusionWorldConfig {
  
      private final String worldName;
@@ -43,10 +45,11 @@ index 29715bcbad34d2cbdfab67d0db1739a408d564a8..659d3e4e9b308ac7efb41f762d6a41fb
  
      public FusionWorldConfig(String worldName) {
          this.worldName = worldName;
-+        lithiumConfig = new LithiumWorldConfig(worldName);
          init();
++        lithiumConfig = new LithiumWorldConfig(worldName);
      }
  
+     public void init() {
 diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..3649c2c825a9e4109fbdfe236c357067ab44a658

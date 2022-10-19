@@ -3,7 +3,28 @@ From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:21:00 +0900
 Subject: [PATCH] Lithium-FastRetrieval
 
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+index 512e33b9a889347c1e52cf30a6b234cc86d4c3db..3cb59bcf4b4924120710b5b1f4562412f00cd918 100644
+--- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+@@ -10,11 +10,13 @@ public class LithiumConfig extends FusionConfig {
+         fastUtil = getBoolean("lithium.fast-util", true);
+         hashedReferenceList = getBoolean("lithium.hashed-reference-list", true);
+         compactSineLUT = getBoolean("lithium.compact-sine-lut", true);
++        fastRetrieval = getBoolean("lithium.fast-retrieval", true);
+     }
+ 
+     public boolean enable;
+     public boolean fastUtil;
+     public boolean hashedReferenceList;
+     public boolean compactSineLUT;
++    public boolean fastRetrieval;
+ 
+ }
 diff --git a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..aa041c93fa70fcc43a37d6eb2540b2024972b9a4 100644
 --- a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
