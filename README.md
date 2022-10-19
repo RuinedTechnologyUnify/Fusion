@@ -14,7 +14,7 @@
 
 ## Features
 - ❗ Work In Progress ❗ 
-- **ZeroChunk**: Extreme Optimized MultiThread View-Distance System with 0 Server View-Distance to replace Vanilla System.
+- **ZeroChunk**: Extreme Optimized MultiThread View-Distance System with 0 Server View-Distance to replace Vanilla System. 
   It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance. (Thx FVD's Dev, XUAN for providing FVD source!)
   I will explain this in wiki.
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
