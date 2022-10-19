@@ -5,7 +5,7 @@ Subject: [PATCH] Fusion-Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a61a0f4f1ce89681336d2ed246e6b616aa6fe73d..000c32f1fd81b411415c02e234888b976e529c05 100644
+index 2ee34f92e8a89b90448bbf710fdc0d5d6350e919..3fd41da5cebd315bfe5b5e0bf660bcd1124bb21b 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,7 +9,8 @@ plugins {
@@ -184,10 +184,10 @@ index 3aa9a667d988fe2b6118ce4b3a4551e7e17b7884..7bfee48c8e2220a0ec1f4b1e6cbf83da
  
      private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e9c20441e37db68d500c230a4371610f98c69428..02487d0d99ccae693815cd049a8e32a0ab20c8b1 100644
+index f9508a26b2e764e752da3d2c9f43a9d7de19dd27..c03570aca0800c1a12fbc62cfe8960ce28c9e5ff 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -248,7 +248,7 @@ import javax.annotation.Nullable; // Paper
+@@ -249,7 +249,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -197,7 +197,7 @@ index e9c20441e37db68d500c230a4371610f98c69428..02487d0d99ccae693815cd049a8e32a0
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 37bcc72ce132f7901460f25d700dba1bac6c210f..47b2784fe038632798f3590b15ac676b76adebbb 100644
+index 3a39dd1fe0dabee2ae9243e4199d9bb799e69219..a6f3236e7cf17dd08081a9159916ad9f848e00ee 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -866,7 +866,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -236,7 +236,7 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..3361f499e9a907c09cf90adcdd3795b0
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 14844cb8a402ac987f44a91b95d5ebdac73c6dfe..8a369dbdf8d51c7545b6814149ff406b1e216946 100644
+index 5d71e3040df116a94df7efa83e61dc1766cc4a93..1a8763bf7380688d02d7d566cd6f1eb0d9fd0fb8 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -244,7 +244,7 @@ public class PurpurConfig {

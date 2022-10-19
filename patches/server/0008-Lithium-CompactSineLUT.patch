@@ -4,24 +4,6 @@ Date: Mon, 17 Oct 2022 21:16:24 +0900
 Subject: [PATCH] Lithium-CompactSineLUT
 
 
-diff --git a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
-index e61d8143f14c1c7224ac0e630dca344ccdeeb4b6..f5fbf627733d1a3295d039691259f57537bcfa47 100644
---- a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
-@@ -11,11 +11,13 @@ public class LithiumConfig extends FusionConfig {
-     public static boolean lithiumEnable = true;
-     public static boolean lithiumFastUtil = true;
-     public static boolean lithiumHashedReferenceList = true;
-+    public static boolean lithiumCompactSineLUT = true;
-     private static void lithiumSettings() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil);
-         lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
-+        lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT);
-     }
- 
- }
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java b/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..c8c85140d1ad0a647f25aa218a56f9e70a0a790b
@@ -120,7 +102,7 @@ index 0000000000000000000000000000000000000000..c8c85140d1ad0a647f25aa218a56f9e7
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 9b22034aa655ceb0da151d9d8ca3147f6487889a..4f4cc06b49e2d7ce6eabcd7c0d56fee2df5f2edb 100644
+index 9b22034aa655ceb0da151d9d8ca3147f6487889a..b03c84bd9a77eefbb780e9ebe201c4217e653831 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -32,6 +32,7 @@ public class Mth {
@@ -136,12 +118,12 @@ index 9b22034aa655ceb0da151d9d8ca3147f6487889a..4f4cc06b49e2d7ce6eabcd7c0d56fee2
  
      public static float sin(float value) {
 -        return SIN[(int)(value * 10430.378F) & '\uffff'];
-+        return com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumConfig.enable && com.github.ipecter.fusion.FusionConfig.lithiumConfig.compactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
      }
  
      public static float cos(float value) {
 -        return SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff'];
-+        return com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumEnable && com.github.ipecter.fusion.configuraions.LithiumConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumConfig.enable && com.github.ipecter.fusion.FusionConfig.lithiumConfig.compactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
      }
  
      public static float sqrt(float value) {

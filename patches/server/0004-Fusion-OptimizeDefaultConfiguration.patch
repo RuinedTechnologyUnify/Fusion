@@ -43,10 +43,10 @@ index a7f4b791894c5d8b7af4b0c067cf167b29272a27..17c53d6a92783b9ee3858c07a5850c7d
  
      public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c325286e2a9 100644
+index 3d2e67dc559ee3910b17ca86a46030ec05232250..82a0ea7d14653dd01f69d246eb743a45a0861a03 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -310,7 +310,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -309,7 +309,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Environment extends ConfigurationPart {
          public boolean disableThunder = false;
          public boolean disableIceAndSnow = false;
@@ -55,7 +55,7 @@ index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c32
          public boolean disableExplosionKnockback = false;
          public boolean generateFlatBedrock = false;
          public FrostedIce frostedIce;
-@@ -361,7 +361,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -360,7 +360,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public Fixes fixes;
  
      public class Fixes extends ConfigurationPart {
@@ -64,7 +64,7 @@ index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c32
          public boolean disableUnloadedChunkEnderpearlExploit = true;
          public boolean preventTntFromMovingInWater = false;
          public boolean splitOverstackedLoot = true;
-@@ -389,9 +389,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -388,9 +388,9 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Collisions extends ConfigurationPart {
          public boolean onlyPlayersCollide = false;
          public boolean allowVehicleCollisions = true;
@@ -76,7 +76,7 @@ index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c32
          public boolean allowPlayerCrammingDamage = false;
      }
  
-@@ -399,9 +399,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -398,9 +398,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Chunks extends ConfigurationPart {
          public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
@@ -88,7 +88,7 @@ index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c32
          public Duration delayChunkUnloadsBy = Duration.of("10s");
          public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(Registry.ENTITY_TYPE.size()), map -> {
              map.defaultReturnValue(-1);
-@@ -424,9 +424,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -423,9 +423,9 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
  
      public class TickRates extends ConfigurationPart {
@@ -100,7 +100,7 @@ index e2c612dd55fcb2769fb06f7878b8d0873f2be139..462baf38851dc043f6277e13be3d3c32
          public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "secondarypoisensor", 40));
          public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "validatenearbypoi", -1));
      }
-@@ -450,9 +450,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -449,9 +449,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
@@ -167,7 +167,7 @@ index cba660a0506994f66cbcb890ccd464bd412a6211..9150d46bb379e2e9b6d529488e28d914
          };
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 8a369dbdf8d51c7545b6814149ff406b1e216946..a1ac970f6ac2426c7b11df1c61f9072dd1089a4f 100644
+index 1a8763bf7380688d02d7d566cd6f1eb0d9fd0fb8..15e6a382628068337f2035c7462c813bfc4ebfde 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -254,7 +254,7 @@ public class PurpurConfig {
@@ -180,10 +180,10 @@ index 8a369dbdf8d51c7545b6814149ff406b1e216946..a1ac970f6ac2426c7b11df1c61f9072d
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index df0668c1f35c1acca1de7f81c8afaa06c2e21082..1f334a9cce279e69f21a9f3248e0ddc510e58e4b 100644
+index daa437f3aaebed4d917fde65d75a8a941755a764..7291f18f359d2d714e4d6d3e49880491f1d42330 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -415,7 +415,7 @@ public class PurpurWorldConfig {
+@@ -417,7 +417,7 @@ public class PurpurWorldConfig {
      public boolean playerInvulnerableWhileAcceptingResourcePack = false;
      public String playerDeathExpDropEquation = "expLevel * 7";
      public int playerDeathExpDropMax = 100;
@@ -192,7 +192,7 @@ index df0668c1f35c1acca1de7f81c8afaa06c2e21082..1f334a9cce279e69f21a9f3248e0ddc5
      public boolean totemOfUndyingWorksInInventory = false;
      public boolean playerFixStuckPortal = false;
      public boolean creativeOnePunch = false;
-@@ -2718,7 +2718,7 @@ public class PurpurWorldConfig {
+@@ -2729,7 +2729,7 @@ public class PurpurWorldConfig {
      public boolean villagerRidableInWater = false;
      public boolean villagerControllable = true;
      public double villagerMaxHealth = 20.0D;
@@ -202,7 +202,7 @@ index df0668c1f35c1acca1de7f81c8afaa06c2e21082..1f334a9cce279e69f21a9f3248e0ddc5
      public boolean villagerFollowEmeraldBlock = false;
      public boolean villagerCanBeLeashed = false;
 diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
-index bbf15fbb889670e57bd86377590a1b3abe80b96d..8e9e62e9a4dff0b26db1bdfae25f85855d136eca 100644
+index 46ef3400605cc420bd88f13838df7d1f1106235e..978a6b38eca8f1c9076e439464456566a5a65609 100644
 --- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
 @@ -150,14 +150,14 @@ public class SpigotWorldConfig

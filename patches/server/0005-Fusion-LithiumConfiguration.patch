@@ -1,87 +1,86 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Mon, 17 Oct 2022 20:47:29 +0900
+Date: Wed, 19 Oct 2022 18:36:21 +0900
 Subject: [PATCH] Fusion-LithiumConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..ab87e88c425e792edb4fe1c07a1cf48b1d91abdf 100644
+index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d5d55674f77d4ddd4a8f12b68ea882d1f2828b2b 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -1,5 +1,6 @@
  package com.github.ipecter.fusion;
  
-+import com.github.ipecter.fusion.configuraions.LithiumConfig;
++import com.github.ipecter.fusion.configurations.LithiumConfig;
  import com.google.common.base.Throwables;
  import com.google.common.collect.ImmutableMap;
  import net.minecraft.server.MinecraftServer;
-@@ -60,6 +61,7 @@ public class FusionConfig {
-         set("config-version", 1);
- 
-         readConfig(FusionConfig.class, null);
-+        readConfig(LithiumConfig.class, null);
+@@ -194,4 +195,7 @@ public class FusionConfig {
+         }
+         return builder.build();
      }
- 
-     protected static void log(String s) {
++
++    public static LithiumConfig lithiumConfig = new LithiumConfig();
++
+ }
+\ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 29715bcbad34d2cbdfab67d0db1739a408d564a8..3ac4805af970f355619a7699a702bce63de99d4c 100644
+index 29715bcbad34d2cbdfab67d0db1739a408d564a8..659d3e4e9b308ac7efb41f762d6a41fb9cb0fcd1 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -1,5 +1,6 @@
  package com.github.ipecter.fusion;
  
-+import com.github.ipecter.fusion.configuraions.LithiumWorldConfig;
++import com.github.ipecter.fusion.configurations.LithiumWorldConfig;
  import org.apache.commons.lang.BooleanUtils;
  import org.simpleyaml.configuration.ConfigurationSection;
  import org.simpleyaml.configuration.comments.CommentType;
-@@ -23,6 +24,7 @@ public class FusionWorldConfig {
-     public void init() {
-         log("-------- World Settings For [" + worldName + "] --------");
-         FusionConfig.readConfig(FusionWorldConfig.class, this);
-+        FusionConfig.readConfig(LithiumWorldConfig.class, this);
+@@ -14,9 +15,11 @@ import static com.github.ipecter.fusion.FusionConfig.log;
+ public class FusionWorldConfig {
+ 
+     private final String worldName;
++    public LithiumWorldConfig lithiumConfig;
+ 
+     public FusionWorldConfig(String worldName) {
+         this.worldName = worldName;
++        lithiumConfig = new LithiumWorldConfig(worldName);
+         init();
      }
  
-     protected static void setComment(String path, String... comment){
-diff --git a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c9ba665e2ade6c29168ada8da8b49ec6c64ecbcf
+index 0000000000000000000000000000000000000000..3649c2c825a9e4109fbdfe236c357067ab44a658
 --- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumConfig.java
-@@ -0,0 +1,17 @@
-+package com.github.ipecter.fusion.configuraions;
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+@@ -0,0 +1,14 @@
++package com.github.ipecter.fusion.configurations;
 +
 +import com.github.ipecter.fusion.FusionConfig;
 +
 +public class LithiumConfig extends FusionConfig {
 +
 +    public LithiumConfig(){
-+        super();
++        setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
++        enable = getBoolean("lithium.enable", true);
 +    }
 +
-+    public static boolean lithiumEnable = true;
-+    private static void lithiumSettings() {
-+        setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-+        lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-+    }
++    public boolean enable;
 +
 +}
-diff --git a/src/main/java/com/github/ipecter/fusion/configuraions/LithiumWorldConfig.java b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumWorldConfig.java
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumWorldConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..24bf6c22afabd2e8734cf9875e557b05b193795f
+index 0000000000000000000000000000000000000000..a66198297ca34fcaa06f5e2a2bf133f6a0484a44
 --- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/configuraions/LithiumWorldConfig.java
-@@ -0,0 +1,14 @@
-+package com.github.ipecter.fusion.configuraions;
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumWorldConfig.java
+@@ -0,0 +1,11 @@
++package com.github.ipecter.fusion.configurations;
 +
 +import com.github.ipecter.fusion.FusionWorldConfig;
 +
 +public class LithiumWorldConfig extends FusionWorldConfig {
 +
-+    private final String worldName;
-+
-+    public LithiumWorldConfig(String worldName) {
++    public LithiumWorldConfig(String worldName){
 +        super(worldName);
-+        this.worldName = worldName;
 +    }
 +
 +}

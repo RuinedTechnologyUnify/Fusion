@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 19 Oct 2022 18:48:00 +0900
+Subject: [PATCH] a1
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+index 3649c2c825a9e4109fbdfe236c357067ab44a658..cb01bddee1a5138a1cc79a393f43bca73e0491f9 100644
+--- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
+@@ -7,8 +7,10 @@ public class LithiumConfig extends FusionConfig {
+     public LithiumConfig(){
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         enable = getBoolean("lithium.enable", true);
++        fastUtil = getBoolean("lithium.fast-util", true);
+     }
+ 
+     public boolean enable;
++    public boolean fastUtil;
+ 
+ }
