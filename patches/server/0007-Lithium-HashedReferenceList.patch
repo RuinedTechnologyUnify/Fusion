@@ -7,20 +7,20 @@ Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
-diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-index cb01bddee1a5138a1cc79a393f43bca73e0491f9..335f37ba7283bdfdd2229a0d1ec30545924c6525 100644
---- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-@@ -8,9 +8,11 @@ public class LithiumConfig extends FusionConfig {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-         enable = getBoolean("lithium.enable", true);
-         fastUtil = getBoolean("lithium.fast-util", true);
-+        hashedReferenceList = getBoolean("lithium.hashed-reference-list", true);
+diff --git a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
+index 130e4b55081eb2c209b84527669343dd3dc080a3..a55f94ae7e08cdfab26c04b3dad1873a5d9b01c7 100644
+--- a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
+@@ -8,9 +8,11 @@ public class LithiumConfig {
+         FusionConfig.setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         enable = FusionConfig.getBoolean("lithium.enable", enable);
+         fastUtil = FusionConfig.getBoolean("lithium.fast-util", fastUtil);
++        hashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", hashedReferenceList);
      }
  
-     public boolean enable;
-     public boolean fastUtil;
-+    public boolean hashedReferenceList;
+     public boolean enable = true;
+     public boolean fastUtil = true;
++    public boolean hashedReferenceList = true;
  
  }
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java b/src/main/java/me/jellysquid/mods/lithium/common/util/collections/HashedReferenceList.java

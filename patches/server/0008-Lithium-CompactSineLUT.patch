@@ -7,21 +7,21 @@ Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
-diff --git a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-index 335f37ba7283bdfdd2229a0d1ec30545924c6525..512e33b9a889347c1e52cf30a6b234cc86d4c3db 100644
---- a/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/configurations/LithiumConfig.java
-@@ -9,10 +9,12 @@ public class LithiumConfig extends FusionConfig {
-         enable = getBoolean("lithium.enable", true);
-         fastUtil = getBoolean("lithium.fast-util", true);
-         hashedReferenceList = getBoolean("lithium.hashed-reference-list", true);
-+        compactSineLUT = getBoolean("lithium.compact-sine-lut", true);
+diff --git a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
+index a55f94ae7e08cdfab26c04b3dad1873a5d9b01c7..d478cad1c9a23dcc16c6644ff4de5a2124bbf177 100644
+--- a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
+@@ -9,10 +9,12 @@ public class LithiumConfig {
+         enable = FusionConfig.getBoolean("lithium.enable", enable);
+         fastUtil = FusionConfig.getBoolean("lithium.fast-util", fastUtil);
+         hashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", hashedReferenceList);
++        compactSineLUT = FusionConfig.getBoolean("lithium.compact-sine-lut", compactSineLUT);
      }
  
-     public boolean enable;
-     public boolean fastUtil;
-     public boolean hashedReferenceList;
-+    public boolean compactSineLUT;
+     public boolean enable = true;
+     public boolean fastUtil = true;
+     public boolean hashedReferenceList = true;
++    public boolean compactSineLUT = true;
  
  }
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java b/src/main/java/me/jellysquid/mods/lithium/common/util/math/CompactSineLUT.java

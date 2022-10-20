@@ -12,8 +12,8 @@ index 455dbb85d17b9ff5685162c3feffdd97c5907100..5e59890e1c30606993617ff5b62015cc
 @@ -1,5 +1,6 @@
  package com.github.ipecter.fusion;
  
-+import com.github.ipecter.fusion.configurations.ZeroChunkConfig;
- import com.github.ipecter.fusion.configurations.LithiumConfig;
++import com.github.ipecter.fusion.ZeroChunkConfig;
+ import com.github.ipecter.fusion.LithiumConfig;
  import com.google.common.base.Throwables;
  import com.google.common.collect.ImmutableMap;
 @@ -200,4 +201,8 @@ public class FusionConfig {
@@ -27,14 +27,14 @@ index 455dbb85d17b9ff5685162c3feffdd97c5907100..5e59890e1c30606993617ff5b62015cc
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 659d3e4e9b308ac7efb41f762d6a41fb9cb0fcd1..a822a664c8c86386a9df44d74d667499d06f50f2 100644
+index 85213f4b3df0709f69d877fa049591014eae1696..387518f50607899294cc447fd02bf2472e1159a7 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -1,6 +1,7 @@
  package com.github.ipecter.fusion;
  
- import com.github.ipecter.fusion.configurations.LithiumWorldConfig;
-+import com.github.ipecter.fusion.configurations.ZeroChunkWorldConfig;
+ import com.github.ipecter.fusion.LithiumWorldConfig;
++import com.github.ipecter.fusion.ZeroChunkWorldConfig;
  import org.apache.commons.lang.BooleanUtils;
  import org.simpleyaml.configuration.ConfigurationSection;
  import org.simpleyaml.configuration.comments.CommentType;
@@ -46,18 +46,26 @@ index 659d3e4e9b308ac7efb41f762d6a41fb9cb0fcd1..a822a664c8c86386a9df44d74d667499
  
      public FusionWorldConfig(String worldName) {
          this.worldName = worldName;
-         init();
          lithiumConfig = new LithiumWorldConfig(worldName);
 +        zeroChunkConfig = new ZeroChunkWorldConfig(worldName);
+         init();
      }
  
-diff --git a/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkConfig.java
+@@ -27,6 +30,7 @@ public class FusionWorldConfig {
+         log("-------- World Settings For [" + worldName + "] --------");
+         FusionConfig.readConfig(FusionWorldConfig.class, this);
+         FusionConfig.readConfig(lithiumConfig.getClass(), this);
++        FusionConfig.readConfig(zeroChunkConfig.getClass(), this);
+     }
+ 
+     protected static void setComment(String path, String... comment){
+diff --git a/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java b/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f543b3b7d5c
 --- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java
 @@ -0,0 +1,71 @@
-+package com.github.ipecter.fusion.configurations;
++package com.github.ipecter.fusion;
 +
 +import com.github.ipecter.fusion.FusionConfig;
 +import com.github.ipecter.fusion.zerochunk.data.viewmap.ViewMapMode;
@@ -67,12 +75,12 @@ index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f54
 +import java.util.List;
 +import java.util.Map;
 +
-+public class ZeroChunkConfig extends FusionConfig {
++public class ZeroChunkConfig {
 +
-+    public ZeroChunkConfig(){
-+        setComment("zero-chunk", "[ ZeroChunk ] Extreme Optimized View-Distance System to replace Vanilla\n" + "It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance");
-+        enable = getBoolean("zero-chunk.enable", true);
-+        setComment("zero-chunk.max-view-distance","( View Distance Mode )\n"
++    private void zeroChunkConfig(){
++        FusionConfig.setComment("zero-chunk", "[ ZeroChunk ] Extreme Optimized View-Distance System to replace Vanilla\n" + "It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance");
++        enable = FusionConfig.getBoolean("zero-chunk.enable", true);
++        FusionConfig.setComment("zero-chunk.max-view-distance","( View Distance Mode )\n"
 +                + "View Distance  |  Needed RAM for View Calculate Per Player\n"
 +                + " X15   =   15  |  int[  31] = byte[  124] Fastest"
 +                + " X31   =   31  |  long[  63] = byte[  504] Recommend"
@@ -80,42 +88,42 @@ index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f54
 +                + " X127  =  127  |  long[1020] = byte[ 8160]"
 +                + " X383  =  383  |  long[3064] = byte[24512]"
 +        );
-+        maxViewDistance = ViewMapMode.valueOf(getString("zero-chunk.max-view-distance", "X31").toUpperCase());
-+        setComment("zero-chunk.async-thread-amount","( Number of Asynchronous Threads )\n"
++        maxViewDistance = ViewMapMode.valueOf(FusionConfig.getString("zero-chunk.max-view-distance", "X31").toUpperCase());
++        FusionConfig.setComment("zero-chunk.async-thread-amount","( Number of Asynchronous Threads )\n"
 +                + "Recommended value 1~10 (can also be higher)"
 +        );
-+        asyncThreadAmount = getInt("zero-chunk.async-thread-amount", 2);
-+        setComment("zero-chunk.auto-adapt-player-network-speed", "Automatically adapt to the player internet speed");
-+        autoAdaptPlayerNetworkSpeed = getBoolean("zero-chunk.auto-adapt-player-network-speed", true);
-+        setComment("zero-chunk.player-network-speed-use-degree","How many player internet speed can be used (percentage)\n"
++        asyncThreadAmount = FusionConfig.getInt("zero-chunk.async-thread-amount", 2);
++        FusionConfig.setComment("zero-chunk.auto-adapt-player-network-speed", "Automatically adapt to the player internet speed");
++        autoAdaptPlayerNetworkSpeed = FusionConfig.getBoolean("zero-chunk.auto-adapt-player-network-speed", true);
++        FusionConfig.setComment("zero-chunk.player-network-speed-use-degree","How many player internet speed can be used (percentage)\n"
 +                + "If the detected network speed is 2 MB/s, 0.6 = 60%, only 1.2 MB/s is allowed to be sent");
-+        playerNetworkSpeedUseDegree = getDouble("zero-chunk.player-network-speed-use-degree", 0.6);
-+        setComment("zero-chunk.server-send-second-max-bytes", "How much data can the server transmit per second (Unit bytes)\n"
++        playerNetworkSpeedUseDegree = FusionConfig.getDouble("zero-chunk.player-network-speed-use-degree", 0.6);
++        FusionConfig.setComment("zero-chunk.server-send-second-max-bytes", "How much data can the server transmit per second (Unit bytes)\n"
 +                + "Default value 20971520 bytes = 20 MB");
-+        serverSendSecondMaxBytes = getInt("zero-chunk.server-send-second-max-bytes", 20971520);
-+        setComment("zero-chunk.server-tick-max-generate-amount","How many chunk can the server generate per game tick\n"
++        serverSendSecondMaxBytes = FusionConfig.getInt("zero-chunk.server-send-second-max-bytes", 20971520);
++        FusionConfig.setComment("zero-chunk.server-tick-max-generate-amount","How many chunk can the server generate per game tick\n"
 +                + "When generating terrain, the CPU workload is greater\n"
 +                + "Set to 0 Does not generate");
-+        serverTickMaxGenerateAmount = getInt("zero-chunk.server-tick-max-generate-amount", 2);
-+        setComment("zero-chunk.calculate-missing-height-map", "Calculate the missing height map\n"
++        serverTickMaxGenerateAmount = FusionConfig.getInt("zero-chunk.server-tick-max-generate-amount", 2);
++        FusionConfig.setComment("zero-chunk.calculate-missing-height-map", "Calculate the missing height map\n"
 +                + "Closing can reduce the amount of calculation required for each chunk\n"
 +                + "But it may cause snow/rain to penetrate the ground by mistake");
-+        calculateMissingHeightMap = getBoolean("zero-chunk.calculate-missing-height-map", false);
-+        setComment("zero-chunk.disable-fast-process", "Don't fast process chunk\n"
++        calculateMissingHeightMap = FusionConfig.getBoolean("zero-chunk.calculate-missing-height-map", false);
++        FusionConfig.setComment("zero-chunk.disable-fast-process", "Don't fast process chunk\n"
 +                + "Load once for each sent");
-+        disableFastProcess = getBoolean("zero-chunk.disable-fast-process", false);
++        disableFastProcess = FusionConfig.getBoolean("zero-chunk.disable-fast-process", false);
 +        Map<String, Integer> permissionsNodeMap = new HashMap<>();
-+        for (String line : (List<String>)getList("zero-chunk.node-list", new ArrayList<>())) {
++        for (String line : (List<String>)FusionConfig.getList("zero-chunk.node-list", new ArrayList<>())) {
 +            String[] lineSplit = line.split(";", 2);
 +            if (lineSplit.length != 2)
 +                throw new NullPointerException("Fusion Configuration - zero-chunk.permissions.node-list - Can't find the separator \";\": " + line);
 +            permissionsNodeMap.put(lineSplit[1], Integer.parseInt(lineSplit[0]));
 +        }
 +        permissionsNodeList = new ArrayList<>(permissionsNodeMap.entrySet());
-+        permissionsPeriodicMillisecondCheck = getInt("zero-chunk.permissions.periodic-millisecond-check", 60000);
++        permissionsPeriodicMillisecondCheck = FusionConfig.getInt("zero-chunk.permissions.periodic-millisecond-check", 60000);
 +    }
 +
-+    public boolean enable;
++    public boolean enable = true;
 +    public ViewMapMode maxViewDistance;
 +    public int asyncThreadAmount;
 +    public boolean autoAdaptPlayerNetworkSpeed;
@@ -128,13 +136,13 @@ index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f54
 +    public int permissionsPeriodicMillisecondCheck;
 +
 +}
-diff --git a/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkWorldConfig.java b/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkWorldConfig.java
+diff --git a/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java b/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..7ea0f0b550c2db11cbf4cacb0b5baed440621732
 --- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/configurations/ZeroChunkWorldConfig.java
-@@ -0,0 +1,81 @@
-+package com.github.ipecter.fusion.configurations;
++++ b/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java
+@@ -0,0 +1,86 @@
++package com.github.ipecter.fusion;
 +
 +import com.github.ipecter.fusion.FusionWorldConfig;
 +import org.bukkit.Bukkit;
@@ -147,35 +155,40 @@ index 0000000000000000000000000000000000000000..7ea0f0b550c2db11cbf4cacb0b5baed4
 +
 +public class ZeroChunkWorldConfig extends FusionWorldConfig {
 +
++    private final String worldName;
 +    public ZeroChunkWorldConfig(String worldName){
 +        super(worldName);
-+        enable = getBoolean("zero-chunk.enable", true);
-+        maxViewDistance = getInt("zero-chunk.max-view-distance", 31);
-+        worldTickMaxGenerateAmount = getInt("zero-chunk.world-tick-max-generate-amount", 2);
-+        sendTitleData = getBoolean("zero-chunk.send-title-data", true);
-+        worldSendSecondMaxBytes = getInt("zero-chunk.world-send-second-max-bytes", 10485760);
-+        playerSendSecondMaxBytes = getInt("zero-chunk.player-send-second-max-bytes", 2097152);
-+        readServerLoadedChunk = getBoolean("zero-chunk.read-server-loaded-chunk", true);
-+        delayBeforeSend = getInt("zero-chunk.delay-before-send", 5000);
++        this.worldName = worldName;
++    }
++
++    private void zeroChunkWorldConfig() {
++        enable = getBoolean("zero-chunk.enable", enable);
++        maxViewDistance = getInt("zero-chunk.max-view-distance", maxViewDistance);
++        worldTickMaxGenerateAmount = getInt("zero-chunk.world-tick-max-generate-amount", worldTickMaxGenerateAmount);
++        sendTitleData = getBoolean("zero-chunk.send-title-data", sendTitleData);
++        worldSendSecondMaxBytes = getInt("zero-chunk.world-send-second-max-bytes", worldSendSecondMaxBytes);
++        playerSendSecondMaxBytes = getInt("zero-chunk.player-send-second-max-bytes", playerSendSecondMaxBytes);
++        readServerLoadedChunk = getBoolean("zero-chunk.read-server-loaded-chunk", readServerLoadedChunk);
++        delayBeforeSend = getInt("zero-chunk.delay-before-send", delayBeforeSend);
 +        preventXray = parsePreventXray(getConfigurationSection("zero-chunk.prevent-xray"), worldName);
 +        getBoolean("zero-chunk.prevent-xray.enable", true);
 +        getList("zero-chunk.prevent-xray.conversion-list.STONE", Arrays.asList("COAL_ORE", "IRON_ORE", "COPPER_ORE", "GOLD_ORE", "REDSTONE_ORE", "EMERALD_ORE", "LAPIS_ORE", "DIAMOND_ORE"));
 +        getList("zero-chunk.prevent-xray.conversion-list.DEEPSLATE", Arrays.asList("DEEPSLATE_COAL_ORE", "DEEPSLATE_IRON_ORE", "DEEPSLATE_COPPER_ORE", "DEEPSLATE_GOLD_ORE", "DEEPSLATE_REDSTONE_ORE", "DEEPSLATE_EMERALD_ORE", "DEEPSLATE_LAPIS_ORE", "DEEPSLATE_DIAMOND_ORE"));
 +        getList("zero-chunk.prevent-xray.conversion-list.NETHERRACK", Arrays.asList("NETHER_GOLD_ORE", "NETHER_QUARTZ_ORE", "ANCIENT_DEBRIS"));
 +        getList("zero-chunk.prevent-xray.conversion-list.BLACKSTONE", Arrays.asList("GILDED_BLACKSTONE"));
-+        speedingNotSend = getDouble("zero-chunk.speeding-not-send", 1.2);
++        speedingNotSend = getDouble("zero-chunk.speeding-not-send", speedingNotSend);
 +    }
 +
-+    public boolean enable;
-+    public int maxViewDistance;
-+    public int worldTickMaxGenerateAmount;
-+    public boolean sendTitleData;
-+    public int worldSendSecondMaxBytes;
-+    public int playerSendSecondMaxBytes;
-+    public boolean readServerLoadedChunk;
-+    public int delayBeforeSend;
++    public boolean enable = true;
++    public int maxViewDistance = 31;
++    public int worldTickMaxGenerateAmount = 2;
++    public boolean sendTitleData = true;
++    public int worldSendSecondMaxBytes = 10485760;
++    public int playerSendSecondMaxBytes = 2097152;
++    public boolean readServerLoadedChunk = true;
++    public int delayBeforeSend = 5000;
 +    public Map<BlockData, BlockData[]> preventXray;
-+    public double speedingNotSend;
++    public double speedingNotSend = 1.2;
 +
 +    private Map<BlockData, BlockData[]> parsePreventXray(ConfigurationSection preventXrayConfiguration, String worldName) {
 +        if (preventXrayConfiguration == null) {
@@ -246,7 +259,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +package com.github.ipecter.fusion.zerochunk;
 +
 +import com.github.ipecter.fusion.FusionConfig;
-+import com.github.ipecter.fusion.configurations.ZeroChunkWorldConfig;
++import com.github.ipecter.fusion.ZeroChunkWorldConfig;
 +import com.github.ipecter.fusion.zerochunk.branch.*;
 +import com.github.ipecter.fusion.zerochunk.data.CumulativeReport;
 +import com.github.ipecter.fusion.zerochunk.data.LangFiles;
@@ -2282,8 +2295,8 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 @@ -0,0 +1,305 @@
 +package com.github.ipecter.fusion.zerochunk.data;
 +
-+import com.github.ipecter.fusion.configurations.ZeroChunkConfig;
-+import com.github.ipecter.fusion.configurations.ZeroChunkWorldConfig;
++import com.github.ipecter.fusion.ZeroChunkConfig;
++import com.github.ipecter.fusion.ZeroChunkWorldConfig;
 +import com.github.ipecter.fusion.zerochunk.ZeroChunk;
 +import com.github.ipecter.fusion.zerochunk.branch.BranchPacket;
 +import com.github.ipecter.fusion.zerochunk.data.viewmap.ViewMap;
