@@ -108,12 +108,3 @@ jobs:
           directory: ./Fusion-Server
           repository: IPECTER/Fusion-Server
           branch: main
-          
-      - name: ( Patch ) Push changes .Gradle
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./zip
-          repository: IPECTER/Fusion-Gradle
-          branch: main
