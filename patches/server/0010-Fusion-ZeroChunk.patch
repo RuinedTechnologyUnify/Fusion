@@ -1,86 +1,52 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Wed, 19 Oct 2022 21:56:20 +0900
+Date: Thu, 20 Oct 2022 20:32:11 +0900
 Subject: [PATCH] Fusion-ZeroChunk
 
-FartherViewDistance - XUAN - Private
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 455dbb85d17b9ff5685162c3feffdd97c5907100..5e59890e1c30606993617ff5b62015ccd39e8914 100644
+index 0225ba5df97ebc3b1594a665aebdaf69916acb78..ef094fa7afec88c6eb0215dd0279576e3889c339 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -1,5 +1,6 @@
  package com.github.ipecter.fusion;
  
-+import com.github.ipecter.fusion.ZeroChunkConfig;
- import com.github.ipecter.fusion.LithiumConfig;
++import com.github.ipecter.fusion.zerochunk.data.viewmap.ViewMapMode;
  import com.google.common.base.Throwables;
  import com.google.common.collect.ImmutableMap;
-@@ -200,4 +201,8 @@ public class FusionConfig {
-     private void lithiumConfig(){
-         lithiumConfig = new LithiumConfig();
+ import net.minecraft.server.MinecraftServer;
+@@ -16,9 +17,7 @@ import java.io.IOException;
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+ import java.lang.reflect.Modifier;
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
++import java.util.*;
+ import java.util.logging.Level;
+ 
+ @SuppressWarnings("unused")
+@@ -209,4 +208,62 @@ public class FusionConfig {
+         lithiumCompactSineLUT = FusionConfig.getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT);
+         lithiumFastRetrieval = FusionConfig.getBoolean("lithium.fast-retrieval", lithiumFastRetrieval);
      }
-+    public static ZeroChunkConfig zeroChunkConfig;
-+    private void zeroChunkConfig(){
-+        zeroChunkConfig = new ZeroChunkConfig();
-+    }
- }
-\ No newline at end of file
-diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 85213f4b3df0709f69d877fa049591014eae1696..387518f50607899294cc447fd02bf2472e1159a7 100644
---- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -1,6 +1,7 @@
- package com.github.ipecter.fusion;
- 
- import com.github.ipecter.fusion.LithiumWorldConfig;
-+import com.github.ipecter.fusion.ZeroChunkWorldConfig;
- import org.apache.commons.lang.BooleanUtils;
- import org.simpleyaml.configuration.ConfigurationSection;
- import org.simpleyaml.configuration.comments.CommentType;
-@@ -16,10 +17,12 @@ public class FusionWorldConfig {
- 
-     private final String worldName;
-     public LithiumWorldConfig lithiumConfig;
-+    public ZeroChunkWorldConfig zeroChunkConfig;
- 
-     public FusionWorldConfig(String worldName) {
-         this.worldName = worldName;
-         lithiumConfig = new LithiumWorldConfig(worldName);
-+        zeroChunkConfig = new ZeroChunkWorldConfig(worldName);
-         init();
-     }
- 
-@@ -27,6 +30,7 @@ public class FusionWorldConfig {
-         log("-------- World Settings For [" + worldName + "] --------");
-         FusionConfig.readConfig(FusionWorldConfig.class, this);
-         FusionConfig.readConfig(lithiumConfig.getClass(), this);
-+        FusionConfig.readConfig(zeroChunkConfig.getClass(), this);
-     }
- 
-     protected static void setComment(String path, String... comment){
-diff --git a/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java b/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f543b3b7d5c
---- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/ZeroChunkConfig.java
-@@ -0,0 +1,71 @@
-+package com.github.ipecter.fusion;
 +
-+import com.github.ipecter.fusion.FusionConfig;
-+import com.github.ipecter.fusion.zerochunk.data.viewmap.ViewMapMode;
++    public static boolean zeroChunkEnable = true;
++    public static ViewMapMode zeroChunkMaxViewDistance = ViewMapMode.X31;
++    public static int zeroChunkAsyncThreadAmount = 2;
++    public static boolean zeroChunkAutoAdaptPlayerNetworkSpeed = true;
++    public static double zeroChunkPlayerNetworkSpeedUseDegree = 0.6;
++    public static int zeroChunkServerSendSecondMaxBytes = 20971520;
++    public static int zeroChunkServerTickMaxGenerateAmount = 2;
++    public static boolean zeroChunkCalculateMissingHeightMap = false;
++    public static boolean zeroChunkDisableFastProcess = false;
++    public static List<Map.Entry<String, Integer>> zeroChunkPermissionsNodeList;
++    public static int zeroChunkPermissionsPeriodicMillisecondCheck = 60000;
 +
-+import java.util.ArrayList;
-+import java.util.HashMap;
-+import java.util.List;
-+import java.util.Map;
-+
-+public class ZeroChunkConfig {
-+
-+    private void zeroChunkConfig(){
-+        FusionConfig.setComment("zero-chunk", "[ ZeroChunk ] Extreme Optimized View-Distance System to replace Vanilla\n" + "It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance");
-+        enable = FusionConfig.getBoolean("zero-chunk.enable", true);
-+        FusionConfig.setComment("zero-chunk.max-view-distance","( View Distance Mode )\n"
++    private static void zeroChunkConfig(){
++        setComment("zero-chunk", "[ ZeroChunk ] Extreme Optimized View-Distance System to replace Vanilla\n" + "It Stably Supports Minimum 32 View-Distance and Maximum 128 View-Distance");
++        zeroChunkEnable = getBoolean("zero-chunk.enable", zeroChunkEnable);
++        setComment("zero-chunk.max-view-distance","( View Distance Mode )\n"
 +                + "View Distance  |  Needed RAM for View Calculate Per Player\n"
 +                + " X15   =   15  |  int[  31] = byte[  124] Fastest"
 +                + " X31   =   31  |  long[  63] = byte[  504] Recommend"
@@ -88,107 +54,97 @@ index 0000000000000000000000000000000000000000..061d8c1fbcd0e7f304966d3caa8a4f54
 +                + " X127  =  127  |  long[1020] = byte[ 8160]"
 +                + " X383  =  383  |  long[3064] = byte[24512]"
 +        );
-+        maxViewDistance = ViewMapMode.valueOf(FusionConfig.getString("zero-chunk.max-view-distance", "X31").toUpperCase());
-+        FusionConfig.setComment("zero-chunk.async-thread-amount","( Number of Asynchronous Threads )\n"
++        zeroChunkMaxViewDistance = ViewMapMode.valueOf(getString("zero-chunk.max-view-distance", "X31").toUpperCase());
++        setComment("zero-chunk.async-thread-amount","( Number of Asynchronous Threads )\n"
 +                + "Recommended value 1~10 (can also be higher)"
 +        );
-+        asyncThreadAmount = FusionConfig.getInt("zero-chunk.async-thread-amount", 2);
-+        FusionConfig.setComment("zero-chunk.auto-adapt-player-network-speed", "Automatically adapt to the player internet speed");
-+        autoAdaptPlayerNetworkSpeed = FusionConfig.getBoolean("zero-chunk.auto-adapt-player-network-speed", true);
-+        FusionConfig.setComment("zero-chunk.player-network-speed-use-degree","How many player internet speed can be used (percentage)\n"
++        zeroChunkAsyncThreadAmount = getInt("zero-chunk.async-thread-amount", zeroChunkAsyncThreadAmount);
++        setComment("zero-chunk.auto-adapt-player-network-speed", "Automatically adapt to the player internet speed");
++        zeroChunkAutoAdaptPlayerNetworkSpeed = getBoolean("zero-chunk.auto-adapt-player-network-speed", zeroChunkAutoAdaptPlayerNetworkSpeed);
++        setComment("zero-chunk.player-network-speed-use-degree","How many player internet speed can be used (percentage)\n"
 +                + "If the detected network speed is 2 MB/s, 0.6 = 60%, only 1.2 MB/s is allowed to be sent");
-+        playerNetworkSpeedUseDegree = FusionConfig.getDouble("zero-chunk.player-network-speed-use-degree", 0.6);
-+        FusionConfig.setComment("zero-chunk.server-send-second-max-bytes", "How much data can the server transmit per second (Unit bytes)\n"
++        zeroChunkPlayerNetworkSpeedUseDegree = getDouble("zero-chunk.player-network-speed-use-degree", zeroChunkPlayerNetworkSpeedUseDegree);
++        setComment("zero-chunk.server-send-second-max-bytes", "How much data can the server transmit per second (Unit bytes)\n"
 +                + "Default value 20971520 bytes = 20 MB");
-+        serverSendSecondMaxBytes = FusionConfig.getInt("zero-chunk.server-send-second-max-bytes", 20971520);
-+        FusionConfig.setComment("zero-chunk.server-tick-max-generate-amount","How many chunk can the server generate per game tick\n"
++        zeroChunkServerSendSecondMaxBytes = getInt("zero-chunk.server-send-second-max-bytes", zeroChunkServerSendSecondMaxBytes);
++        setComment("zero-chunk.server-tick-max-generate-amount","How many chunk can the server generate per game tick\n"
 +                + "When generating terrain, the CPU workload is greater\n"
 +                + "Set to 0 Does not generate");
-+        serverTickMaxGenerateAmount = FusionConfig.getInt("zero-chunk.server-tick-max-generate-amount", 2);
-+        FusionConfig.setComment("zero-chunk.calculate-missing-height-map", "Calculate the missing height map\n"
++        zeroChunkServerTickMaxGenerateAmount = getInt("zero-chunk.server-tick-max-generate-amount", zeroChunkServerTickMaxGenerateAmount);
++        setComment("zero-chunk.calculate-missing-height-map", "Calculate the missing height map\n"
 +                + "Closing can reduce the amount of calculation required for each chunk\n"
 +                + "But it may cause snow/rain to penetrate the ground by mistake");
-+        calculateMissingHeightMap = FusionConfig.getBoolean("zero-chunk.calculate-missing-height-map", false);
-+        FusionConfig.setComment("zero-chunk.disable-fast-process", "Don't fast process chunk\n"
++        zeroChunkCalculateMissingHeightMap = getBoolean("zero-chunk.calculate-missing-height-map", zeroChunkCalculateMissingHeightMap);
++        setComment("zero-chunk.disable-fast-process", "Don't fast process chunk\n"
 +                + "Load once for each sent");
-+        disableFastProcess = FusionConfig.getBoolean("zero-chunk.disable-fast-process", false);
++        zeroChunkDisableFastProcess = getBoolean("zero-chunk.disable-fast-process", zeroChunkDisableFastProcess);
 +        Map<String, Integer> permissionsNodeMap = new HashMap<>();
-+        for (String line : (List<String>)FusionConfig.getList("zero-chunk.node-list", new ArrayList<>())) {
++        for (String line : (List<String>)getList("zero-chunk.node-list", Arrays.asList("8;max_view_distance.8", "16;max_view_distance.16", "24;max_view_distance.24", "32;max_view_distance.32"))) {
 +            String[] lineSplit = line.split(";", 2);
 +            if (lineSplit.length != 2)
 +                throw new NullPointerException("Fusion Configuration - zero-chunk.permissions.node-list - Can't find the separator \";\": " + line);
 +            permissionsNodeMap.put(lineSplit[1], Integer.parseInt(lineSplit[0]));
 +        }
-+        permissionsNodeList = new ArrayList<>(permissionsNodeMap.entrySet());
-+        permissionsPeriodicMillisecondCheck = FusionConfig.getInt("zero-chunk.permissions.periodic-millisecond-check", 60000);
++        zeroChunkPermissionsNodeList = new ArrayList<>(permissionsNodeMap.entrySet());
++        zeroChunkPermissionsPeriodicMillisecondCheck = getInt("zero-chunk.permissions.periodic-millisecond-check", zeroChunkPermissionsPeriodicMillisecondCheck);
 +    }
-+
-+    public boolean enable = true;
-+    public ViewMapMode maxViewDistance;
-+    public int asyncThreadAmount;
-+    public boolean autoAdaptPlayerNetworkSpeed;
-+    public double playerNetworkSpeedUseDegree;
-+    public int serverSendSecondMaxBytes;
-+    public int serverTickMaxGenerateAmount;
-+    public boolean calculateMissingHeightMap;
-+    public boolean disableFastProcess;
-+    public List<Map.Entry<String, Integer>> permissionsNodeList;
-+    public int permissionsPeriodicMillisecondCheck;
-+
-+}
-diff --git a/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java b/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..7ea0f0b550c2db11cbf4cacb0b5baed440621732
---- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/ZeroChunkWorldConfig.java
-@@ -0,0 +1,86 @@
-+package com.github.ipecter.fusion;
-+
-+import com.github.ipecter.fusion.FusionWorldConfig;
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 29715bcbad34d2cbdfab67d0db1739a408d564a8..6004a9e9d5ed67efcaac49562d8438379183330e 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -1,12 +1,15 @@
+ package com.github.ipecter.fusion;
+ 
+ import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.Bukkit;
 +import org.bukkit.Material;
 +import org.bukkit.block.data.BlockData;
-+import org.simpleyaml.configuration.ConfigurationSection;
-+
+ import org.simpleyaml.configuration.ConfigurationSection;
+ import org.simpleyaml.configuration.comments.CommentType;
+ 
+-import java.util.List;
+-import java.util.Map;
 +import java.util.*;
+ import java.util.function.Predicate;
 +import java.util.logging.Level;
-+
-+public class ZeroChunkWorldConfig extends FusionWorldConfig {
-+
-+    private final String worldName;
-+    public ZeroChunkWorldConfig(String worldName){
-+        super(worldName);
-+        this.worldName = worldName;
-+    }
+ 
+ import static com.github.ipecter.fusion.FusionConfig.log;
+ 
+@@ -121,4 +124,71 @@ public class FusionWorldConfig {
+         final Map<String, Object> value = FusionConfig.getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
 +
 +    private void zeroChunkWorldConfig() {
-+        enable = getBoolean("zero-chunk.enable", enable);
-+        maxViewDistance = getInt("zero-chunk.max-view-distance", maxViewDistance);
-+        worldTickMaxGenerateAmount = getInt("zero-chunk.world-tick-max-generate-amount", worldTickMaxGenerateAmount);
-+        sendTitleData = getBoolean("zero-chunk.send-title-data", sendTitleData);
-+        worldSendSecondMaxBytes = getInt("zero-chunk.world-send-second-max-bytes", worldSendSecondMaxBytes);
-+        playerSendSecondMaxBytes = getInt("zero-chunk.player-send-second-max-bytes", playerSendSecondMaxBytes);
-+        readServerLoadedChunk = getBoolean("zero-chunk.read-server-loaded-chunk", readServerLoadedChunk);
-+        delayBeforeSend = getInt("zero-chunk.delay-before-send", delayBeforeSend);
-+        preventXray = parsePreventXray(getConfigurationSection("zero-chunk.prevent-xray"), worldName);
++        zeroChunkEnable = getBoolean("zero-chunk.enable", zeroChunkEnable);
++        zeroChunkMaxViewDistance = getInt("zero-chunk.max-view-distance", zeroChunkMaxViewDistance);
++        zeroChunkWorldTickMaxGenerateAmount = getInt("zero-chunk.world-tick-max-generate-amount", zeroChunkWorldTickMaxGenerateAmount);
++        zeroChunkSendTitleData = getBoolean("zero-chunk.send-title-data", zeroChunkSendTitleData);
++        zeroChunkWorldSendSecondMaxBytes = getInt("zero-chunk.world-send-second-max-bytes", zeroChunkWorldSendSecondMaxBytes);
++        zeroChunkPlayerSendSecondMaxBytes = getInt("zero-chunk.player-send-second-max-bytes", zeroChunkPlayerSendSecondMaxBytes);
++        zeroChunkReadServerLoadedChunk = getBoolean("zero-chunk.read-server-loaded-chunk", zeroChunkReadServerLoadedChunk);
++        zeroChunkDelayBeforeSend = getInt("zero-chunk.delay-before-send", zeroChunkDelayBeforeSend);
++        zeroChunkPreventXray = parsePreventXray(getConfigurationSection("zero-chunk.prevent-xray"), worldName);
 +        getBoolean("zero-chunk.prevent-xray.enable", true);
 +        getList("zero-chunk.prevent-xray.conversion-list.STONE", Arrays.asList("COAL_ORE", "IRON_ORE", "COPPER_ORE", "GOLD_ORE", "REDSTONE_ORE", "EMERALD_ORE", "LAPIS_ORE", "DIAMOND_ORE"));
 +        getList("zero-chunk.prevent-xray.conversion-list.DEEPSLATE", Arrays.asList("DEEPSLATE_COAL_ORE", "DEEPSLATE_IRON_ORE", "DEEPSLATE_COPPER_ORE", "DEEPSLATE_GOLD_ORE", "DEEPSLATE_REDSTONE_ORE", "DEEPSLATE_EMERALD_ORE", "DEEPSLATE_LAPIS_ORE", "DEEPSLATE_DIAMOND_ORE"));
 +        getList("zero-chunk.prevent-xray.conversion-list.NETHERRACK", Arrays.asList("NETHER_GOLD_ORE", "NETHER_QUARTZ_ORE", "ANCIENT_DEBRIS"));
 +        getList("zero-chunk.prevent-xray.conversion-list.BLACKSTONE", Arrays.asList("GILDED_BLACKSTONE"));
-+        speedingNotSend = getDouble("zero-chunk.speeding-not-send", speedingNotSend);
++        zeroChunkSpeedingNotSend = getDouble("zero-chunk.speeding-not-send", zeroChunkSpeedingNotSend);
 +    }
 +
-+    public boolean enable = true;
-+    public int maxViewDistance = 31;
-+    public int worldTickMaxGenerateAmount = 2;
-+    public boolean sendTitleData = true;
-+    public int worldSendSecondMaxBytes = 10485760;
-+    public int playerSendSecondMaxBytes = 2097152;
-+    public boolean readServerLoadedChunk = true;
-+    public int delayBeforeSend = 5000;
-+    public Map<BlockData, BlockData[]> preventXray;
-+    public double speedingNotSend = 1.2;
++    public boolean zeroChunkEnable = true;
++    public int zeroChunkMaxViewDistance = 31;
++    public int zeroChunkWorldTickMaxGenerateAmount = 2;
++    public boolean zeroChunkSendTitleData = true;
++    public int zeroChunkWorldSendSecondMaxBytes = 10485760;
++    public int zeroChunkPlayerSendSecondMaxBytes = 2097152;
++    public boolean zeroChunkReadServerLoadedChunk = true;
++    public int zeroChunkDelayBeforeSend = 5000;
++    public Map<BlockData, BlockData[]> zeroChunkPreventXray;
++    public double zeroChunkSpeedingNotSend = 1.2;
 +
 +    private Map<BlockData, BlockData[]> parsePreventXray(ConfigurationSection preventXrayConfiguration, String worldName) {
 +        if (preventXrayConfiguration == null) {
@@ -227,7 +183,8 @@ index 0000000000000000000000000000000000000000..7ea0f0b550c2db11cbf4cacb0b5baed4
 +            return preventXrayConversionMap;
 +        }
 +    }
-+}
+ }
+\ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/zerochunk/ViewDistance.java b/src/main/java/com/github/ipecter/fusion/zerochunk/ViewDistance.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..30895fada57cb6ac650b5c831c8c56a229e91e8a
@@ -252,14 +209,14 @@ index 0000000000000000000000000000000000000000..30895fada57cb6ac650b5c831c8c56a2
 +}
 diff --git a/src/main/java/com/github/ipecter/fusion/zerochunk/ZeroChunk.java b/src/main/java/com/github/ipecter/fusion/zerochunk/ZeroChunk.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463dcd0e87a
+index 0000000000000000000000000000000000000000..b3b2a15cbfb5af741677b485de4f7f43b77a4548
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/zerochunk/ZeroChunk.java
 @@ -0,0 +1,492 @@
 +package com.github.ipecter.fusion.zerochunk;
 +
 +import com.github.ipecter.fusion.FusionConfig;
-+import com.github.ipecter.fusion.ZeroChunkWorldConfig;
++import com.github.ipecter.fusion.FusionWorldConfig;
 +import com.github.ipecter.fusion.zerochunk.branch.*;
 +import com.github.ipecter.fusion.zerochunk.data.CumulativeReport;
 +import com.github.ipecter.fusion.zerochunk.data.LangFiles;
@@ -351,7 +308,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +
 +        AtomicBoolean canRun = new AtomicBoolean(true);
 +        multithreadedCanRun = canRun;
-+        multithreadedService = Executors.newScheduledThreadPool(FusionConfig.zeroChunkConfig.asyncThreadAmount + 1);
++        multithreadedService = Executors.newScheduledThreadPool(FusionConfig.zeroChunkAsyncThreadAmount + 1);
 +
 +        multithreadedService.schedule(() -> {
 +            Thread thread = Thread.currentThread();
@@ -361,7 +318,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +            runView(canRun);
 +        }, 0, TimeUnit.MILLISECONDS);
 +
-+        for (int index = 0; index < FusionConfig.zeroChunkConfig.asyncThreadAmount; index++) {
++        for (int index = 0; index < FusionConfig.zeroChunkAsyncThreadAmount; index++) {
 +            int threadNumber = index;
 +            CumulativeReport threadCumulativeReport = new CumulativeReport();
 +            threadsCumulativeReport.put(index, threadCumulativeReport);
@@ -466,8 +423,8 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +                    {
 +                        for (World world : worldList) {
 +                            CraftWorld craftWorld = (CraftWorld) world;
-+                            ZeroChunkWorldConfig configWorld = craftWorld.getHandle().fusionConfig.zeroChunkConfig;
-+                            if (!configWorld.enable)
++                            FusionWorldConfig configWorld = craftWorld.getHandle().fusionConfig;
++                            if (!configWorld.zeroChunkEnable)
 +                                continue;
 +                            CumulativeReport worldCumulativeReport = worldsCumulativeReport.get(world);
 +                            if (worldCumulativeReport == null)
@@ -475,9 +432,9 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +                            NetworkTraffic worldNetworkTraffic = worldsNetworkTraffic.get(world);
 +                            if (worldNetworkTraffic == null)
 +                                continue;
-+                            if (serverNetworkTraffic.exceed(FusionConfig.zeroChunkConfig.serverSendSecondMaxBytes / 20))
++                            if (serverNetworkTraffic.exceed(FusionConfig.zeroChunkServerSendSecondMaxBytes / 20))
 +                                break handleServer;
-+                            if (worldNetworkTraffic.exceed(configWorld.worldSendSecondMaxBytes / 20))
++                            if (worldNetworkTraffic.exceed(configWorld.zeroChunkWorldSendSecondMaxBytes / 20))
 +                                continue;
 +
 +                            AtomicInteger worldGeneratedChunk = worldsGeneratedChunk.getOrDefault(world, new AtomicInteger(Integer.MAX_VALUE));
@@ -488,15 +445,15 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +                                while (!playersFull && effectiveTime >= System.currentTimeMillis()) {
 +                                    playersFull = true;
 +                                    for (PlayerChunkView view : worldsViews.getOrDefault(world, new ArrayList<>(0))) {
-+                                        if (serverNetworkTraffic.exceed(FusionConfig.zeroChunkConfig.serverSendSecondMaxBytes / 20))
++                                        if (serverNetworkTraffic.exceed(FusionConfig.zeroChunkServerSendSecondMaxBytes / 20))
 +                                            break handleServer;
-+                                        if (worldNetworkTraffic.exceed(configWorld.worldSendSecondMaxBytes / 20))
++                                        if (worldNetworkTraffic.exceed(configWorld.zeroChunkWorldSendSecondMaxBytes / 20))
 +                                            break handleWorld;
 +                                        synchronized (view.networkTraffic) {
 +                                            Integer forciblySendSecondMaxBytes = view.forciblySendSecondMaxBytes;
-+                                            if (view.networkTraffic.exceed(forciblySendSecondMaxBytes != null ? (int) (forciblySendSecondMaxBytes * FusionConfig.zeroChunkConfig.playerNetworkSpeedUseDegree) / 20 : configWorld.playerSendSecondMaxBytes / 20))
++                                            if (view.networkTraffic.exceed(forciblySendSecondMaxBytes != null ? (int) (forciblySendSecondMaxBytes * FusionConfig.zeroChunkPlayerNetworkSpeedUseDegree) / 20 : configWorld.zeroChunkPlayerSendSecondMaxBytes / 20))
 +                                                continue;
-+                                            if (FusionConfig.zeroChunkConfig.autoAdaptPlayerNetworkSpeed && view.networkTraffic.exceed(Math.max(1, view.networkSpeed.avg() * 50)))
++                                            if (FusionConfig.zeroChunkAutoAdaptPlayerNetworkSpeed && view.networkTraffic.exceed(Math.max(1, view.networkSpeed.avg() * 50)))
 +                                                continue;
 +                                        }
 +                                        if (view.waitSend) {
@@ -518,9 +475,9 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +
 +                                        handlePlayer:
 +                                        {
-+                                            if (!FusionConfig.zeroChunkConfig.disableFastProcess) {
++                                            if (!FusionConfig.zeroChunkDisableFastProcess) {
 +                                                try {
-+                                                    if (configWorld.readServerLoadedChunk) {
++                                                    if (configWorld.zeroChunkReadServerLoadedChunk) {
 +                                                        Chunk chunk = branchMinecraft.getChunkFromMemoryCache(world, chunkX, chunkZ);
 +                                                        if (chunk != null) {
 +                                                            serverCumulativeReport.increaseLoadFast();
@@ -556,7 +513,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +                                                }
 +                                            }
 +
-+                                            boolean canGenerated = serverGeneratedChunk.get() < FusionConfig.zeroChunkConfig.serverTickMaxGenerateAmount && worldGeneratedChunk.get() < configWorld.worldTickMaxGenerateAmount;
++                                            boolean canGenerated = serverGeneratedChunk.get() < FusionConfig.zeroChunkServerTickMaxGenerateAmount && worldGeneratedChunk.get() < configWorld.zeroChunkWorldTickMaxGenerateAmount;
 +                                            if (canGenerated) {
 +                                                serverGeneratedChunk.incrementAndGet();
 +                                                worldGeneratedChunk.incrementAndGet();
@@ -580,7 +537,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +                                                        exception.printStackTrace();
 +                                                    } catch (Exception ignored) {
 +                                                    }
-+                                                } else if (FusionConfig.zeroChunkConfig.serverTickMaxGenerateAmount > 0 && configWorld.worldTickMaxGenerateAmount > 0) {
++                                                } else if (FusionConfig.zeroChunkServerTickMaxGenerateAmount > 0 && configWorld.zeroChunkWorldTickMaxGenerateAmount > 0) {
 +                                                    view.remove(chunkX, chunkZ);
 +                                                    break handlePlayer;
 +                                                }
@@ -640,20 +597,20 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +        }
 +    }
 +
-+    private void sendChunk(World world, ZeroChunkWorldConfig configWorld, NetworkTraffic worldNetworkTraffic, PlayerChunkView view, int chunkX, int chunkZ, BranchNBT chunkNBT, BranchChunkLight chunkLight, long syncKey, CumulativeReport worldCumulativeReport, CumulativeReport threadCumulativeReport) {
-+        BranchChunk chunk = branchMinecraft.fromChunk(world, chunkX, chunkZ, chunkNBT, FusionConfig.zeroChunkConfig.calculateMissingHeightMap);
++    private void sendChunk(World world, FusionWorldConfig configWorld, NetworkTraffic worldNetworkTraffic, PlayerChunkView view, int chunkX, int chunkZ, BranchNBT chunkNBT, BranchChunkLight chunkLight, long syncKey, CumulativeReport worldCumulativeReport, CumulativeReport threadCumulativeReport) {
++        BranchChunk chunk = branchMinecraft.fromChunk(world, chunkX, chunkZ, chunkNBT, FusionConfig.zeroChunkCalculateMissingHeightMap);
 +        PlayerSendExtendChunkEvent event = new PlayerSendExtendChunkEvent(view.viewAPI, chunk, world);
 +        Bukkit.getPluginManager().callEvent(event);
 +        if (event.isCancelled())
 +            return;
 +
-+        if (configWorld.preventXray != null && configWorld.preventXray.size() > 0) {
-+            for (Map.Entry<BlockData, BlockData[]> conversionMap : configWorld.preventXray.entrySet())
++        if (configWorld.zeroChunkPreventXray != null && configWorld.zeroChunkPreventXray.size() > 0) {
++            for (Map.Entry<BlockData, BlockData[]> conversionMap : configWorld.zeroChunkPreventXray.entrySet())
 +                chunk.replaceAllMaterial(conversionMap.getValue(), conversionMap.getKey());
 +        }
 +
 +        AtomicInteger consumeTraffic = new AtomicInteger(0);
-+        Consumer<Player> chunkAndLightPacket = branchPacket.sendChunkAndLight(chunk.getChunk(), chunkLight, configWorld.sendTitleData, consumeTraffic::addAndGet);
++        Consumer<Player> chunkAndLightPacket = branchPacket.sendChunkAndLight(chunk.getChunk(), chunkLight, configWorld.zeroChunkSendTitleData, consumeTraffic::addAndGet);
 +
 +        synchronized (view.networkSpeed) {
 +            Location nowLoc = view.getPlayer().getLocation();
@@ -673,7 +630,7 @@ index 0000000000000000000000000000000000000000..8b9c6f9526945f015ed2f7bce0d81463
 +            if (!running)
 +                return;
 +
-+            boolean needMeasure = FusionConfig.zeroChunkConfig.autoAdaptPlayerNetworkSpeed && ((view.networkSpeed.speedID == null && view.networkSpeed.speedTimestamp + 1000 <= System.currentTimeMillis()) || view.networkSpeed.speedTimestamp + 30000 <= System.currentTimeMillis());
++            boolean needMeasure = FusionConfig.zeroChunkAutoAdaptPlayerNetworkSpeed && ((view.networkSpeed.speedID == null && view.networkSpeed.speedTimestamp + 1000 <= System.currentTimeMillis()) || view.networkSpeed.speedTimestamp + 30000 <= System.currentTimeMillis());
 +            if (needMeasure) {
 +                if (view.networkSpeed.speedID != null) {
 +                    view.networkSpeed.add(30000, 0);
@@ -2289,14 +2246,14 @@ index 0000000000000000000000000000000000000000..3dedec745cb7cefcb3ccd646fd56083a
 +}
 diff --git a/src/main/java/com/github/ipecter/fusion/zerochunk/data/PlayerChunkView.java b/src/main/java/com/github/ipecter/fusion/zerochunk/data/PlayerChunkView.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab26d9c60ea
+index 0000000000000000000000000000000000000000..79aee2ad4d92024883dbcc48d3910e25b85fa579
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/zerochunk/data/PlayerChunkView.java
 @@ -0,0 +1,305 @@
 +package com.github.ipecter.fusion.zerochunk.data;
 +
-+import com.github.ipecter.fusion.ZeroChunkConfig;
-+import com.github.ipecter.fusion.ZeroChunkWorldConfig;
++import com.github.ipecter.fusion.FusionConfig;
++import com.github.ipecter.fusion.FusionWorldConfig;
 +import com.github.ipecter.fusion.zerochunk.ZeroChunk;
 +import com.github.ipecter.fusion.zerochunk.branch.BranchPacket;
 +import com.github.ipecter.fusion.zerochunk.data.viewmap.ViewMap;
@@ -2324,7 +2281,7 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +    public Integer forciblySendSecondMaxBytes = null;
 +    /** 最後的視野距離 */
 +    private int lastDistance = 0;
-+    private ZeroChunkConfig configData;
++    private FusionConfig configData;
 +    /** 延遲時間戳 */
 +    private long delayTime;
 +    /** 已卸除 */
@@ -2356,7 +2313,7 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +    public PlayerChunkView(Player player, ViewShape viewShape, BranchPacket branchPacket) {
 +        this.player = player;
 +        this.branchPacket = branchPacket;
-+        this.mapView = configData.maxViewDistance.createMap(viewShape);
++        this.mapView = configData.zeroChunkMaxViewDistance.createMap(viewShape);
 +        this.lastWorld = player.getWorld();
 +        this.syncKey = ZeroChunk.getInstance().random.nextLong();
 +
@@ -2409,8 +2366,8 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +    }
 +    public boolean overSpeed(Location location) {
 +        CraftWorld craftWorld = (CraftWorld)lastWorld;
-+        ZeroChunkWorldConfig configWorld = (ZeroChunkWorldConfig) craftWorld.getHandle().fusionConfig;
-+        if (configWorld.speedingNotSend == -1) {
++        FusionWorldConfig configWorld = craftWorld.getHandle().fusionConfig;
++        if (configWorld.zeroChunkSpeedingNotSend == -1) {
 +            return false;
 +        } else {
 +            double speed = 0;
@@ -2420,7 +2377,7 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +            oldLocation = location;
 +
 +            // 檢查速度是否太快 (水平飛行速度 > ? 方塊)
-+            return speed > configWorld.speedingNotSend;
++            return speed > configWorld.zeroChunkSpeedingNotSend;
 +        }
 +    }
 +
@@ -2457,7 +2414,7 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +
 +
 +    public void delay() {
-+        delay(System.currentTimeMillis() + ((ZeroChunkWorldConfig) ((CraftWorld)lastWorld).getHandle().fusionConfig).delayBeforeSend);
++        delay(System.currentTimeMillis() + ((CraftWorld)lastWorld).getHandle().fusionConfig.zeroChunkDelayBeforeSend);
 +    }
 +    public void delay(long delayTime) {
 +        this.delayTime = delayTime;
@@ -2537,8 +2494,8 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +
 +    public int max() {
 +        CraftWorld craftWorld = (CraftWorld)lastWorld;
-+        ZeroChunkWorldConfig configWorld = (ZeroChunkWorldConfig) craftWorld.getHandle().fusionConfig;
-+        int viewDistance = configWorld.maxViewDistance;
++        FusionWorldConfig configWorld = craftWorld.getHandle().fusionConfig;
++        int viewDistance = configWorld.zeroChunkMaxViewDistance;
 +        int clientViewDistance = player.getClientViewDistance();
 +        Integer forciblyViewDistance = forciblyMaxDistance;
 +
@@ -2549,14 +2506,14 @@ index 0000000000000000000000000000000000000000..48085740547cecc9387943d64bec4ab2
 +            viewDistance = event.getForciblyDistance();
 +        } else if (forciblyViewDistance != null) {
 +            viewDistance = forciblyViewDistance;
-+        } else if (permissionsNeed || (configData.permissionsPeriodicMillisecondCheck != -1 && (permissionsCheck == null || permissionsCheck <= System.currentTimeMillis() - Long.valueOf(configData.permissionsPeriodicMillisecondCheck)))) {
++        } else if (permissionsNeed || (configData.zeroChunkPermissionsPeriodicMillisecondCheck != -1 && (permissionsCheck == null || permissionsCheck <= System.currentTimeMillis() - Long.valueOf(configData.zeroChunkPermissionsPeriodicMillisecondCheck)))) {
 +            permissionsNeed = false;
 +            permissionsCheck = System.currentTimeMillis();
 +            permissionsHit = null;
 +            // 檢查權限節點
-+            for (Map.Entry<String, Integer> permissionsNodeEntry : configData.permissionsNodeList) {
++            for (Map.Entry<String, Integer> permissionsNodeEntry : configData.zeroChunkPermissionsNodeList) {
 +                int permissionViewDistance = permissionsNodeEntry.getValue();
-+                if (permissionViewDistance <= configWorld.maxViewDistance && (permissionsHit == null || permissionViewDistance > permissionsHit) && player.hasPermission(permissionsNodeEntry.getKey())) {
++                if (permissionViewDistance <= configWorld.zeroChunkMaxViewDistance && (permissionsHit == null || permissionViewDistance > permissionsHit) && player.hasPermission(permissionsNodeEntry.getKey())) {
 +                    permissionsHit = permissionViewDistance;
 +                }
 +            }
@@ -5308,3 +5265,56 @@ index 0000000000000000000000000000000000000000..89ecc72c7a68715c11c4103956bfd5d7
 +
 +}
 \ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index a242664f9be2f476d5905a30d09b8e4d096f5969..2f21d3927426da5233f425baf26824a20d09671d 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -235,6 +235,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         // Fusion start
+         try {
+             com.github.ipecter.fusion.FusionConfig.init((java.io.File) options.valueOf("fusion-settings"));
++            settings.setZeroChunk();
+         } catch (Exception e) {
+             DedicatedServer.LOGGER.error("Unable to load server configuration", e);
+             return false;
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index a616916cda2932e984f4702fc034ea7f2abd26af..c33d2516a5aa4cdf5b82cdc6c2d68836cbd1d9a9 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -79,7 +79,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+     public final long maxTickTime;
+     public final int maxChainedNeighborUpdates;
+     public final int rateLimitPacketsPerSecond;
+-    public final int viewDistance;
++    public int viewDistance; // Fusion - ZeroChunk
+     public final int simulationDistance;
+     public final int maxPlayers;
+     public final int networkCompressionThreshold;
+@@ -128,7 +128,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.maxTickTime = this.get("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+         this.maxChainedNeighborUpdates = this.get("max-chained-neighbor-updates", 1000000);
+         this.rateLimitPacketsPerSecond = this.get("rate-limit", 0);
+-        this.viewDistance = this.get("view-distance", 7); // Fusion - Optimize Default Configuration
++        this.viewDistance = this.get("view-distance", 0); // Fusion - Optimize Default Configuration // Fusion - ZeroChunk
+         this.simulationDistance = this.get("simulation-distance", 4); // Fusion - Optimize Default Configuration
+         this.maxPlayers = this.get("max-players", 20);
+         this.networkCompressionThreshold = this.get("network-compression-threshold", 256);
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerSettings.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerSettings.java
+index 8d029ff40a35004ba6a9c5f5879444f46b2b60ac..06aba818eae6a550c4c18527f3cf770047edb500 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerSettings.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerSettings.java
+@@ -24,6 +24,14 @@ public class DedicatedServerSettings {
+         return this.properties;
+     }
+ 
++    // Fusion start - ZeroChunk
++    public void setZeroChunk() {
++        if (com.github.ipecter.fusion.FusionConfig.zeroChunkEnable) {
++            properties.viewDistance = 0;
++        }
++    }
++    // Fusion end
++
+     public void forceSave() {
+         this.properties.store(this.source);
+     }

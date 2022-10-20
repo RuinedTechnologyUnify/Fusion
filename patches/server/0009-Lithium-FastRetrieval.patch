@@ -7,26 +7,28 @@ Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
-diff --git a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
-index d478cad1c9a23dcc16c6644ff4de5a2124bbf177..25ede060b12c8253fbb359826fcd31a609ef7f1b 100644
---- a/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/LithiumConfig.java
-@@ -10,11 +10,13 @@ public class LithiumConfig {
-         fastUtil = FusionConfig.getBoolean("lithium.fast-util", fastUtil);
-         hashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", hashedReferenceList);
-         compactSineLUT = FusionConfig.getBoolean("lithium.compact-sine-lut", compactSineLUT);
-+        fastRetrieval = FusionConfig.getBoolean("lithium.fast-retrieval", fastRetrieval);
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 8d8eb832d17b3c28e1764e1c1aff36f09e0c790f..0225ba5df97ebc3b1594a665aebdaf69916acb78 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -199,6 +199,7 @@ public class FusionConfig {
+     public static boolean lithiumFastUtil = true;
+     public static boolean lithiumHashedReferenceList = true;
+     public static boolean lithiumCompactSineLUT = true;
++    public static boolean lithiumFastRetrieval = true;
+
+     private static void lithiumConfig() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+@@ -206,5 +207,6 @@ public class FusionConfig {
+         lithiumFastUtil = FusionConfig.getBoolean("lithium.fast-util", lithiumFastUtil);
+         lithiumHashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
+         lithiumCompactSineLUT = FusionConfig.getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT);
++        lithiumFastRetrieval = FusionConfig.getBoolean("lithium.fast-retrieval", lithiumFastRetrieval);
      }
- 
-     public boolean enable = true;
-     public boolean fastUtil = true;
-     public boolean hashedReferenceList = true;
-     public boolean compactSineLUT = true;
-+    public boolean fastRetrieval = true;
- 
  }
+\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
-index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..aa041c93fa70fcc43a37d6eb2540b2024972b9a4 100644
+index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..5a56a60d194afc4b2895246447255ddddc58c9f6 100644
 --- a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 +++ b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 @@ -33,7 +33,7 @@ public class EntitySectionStorage<T extends EntityAccess> {
@@ -55,7 +57,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..aa041c93fa70fcc43a37d6eb2540b202
 -                    EntitySection<T> entitySection = this.sections.get(s);
 -                    if (entitySection != null && !entitySection.isEmpty() && entitySection.getStatus().isAccessible()) {
 -                        action.accept(entitySection);
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumConfig.enable && com.github.ipecter.fusion.FusionConfig.lithiumConfig.fastRetrieval) {
++        if (com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumFastRetrieval) {
 +            if (m >= j + 4 || o >= l + 4) {
 +                // Vanilla is likely more optimized when shooting entities with TNT cannons over huge distances.
 +                // Choosing a cutoff of 4 chunk size, as it becomes more likely that these entity sections do not exist when
