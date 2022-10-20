@@ -12,11 +12,11 @@ index 37365c77d6256d2b694be3f50daa9aa484682108..f502094d64956b7211734ce0e100ecf2
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -197,10 +197,12 @@ public class FusionConfig {
-
+ 
      public static boolean lithiumEnable = true;
      public static boolean lithiumFastUtil = true;
 +    public static boolean lithiumHashedReferenceList = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
          lithiumEnable = FusionConfig.getBoolean("lithium.enable", lithiumEnable);

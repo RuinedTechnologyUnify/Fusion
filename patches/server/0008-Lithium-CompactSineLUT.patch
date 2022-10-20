@@ -16,7 +16,7 @@ index f502094d64956b7211734ce0e100ecf2163e59fc..8d8eb832d17b3c28e1764e1c1aff36f0
      public static boolean lithiumFastUtil = true;
      public static boolean lithiumHashedReferenceList = true;
 +    public static boolean lithiumCompactSineLUT = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
          lithiumEnable = FusionConfig.getBoolean("lithium.enable", lithiumEnable);

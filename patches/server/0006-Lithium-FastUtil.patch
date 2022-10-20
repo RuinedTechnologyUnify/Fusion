@@ -13,7 +13,7 @@ index 89944ecf57e7834af95370b6738c2d25055ab81c..37365c77d6256d2b694be3f50daa9aa4
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -196,8 +196,11 @@ public class FusionConfig {
      }
-
+ 
      public static boolean lithiumEnable = true;
 +    public static boolean lithiumFastUtil = true;
 +

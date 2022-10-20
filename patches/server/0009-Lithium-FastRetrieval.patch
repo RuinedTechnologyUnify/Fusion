@@ -16,7 +16,7 @@ index 8d8eb832d17b3c28e1764e1c1aff36f09e0c790f..0225ba5df97ebc3b1594a665aebdaf69
      public static boolean lithiumHashedReferenceList = true;
      public static boolean lithiumCompactSineLUT = true;
 +    public static boolean lithiumFastRetrieval = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -206,5 +207,6 @@ public class FusionConfig {
