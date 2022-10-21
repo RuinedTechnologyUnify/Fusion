@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Fri, 21 Oct 2022 12:43:31 +0900
 Subject: [PATCH] Lithium-CachedHashCode
 
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
 index e94ca6283a0471a49b31942de763472ccb989dcb..0a229ef3f0853899ff902b43c8e389182864c17a 100644

@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Fri, 21 Oct 2022 12:30:36 +0900
 Subject: [PATCH] Lithium-OptimizedAIGoalSet
 
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index ce76ce4b77236d2c04f160da74dd40093bfc9dad..e03aed57035c768eea4dfa537fae6aaacdadc716 100644
