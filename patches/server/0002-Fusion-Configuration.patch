@@ -210,7 +210,7 @@ index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..29715bcbad34d2cbdfab67d0db1739a408d564a8
+index 0000000000000000000000000000000000000000..300dec4fca20c0d9dc18f228cd8157057dc2b74e
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -0,0 +1,124 @@
@@ -296,8 +296,8 @@ index 0000000000000000000000000000000000000000..29715bcbad34d2cbdfab67d0db1739a4
 +    }
 +
 +    protected Map<String, Object> getMap(String path, Map<String, Object> def, String... comment) {
-+        final Map<String, Object> fallback = FusionConfig.getMap("world-settings.default." + path, def, comment);
-+        final Map<String, Object> value = FusionConfig.getMap("world-settings." + worldName + "." + path, null, comment);
++        final Map<String, Object> fallback = getMap("world-settings.default." + path, def, comment);
++        final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null, comment);
 +        return value.isEmpty() ? fallback : value;
 +    }
 +
@@ -333,8 +333,8 @@ index 0000000000000000000000000000000000000000..29715bcbad34d2cbdfab67d0db1739a4
 +    }
 +
 +    protected Map<String, Object> getMap(String path, Map<String, Object> def) {
-+        final Map<String, Object> fallback = FusionConfig.getMap("world-settings.default." + path, def);
-+        final Map<String, Object> value = FusionConfig.getMap("world-settings." + worldName + "." + path, null);
++        final Map<String, Object> fallback = getMap("world-settings.default." + path, def);
++        final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
 +        return value.isEmpty() ? fallback : value;
 +    }
 +}

@@ -8,7 +8,7 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index f502094d64956b7211734ce0e100ecf2163e59fc..8d8eb832d17b3c28e1764e1c1aff36f09e0c790f 100644
+index 42ec2af30b2072f9f1823ddee443753d12e054c2..e383d4478d18f3cfd27884fcb0847603be324332 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -198,11 +198,13 @@ public class FusionConfig {
@@ -19,11 +19,10 @@ index f502094d64956b7211734ce0e100ecf2163e59fc..8d8eb832d17b3c28e1764e1c1aff36f0
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-         lithiumEnable = FusionConfig.getBoolean("lithium.enable", lithiumEnable);
-         lithiumFastUtil = FusionConfig.getBoolean("lithium.fast-util", lithiumFastUtil);
--        lithiumHashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);;
-+        lithiumHashedReferenceList = FusionConfig.getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList);
-+        lithiumCompactSineLUT = FusionConfig.getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT);
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil) && lithiumEnable;
+         lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList) && lithiumEnable;
++        lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
      }
  }
 \ No newline at end of file
@@ -125,14 +124,14 @@ index 0000000000000000000000000000000000000000..c8c85140d1ad0a647f25aa218a56f9e7
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 9b22034aa655ceb0da151d9d8ca3147f6487889a..515fc0995410b3e535a9b3552005354dbe06c7cd 100644
+index 9b22034aa655ceb0da151d9d8ca3147f6487889a..6433a93ab434f1b78c7dd34c186fce7c6a432d91 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -32,6 +32,7 @@ public class Mth {
  
      });
      private static final RandomSource RANDOM = RandomSource.createThreadSafe();
-+    public static float[] getSinTable() { return SIN; } // Fusion - Lithium: CompactSineLUT
++    public static float[] getSinTable() { return SIN; } // Fusion - Lithium: Compact Sine LUT
      private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
      private static final double ONE_SIXTH = 0.16666666666666666D;
      private static final int FRAC_EXP = 8;
@@ -141,12 +140,12 @@ index 9b22034aa655ceb0da151d9d8ca3147f6487889a..515fc0995410b3e535a9b3552005354d
  
      public static float sin(float value) {
 -        return SIN[(int)(value * 10430.378F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
      }
  
      public static float cos(float value) {
 -        return SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumEnable && com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: CompactSineLUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
      }
  
      public static float sqrt(float value) {
