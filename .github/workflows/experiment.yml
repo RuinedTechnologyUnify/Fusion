@@ -1,0 +1,100 @@
+name: Build Fusion (Experimemt Ver)
+on:
+  workflow_dispatch:
+
+env:
+  version: '1.19.2'
+  branch: ver/1.19.2
+  debug: 'false'
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        jdk: ['17']
+        java: ['Java']
+        os: ['ubuntu-latest']
+
+    if: "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@main
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@master
+
+      - name: Set up JDK ${{ matrix.java }} ${{ matrix.jdk }}
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: ${{ matrix.jdk }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: 'latest'
+          cache: 'gradle'
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+          chmod +x gradlew
+
+      - name: Apply Patches
+        run: |
+          ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" applyPatches --stacktrace
+
+      - name: Build
+        run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" build --stacktrace
+
+      - name: Create Reobf Jar
+        run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" createReobfPaperclipJar --stacktrace
+
+      - name: Create Mojmap Jar
+        run: ./gradlew -Dorg.gradle.jvmargs="-Dfile.encoding=UTF-8 -Dgraal.CompilerConfiguration=community -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.SpeculativeGuardMovement=true -Dgraal.WriteableCodeCache=true --add-modules jdk.incubator.vector" createMojmapPaperclipJar --stacktrace
+        
+      - name: Upload Artifacts
+        if: env.debug == 'true'
+        uses: actions/upload-artifact@main
+        with:
+          name: Artifacts
+          path: build/libs
+
+      - name: Release Artifacts
+        if: github.ref_name == env.branch
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          title: "Experiment #${{ env.workflow }}"
+          automatic_release_tag: experiment-${{ env.workflow }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          files: build/libs/*.jar
+          prerelease: false
+
+      - name: ( Patch ) Commit changes
+        run: |
+          mkdir zip
+          cp -rf .gradle/caches caches
+          zip zip/gradle.zip caches
+          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          
+          chmod +x gradlew
+          git add Fusion-Server
+          git add Fusion-API
+          git add zip
+          git commit -m Patch
+
+      - name: ( Patch ) Push changes API
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./Fusion-API
+          repository: IPECTER/Fusion-API
+          branch: experiment
+
+      - name: ( Patch ) Push changes Server
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./Fusion-Server
+          repository: IPECTER/Fusion-Server
+          branch: experiment
