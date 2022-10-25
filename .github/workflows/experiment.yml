@@ -67,34 +67,3 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: build/libs/*.jar
           prerelease: false
-
-      - name: ( Patch ) Commit changes
-        run: |
-          mkdir zip
-          cp -rf .gradle/caches caches
-          zip zip/gradle.zip caches
-          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
-          
-          chmod +x gradlew
-          git add Fusion-Server
-          git add Fusion-API
-          git add zip
-          git commit -m Patch
-
-      - name: ( Patch ) Push changes API
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Fusion-API
-          repository: IPECTER/Fusion-API
-          branch: experiment
-
-      - name: ( Patch ) Push changes Server
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Fusion-Server
-          repository: IPECTER/Fusion-Server
-          branch: experiment
