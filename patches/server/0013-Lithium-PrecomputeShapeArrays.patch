@@ -44,11 +44,11 @@ index a544db042c8d2ecec8d323770552c4f10ca758a6..19a2e0f93953a4ee7cac85d2f960b6e7
 --- a/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java
 +++ b/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java
 @@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
-
+ 
  public class CubePointRange extends AbstractDoubleList {
      private final int parts;
 +    private double scale; // Fusion - Lithium: Precompute Shape Arrays
-
+ 
      CubePointRange(int sectionCount) {
          if (sectionCount <= 0) {
 @@ -11,10 +12,11 @@ public class CubePointRange extends AbstractDoubleList {
@@ -57,20 +57,20 @@ index a544db042c8d2ecec8d323770552c4f10ca758a6..19a2e0f93953a4ee7cac85d2f960b6e7
          }
 +        this.scale = 1.0D / sectionCount; // Fusion - Lithium: Precompute Shape Arrays
      }
-
+ 
      public double getDouble(int i) {
 -        return (double)i / (double)this.parts;
 +        return com.github.ipecter.fusion.FusionConfig.lithiumPrecomputeShapeArrays ? i * this.scale : (double)i / (double)this.parts;
      }
-
+ 
      public int size() {
 diff --git a/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java b/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
-index 68e89dbd79171627046e89699057964e44c40e7d..3bec69d7821f5e4ef2968bde82df131e75814f24 100644
+index 68e89dbd79171627046e89699057964e44c40e7d..0fb6b2916c174008c5bf535ea0cc2fa89edd09cb 100644
 --- a/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
 +++ b/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
-@@ -5,12 +5,20 @@ import net.minecraft.core.Direction;
+@@ -5,13 +5,21 @@ import net.minecraft.core.Direction;
  import net.minecraft.util.Mth;
-
+ 
  public final class CubeVoxelShape extends VoxelShape {
 +    private DoubleList[] list; // Fusion - Lithium: Precompute Shape Arrays
 +
@@ -83,11 +83,11 @@ index 68e89dbd79171627046e89699057964e44c40e7d..3bec69d7821f5e4ef2968bde82df131e
 +        }
 +        // Fusion end
      }
-
+ 
      @Override
      protected DoubleList getCoords(Direction.Axis axis) {
 -        return new CubePointRange(this.shape.getSize(axis));
 +        return com.github.ipecter.fusion.FusionConfig.lithiumPrecomputeShapeArrays ? this.list[axis.ordinal()] : new CubePointRange(this.shape.getSize(axis)); // Fusion - Lithium: Precompute Shape Arrays
      }
-
+ 
      @Override

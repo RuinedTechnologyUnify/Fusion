@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 27 Oct 2022 13:56:21 +0900
+Subject: [PATCH] Lithium-EntityFastElytraCheck
+
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 5f73dcd5d213d287c3645462d3a24be707999122..8f0064137605b870eb417a605772227c56d16ef2 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -203,6 +203,7 @@ public class FusionConfig {
+     public static boolean lithiumOptimizedAIGoalSet = true;
+     public static boolean lithiumOptimizedStoreGameRule = true;
+     public static boolean lithiumPrecomputeShapeArrays = true;
++    public static boolean lithiumEntityFastElytraCheck = true;
+ 
+     private static void lithiumConfig() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+@@ -214,5 +215,6 @@ public class FusionConfig {
+         lithiumOptimizedAIGoalSet = getBoolean("lithium.optimized-ai-goal-set", lithiumOptimizedAIGoalSet) && lithiumEnable;
+         lithiumOptimizedStoreGameRule = getBoolean("lithium.optimized-store-gamerule", lithiumOptimizedStoreGameRule) && lithiumEnable;
+         lithiumPrecomputeShapeArrays = getBoolean("lithium.precompute-shape-arrays", lithiumPrecomputeShapeArrays) && lithiumEnable;
++        lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 1ec9a48f2f44f5bd647e0661423ae90970aee262..99d41757a69edbe9e27232563f2f8ba624edb8d2 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -3528,6 +3528,8 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     private void updateFallFlying() {
++        if (com.github.ipecter.fusion.FusionConfig.lithiumEntityFastElytraCheck && !this.isFallFlying()) return; // Fusion - Lithium: Entity Fast Elytra Check
++
+         boolean flag = this.getSharedFlag(7);
+ 
+         if (flag && !this.onGround && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
