@@ -32,7 +32,7 @@ index 99d41757a69edbe9e27232563f2f8ba624edb8d2..cd7d5554f0a38759e768351010e2df8e
      }
  
      protected void updateSwingTime() {
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumEntityFastHandSwing && !this.swinging && this.swingTime == 0) return; // Fusion - Lithium: Entity Fast Hand Swing
++		if (com.github.ipecter.fusion.FusionConfig.lithiumEntityFastHandSwing && !this.swinging && this.swingTime == 0) return; // Fusion - Lithium: Entity Fast Hand Swing
 +
          int i = this.getCurrentSwingDuration();
  
