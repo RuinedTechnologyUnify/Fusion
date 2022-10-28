@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Thu, 27 Oct 2022 14:44:59 +0900
 Subject: [PATCH] Lithium-EntityFastHandSwing
 
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index 8f0064137605b870eb417a605772227c56d16ef2..55e8736e7136d4003b71badcf1b8b53dd22258c5 100644
