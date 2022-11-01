@@ -3,7 +3,7 @@ From: IPECTER <ipectert@gmail.com>
 Date: Tue, 1 Nov 2022 10:32:17 +0900
 Subject: [PATCH] Lithium-CollectionsEntityByType
 
-Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
