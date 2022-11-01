@@ -35,7 +35,7 @@ index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220
 -        this((Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> {
 -            return ((GameRules.Type) entry.getValue()).createRule();
 -        })));
-+        // Fusion start - lithium: Optimized Store GameRule
++        // Fusion start - lithium: Optimize Store GameRule
 +        this(com.github.ipecter.fusion.FusionConfig.lithiumOptimizeStoreGameRule ?
 +                        new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>((Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ((Type) entry.getValue()).createRule()))) :
 +                        (Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ((Type) entry.getValue()).createRule()))
@@ -46,7 +46,7 @@ index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220
  
      private GameRules(Map<GameRules.Key<?>, GameRules.Value<?>> rules) {
 -        this.rules = rules;
-+        this.rules = com.github.ipecter.fusion.FusionConfig.lithiumOptimizeStoreGameRule ? new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules) : rules; // Fusion - lithium: Optimized Store GameRule
++        this.rules = com.github.ipecter.fusion.FusionConfig.lithiumOptimizeStoreGameRule ? new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules) : rules; // Fusion - lithium: Optimize Store GameRule
  
          // Pufferfish start
          int arraySize = rules.keySet().stream().mapToInt(key -> key.gameRuleIndex).max().orElse(-1) + 1;
