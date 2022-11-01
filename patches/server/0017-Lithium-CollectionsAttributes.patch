@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Tue, 1 Nov 2022 09:46:28 +0900
 Subject: [PATCH] Lithium-CollectionsAttributes
 
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index e593b6c9bee23da1e1040ea12097bae2c750f78d..7122ecf8673c0196fce682d8907dae75e6826b21 100644
