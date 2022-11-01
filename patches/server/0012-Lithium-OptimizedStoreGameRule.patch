@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Tue, 25 Oct 2022 21:27:24 +0900
-Subject: [PATCH] Lithium-OptimizedStoreGameRule
+Subject: [PATCH] Lithium-OptimizeStoreGameRule
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
@@ -11,16 +11,16 @@ index e03aed57035c768eea4dfa537fae6aaacdadc716..5742ad4ea8b1e9d8a74309ee25cb29c1
 @@ -201,6 +201,7 @@ public class FusionConfig {
      public static boolean lithiumCompactSineLUT = true;
      public static boolean lithiumFastRetrieval = true;
-     public static boolean lithiumOptimizedAIGoalSet = true;
-+    public static boolean lithiumOptimizedStoreGameRule = true;
+     public static boolean lithiumOptimizeAIGoalSet = true;
++    public static boolean lithiumOptimizeStoreGameRule = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -210,5 +211,6 @@ public class FusionConfig {
          lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
          lithiumFastRetrieval = getBoolean("lithium.fast-retrieval", lithiumFastRetrieval) && lithiumEnable;
-         lithiumOptimizedAIGoalSet = getBoolean("lithium.optimized-ai-goal-set", lithiumOptimizedAIGoalSet) && lithiumEnable;
-+        lithiumOptimizedStoreGameRule = getBoolean("lithium.optimized-store-gamerule", lithiumOptimizedStoreGameRule) && lithiumEnable;
+         lithiumOptimizeAIGoalSet = getBoolean("lithium.optimize-ai-goal-set", lithiumOptimizeAIGoalSet) && lithiumEnable;
++        lithiumOptimizeStoreGameRule = getBoolean("lithium.optimize-store-gamerule", lithiumOptimizeStoreGameRule) && lithiumEnable;
      }
  }
 \ No newline at end of file
@@ -36,7 +36,7 @@ index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220
 -            return ((GameRules.Type) entry.getValue()).createRule();
 -        })));
 +        // Fusion start - lithium: Optimized Store GameRule
-+        this(com.github.ipecter.fusion.FusionConfig.lithiumOptimizedStoreGameRule ?
++        this(com.github.ipecter.fusion.FusionConfig.lithiumOptimizeStoreGameRule ?
 +                        new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>((Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ((Type) entry.getValue()).createRule()))) :
 +                        (Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ((Type) entry.getValue()).createRule()))
 +        );
@@ -46,7 +46,7 @@ index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220
  
      private GameRules(Map<GameRules.Key<?>, GameRules.Value<?>> rules) {
 -        this.rules = rules;
-+        this.rules = com.github.ipecter.fusion.FusionConfig.lithiumOptimizedStoreGameRule ? new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules) : rules; // Fusion - lithium: Optimized Store GameRule
++        this.rules = com.github.ipecter.fusion.FusionConfig.lithiumOptimizeStoreGameRule ? new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules) : rules; // Fusion - lithium: Optimized Store GameRule
  
          // Pufferfish start
          int arraySize = rules.keySet().stream().mapToInt(key -> key.gameRuleIndex).max().orElse(-1) + 1;
