@@ -5,27 +5,27 @@ Subject: [PATCH] Lithium-OptimizeStoreGameRule
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index e03aed57035c768eea4dfa537fae6aaacdadc716..5742ad4ea8b1e9d8a74309ee25cb29c137236540 100644
+index 0565a00515d60c149bf71e243bb77cc214d9e323..1f6531578f00ec56f95f64a2ea43a4ea7ad6c765 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -201,6 +201,7 @@ public class FusionConfig {
      public static boolean lithiumCompactSineLUT = true;
-     public static boolean lithiumEntityFastRetrieval = true;
-     public static boolean lithiumEntityOptimizeAIGoalSet = true;
+     public static boolean lithiumFastRetrieval = true;
+     public static boolean lithiumOptimizeAIGoalSet = true;
 +    public static boolean lithiumOptimizeStoreGameRule = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -210,5 +211,6 @@ public class FusionConfig {
          lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
-         lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
-         lithiumEntityOptimizeAIGoalSet = getBoolean("lithium.entity.optimize-ai-goal-set", lithiumEntityOptimizeAIGoalSet) && lithiumEnable;
+         lithiumFastRetrieval = getBoolean("lithium.fast-retrieval", lithiumFastRetrieval) && lithiumEnable;
+         lithiumOptimizeAIGoalSet = getBoolean("lithium.optimize-ai-goal-set", lithiumOptimizeAIGoalSet) && lithiumEnable;
 +        lithiumOptimizeStoreGameRule = getBoolean("lithium.optimize-store-gamerule", lithiumOptimizeStoreGameRule) && lithiumEnable;
      }
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220a6e5f343 100644
+index 17e869074b8cf29a8c3280499a27e95179896750..8b761c02be6f7663631620dab61edb6fd42bec3d 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -111,14 +111,17 @@ public class GameRules {

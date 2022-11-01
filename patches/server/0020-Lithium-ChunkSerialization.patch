@@ -240,6 +240,26 @@ index 106610ccc74b70b557b01c61262d56c4f1147acf..dad0f64933b98de4ed96da6ca6f4b26f
 +
 +    <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out); // Fusion - Lithium: Chunk Serialization
  }
+diff --git a/src/main/java/net/minecraft/util/ZeroBitStorage.java b/src/main/java/net/minecraft/util/ZeroBitStorage.java
+index 5d8e9bdf5538b19681f21949368d862fab8a89ad..ace4f58f03423be69dd0450358aa818d6ae1e1c2 100644
+--- a/src/main/java/net/minecraft/util/ZeroBitStorage.java
++++ b/src/main/java/net/minecraft/util/ZeroBitStorage.java
+@@ -2,6 +2,8 @@ package net.minecraft.util;
+
+ import java.util.Arrays;
+ import java.util.function.IntConsumer;
++
++import net.minecraft.world.level.chunk.Palette; // Fusion
+ import org.apache.commons.lang3.Validate;
+
+ public class ZeroBitStorage implements BitStorage {
+@@ -72,4 +74,6 @@ public class ZeroBitStorage implements BitStorage {
+     public BitStorage copy() {
+         return this;
+     }
++
++    @Override public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {} // Fusion - Lithium: Chunk Serialization
+ }
 diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
 index 36e33923bf48e56c743ed043bcbc66bc32f0422f..d63d8103dc9551a7706df5d382205fddff22a96e 100644
 --- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
