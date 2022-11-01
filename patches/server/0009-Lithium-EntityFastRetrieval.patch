@@ -13,17 +13,17 @@ index e383d4478d18f3cfd27884fcb0847603be324332..ce76ce4b77236d2c04f160da74dd4009
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -199,6 +199,7 @@ public class FusionConfig {
      public static boolean lithiumFastUtil = true;
-     public static boolean lithiumHashedReferenceList = true;
+     public static boolean lithiumCollectionsHashedReferenceList = true;
      public static boolean lithiumCompactSineLUT = true;
-+    public static boolean lithiumFastRetrieval = true;
++    public static boolean lithiumEntityFastRetrieval = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -206,5 +207,6 @@ public class FusionConfig {
          lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil) && lithiumEnable;
-         lithiumHashedReferenceList = getBoolean("lithium.hashed-reference-list", lithiumHashedReferenceList) && lithiumEnable;
+         lithiumCollectionsHashedReferenceList = getBoolean("lithium.collections.hashed-reference-list", lithiumCollectionsHashedReferenceList) && lithiumEnable;
          lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
-+        lithiumFastRetrieval = getBoolean("lithium.fast-retrieval", lithiumFastRetrieval) && lithiumEnable;
++        lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
      }
  }
 \ No newline at end of file
@@ -57,7 +57,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..485d6e625384d0d1f58537e0f8440d03
 -                    EntitySection<T> entitySection = this.sections.get(s);
 -                    if (entitySection != null && !entitySection.isEmpty() && entitySection.getStatus().isAccessible()) {
 -                        action.accept(entitySection);
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumFastRetrieval) {
++        if (com.github.ipecter.fusion.FusionConfig.lithiumEntityFastRetrieval) {
 +            if (m >= j + 4 || o >= l + 4) {
 +                // Vanilla is likely more optimized when shooting entities with TNT cannons over huge distances.
 +                // Choosing a cutoff of 4 chunk size, as it becomes more likely that these entity sections do not exist when

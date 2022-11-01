@@ -12,7 +12,7 @@ index 8f0064137605b870eb417a605772227c56d16ef2..55e8736e7136d4003b71badcf1b8b53d
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -204,6 +204,7 @@ public class FusionConfig {
      public static boolean lithiumOptimizeStoreGameRule = true;
-     public static boolean lithiumPrecomputeShapeArrays = true;
+     public static boolean lithiumCollectionsPrecomputeShapeArrays = true;
      public static boolean lithiumEntityFastElytraCheck = true;
 +    public static boolean lithiumEntityFastHandSwing = true;
  
@@ -20,7 +20,7 @@ index 8f0064137605b870eb417a605772227c56d16ef2..55e8736e7136d4003b71badcf1b8b53d
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -216,5 +217,6 @@ public class FusionConfig {
          lithiumOptimizeStoreGameRule = getBoolean("lithium.optimize-store-gamerule", lithiumOptimizeStoreGameRule) && lithiumEnable;
-         lithiumPrecomputeShapeArrays = getBoolean("lithium.precompute-shape-arrays", lithiumPrecomputeShapeArrays) && lithiumEnable;
+         lithiumCollectionsPrecomputeShapeArrays = getBoolean("lithium.collections.precompute-shape-arrays", lithiumCollectionsPrecomputeShapeArrays) && lithiumEnable;
          lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
 +        lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
      }

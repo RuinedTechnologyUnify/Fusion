@@ -1,3 +1,4 @@
 minecraft net/minecraft/world/level/entity/EntitySectionStorage.java
 minecraft net/minecraft/world/phys/shapes/CubeVoxelShape.java
 minecraft net/minecraft/world/phys/shapes/CubePointRange.java
+minecraft net/minecraft/world/level/chunk/PaletteResize.java

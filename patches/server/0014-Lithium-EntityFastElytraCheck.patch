@@ -11,17 +11,17 @@ index 5f73dcd5d213d287c3645462d3a24be707999122..8f0064137605b870eb417a605772227c
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -203,6 +203,7 @@ public class FusionConfig {
-     public static boolean lithiumOptimizeAIGoalSet = true;
+     public static boolean lithiumEntityOptimizeAIGoalSet = true;
      public static boolean lithiumOptimizeStoreGameRule = true;
-     public static boolean lithiumPrecomputeShapeArrays = true;
+     public static boolean lithiumCollectionsPrecomputeShapeArrays = true;
 +    public static boolean lithiumEntityFastElytraCheck = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -214,5 +215,6 @@ public class FusionConfig {
-         lithiumOptimizeAIGoalSet = getBoolean("lithium.optimize-ai-goal-set", lithiumOptimizeAIGoalSet) && lithiumEnable;
+         lithiumEntityOptimizeAIGoalSet = getBoolean("lithium.entity.optimize-ai-goal-set", lithiumEntityOptimizeAIGoalSet) && lithiumEnable;
          lithiumOptimizeStoreGameRule = getBoolean("lithium.optimize-store-gamerule", lithiumOptimizeStoreGameRule) && lithiumEnable;
-         lithiumPrecomputeShapeArrays = getBoolean("lithium.precompute-shape-arrays", lithiumPrecomputeShapeArrays) && lithiumEnable;
+         lithiumCollectionsPrecomputeShapeArrays = getBoolean("lithium.collections.precompute-shape-arrays", lithiumCollectionsPrecomputeShapeArrays) && lithiumEnable;
 +        lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
      }
  }
