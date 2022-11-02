@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 27 Oct 2022 13:56:21 +0900
+Subject: [PATCH] Lithium-Entity-FastElytraCheck
+
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 9f031354e786044f0b7e08f0eee7bbf394e947eb..68b59a4631c23ff4dbb7182bcb992d3966997ca0 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -124,9 +124,11 @@ public class FusionWorldConfig {
+
+     public boolean lithiumEnable = true;
+     public boolean lithiumCollectionsTileEntityTickers = true;
++    public boolean lithiumEntityFastElytraCheck = true;
+
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+         lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
++        lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 1ec9a48f2f44f5bd647e0661423ae90970aee262..99d41757a69edbe9e27232563f2f8ba624edb8d2 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -3528,6 +3528,8 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     private void updateFallFlying() {
++		if(this.level.fusionConfig.lithiumEntityFastElytraCheck && !this.isFallFlying()) return; // Fusion - Lithium: Entity Fast Elytra Check
++
+         boolean flag = this.getSharedFlag(7);
+ 
+         if (flag && !this.onGround && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
