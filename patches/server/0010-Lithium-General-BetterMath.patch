@@ -8,10 +8,11 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 42ec2af30b2072f9f1823ddee443753d12e054c2..e383d4478d18f3cfd27884fcb0847603be324332 100644
+index 04a8a2c10bb39a1fd88b1484cf6a9b0b7bd5aec6..7c82a81026815ff275dfe998fa195a61594c3561 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -196,9 +196,11 @@ public class FusionConfig {
+@@ -197,10 +197,12 @@ public class FusionConfig {
+ 
      public static boolean lithiumEnable = true;
      public static boolean lithiumGeneralFastUtil = true;
 +    public static boolean lithiumGeneralBetterMath = true;
@@ -25,7 +26,7 @@ index 42ec2af30b2072f9f1823ddee443753d12e054c2..e383d4478d18f3cfd27884fcb0847603
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 9b22034aa655ceb0da151d9d8ca3147f6487889a..6433a93ab434f1b78c7dd34c186fce7c6a432d91 100644
+index 9b22034aa655ceb0da151d9d8ca3147f6487889a..1272e33c596576ca0ef4e0c618d6b589c4c2d1c2 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -32,6 +32,7 @@ public class Mth {
