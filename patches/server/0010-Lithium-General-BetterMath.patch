@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:16:24 +0900
-Subject: [PATCH] Lithium-CompactSineLUT
+Subject: [PATCH] Lithium-General-BetterMath
 
 Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
@@ -13,14 +13,14 @@ index 42ec2af30b2072f9f1823ddee443753d12e054c2..e383d4478d18f3cfd27884fcb0847603
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -196,9 +196,11 @@ public class FusionConfig {
      public static boolean lithiumEnable = true;
-     public static boolean lithiumFastUtil = true;
-+    public static boolean lithiumCompactSineLUT = true;
+     public static boolean lithiumGeneralFastUtil = true;
++    public static boolean lithiumGeneralBetterMath = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil) && lithiumEnable;
-+        lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
+         lithiumGeneralFastUtil = getBoolean("lithium.general.fast-util", lithiumGeneralFastUtil) && lithiumEnable;
++        lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
      }
  }
 \ No newline at end of file
@@ -41,12 +41,12 @@ index 9b22034aa655ceb0da151d9d8ca3147f6487889a..6433a93ab434f1b78c7dd34c186fce7c
  
      public static float sin(float value) {
 -        return SIN[(int)(value * 10430.378F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumGeneralBetterMath ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
      }
  
      public static float cos(float value) {
 -        return SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumCompactSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
++        return com.github.ipecter.fusion.FusionConfig.lithiumGeneralBetterMath ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: Compact Sine LUT
      }
  
      public static float sqrt(float value) {

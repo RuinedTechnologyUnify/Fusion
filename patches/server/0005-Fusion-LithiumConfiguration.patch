@@ -33,7 +33,7 @@ index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b
 +    public boolean lithiumEnable = true;
 +	
 +    private void lithiumConfig() {
-+		lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++        lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +    }
  }
 \ No newline at end of file

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:12:21 +0900
-Subject: [PATCH] Lithium-CollectionsTileEntityTickers
+Subject: [PATCH] Lithium-Collections-TileEntityTickers
 
 Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
@@ -18,7 +18,7 @@ index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b
 +    public boolean lithiumCollectionsTileEntityTickers = true;
 
      private void lithiumConfig() {
- 		lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +         lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
      }
  }

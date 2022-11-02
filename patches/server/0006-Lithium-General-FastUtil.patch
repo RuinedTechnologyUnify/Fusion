@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Mon, 17 Oct 2022 21:06:24 +0900
-Subject: [PATCH] Lithium-FastUtil
+Subject: [PATCH] Lithium-General-FastUtil
 
 Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
@@ -15,12 +15,12 @@ index d73846735a00be86665e554c5b752c8865233eae..5e8a5d5da3713a88e6577cf70c73fa4f
      }
  
      public static boolean lithiumEnable = true;
-+    public static boolean lithiumFastUtil = true;
++    public static boolean lithiumGeneralFastUtil = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-+        lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil) && lithiumEnable;
++        lithiumGeneralFastUtil = getBoolean("lithium.general.fast-util", lithiumGeneralFastUtil) && lithiumEnable;
      }
  }
 \ No newline at end of file
@@ -33,7 +33,7 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..3908708107aea6ecbf07797ea25785b1
  
      public Direction getOpposite() {
 -        return from3DDataValue(this.oppositeIndex);
-+        return com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[this.oppositeIndex] : from3DDataValue(this.oppositeIndex); // Fusion - Lithium: Fast Util
++        return com.github.ipecter.fusion.FusionConfig.lithiumGeneralFastUtil ? VALUES[this.oppositeIndex] : from3DDataValue(this.oppositeIndex); // Fusion - Lithium: Fast Util
      }
  
      public Direction getClockWise(Direction.Axis axis) {
@@ -42,7 +42,7 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..3908708107aea6ecbf07797ea25785b1
  
      public static Direction getRandom(RandomSource random) {
 -        return Util.getRandom(VALUES, random);
-+        return com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[random.nextInt(VALUES.length)] : Util.getRandom(VALUES, random); // Fusion - Lithium: Fast Util
++        return com.github.ipecter.fusion.FusionConfig.lithiumGeneralFastUtil ? VALUES[random.nextInt(VALUES.length)] : Util.getRandom(VALUES, random); // Fusion - Lithium: Fast Util
      }
  
      public static Direction getNearest(double x, double y, double z) {
@@ -56,7 +56,7 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..0985dc18803f61e14c2865148a6caf3a
  
 +    // Fusion start - Lithium: Fast Util
 +    static {
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumFastUtil) {
++        if (com.github.ipecter.fusion.FusionConfig.lithiumGeneralFastUtil) {
 +            assert Direction.Axis.X.ordinal() == 0;
 +            assert Direction.Axis.Y.ordinal() == 1;
 +            assert Direction.Axis.Z.ordinal() == 2;
@@ -74,7 +74,7 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..0985dc18803f61e14c2865148a6caf3a
      public double min(Direction.Axis axis) {
 -        return axis.choose(this.minX, this.minY, this.minZ);
 +        // Fusion start - Lithium: Fast Util
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumFastUtil){
++        if (com.github.ipecter.fusion.FusionConfig.lithiumGeneralFastUtil){
 +            switch (axis.ordinal()) {
 +                case 0: //X
 +                   return this.minX;
@@ -94,7 +94,7 @@ index cfb2e46b34b2982d6724f18214557fc80cf4adfa..0985dc18803f61e14c2865148a6caf3a
      public double max(Direction.Axis axis) {
 -        return axis.choose(this.maxX, this.maxY, this.maxZ);
 +        // Fusion start - Lithium: Fast Util
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumFastUtil){
++        if (com.github.ipecter.fusion.FusionConfig.lithiumGeneralFastUtil){
 +            switch (axis.ordinal()) {
 +                case 0: //X
 +                    return this.maxX;

@@ -11,14 +11,14 @@ index ce76ce4b77236d2c04f160da74dd40093bfc9dad..e03aed57035c768eea4dfa537fae6aaa
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -199,5 +199,6 @@ public class FusionConfig {
-     public static boolean lithiumCompactSineLUT = true;
+     public static boolean lithiumGeneralBetterMath = true;
      public static boolean lithiumEntityFastRetrieval = true;
 +    public static boolean lithiumEntityOptimizeAIGoalSet = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -207,4 +208,5 @@ public class FusionConfig {
-         lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
+         lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
 +        lithiumEntityOptimizeAIGoalSet = getBoolean("lithium.entity.optimize-ai-goal-set", lithiumEntityOptimizeAIGoalSet) && lithiumEnable;
      }

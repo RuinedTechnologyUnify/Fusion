@@ -12,15 +12,15 @@ index e383d4478d18f3cfd27884fcb0847603be324332..ce76ce4b77236d2c04f160da74dd4009
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -198,5 +198,6 @@ public class FusionConfig {
-     public static boolean lithiumFastUtil = true;
-     public static boolean lithiumCompactSineLUT = true;
+     public static boolean lithiumGeneralFastUtil = true;
+     public static boolean lithiumGeneralBetterMath = true;
 +    public static boolean lithiumEntityFastRetrieval = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -205,4 +206,5 @@ public class FusionConfig {
-         lithiumFastUtil = getBoolean("lithium.fast-util", lithiumFastUtil) && lithiumEnable;
-         lithiumCompactSineLUT = getBoolean("lithium.compact-sine-lut", lithiumCompactSineLUT) && lithiumEnable;
+         lithiumGeneralFastUtil = getBoolean("lithium.general.fast-util", lithiumGeneralFastUtil) && lithiumEnable;
+         lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
 +        lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
      }
  }
