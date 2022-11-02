@@ -10,18 +10,14 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index 360534414a8d62ee72fa04be01199cd39dd7189b..1a23a50d90180eebc5de5291807b2d5bd93d3fb5 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -208,6 +208,7 @@ public class FusionConfig {
-     public static boolean lithiumEntityFastPowderSnowCheck = true;
+@@ -203,4 +203,5 @@ public class FusionConfig {
      public static boolean lithiumCollectionsAttributes = true;
-     public static boolean lithiumCollectionsEntityByType = true;
 +    public static boolean lithiumCollectionsEntityFiltering = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -224,5 +225,6 @@ public class FusionConfig {
-         lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
+@@ -219,3 +220,4 @@ public class FusionConfig {
          lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
-         lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
 +        lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
      }
  }

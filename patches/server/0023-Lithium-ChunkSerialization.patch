@@ -10,17 +10,15 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index aceb5f620e0d2bfae9ad7cc55a19f3d6aaeb2867..56f68c2cb7ce48e71e64f6b7579bd03ac890c958 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -209,6 +209,7 @@ public class FusionConfig {
+@@ -204,5 +204,6 @@ public class FusionConfig {
      public static boolean lithiumCollectionsAttributes = true;
-     public static boolean lithiumCollectionsEntityByType = true;
      public static boolean lithiumCollectionsEntityFiltering = true;
 +    public static boolean lithiumChunkSerialization = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -226,5 +227,6 @@ public class FusionConfig {
+@@ -221,4 +222,5 @@ public class FusionConfig {
          lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
-         lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
          lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
 +        lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
      }

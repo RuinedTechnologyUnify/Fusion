@@ -26,6 +26,22 @@ index 5f73dcd5d213d287c3645462d3a24be707999122..8f0064137605b870eb417a605772227c
      }
  }
 \ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b1f8ca32f 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -123,8 +123,10 @@ public class FusionWorldConfig {
+     }
+
+     public boolean lithiumEnable = true;
+     public boolean lithiumCollectionsTileEntityTickers = true;
+
+     private void lithiumConfig() {
+ 		lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++         lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 index 1ec9a48f2f44f5bd647e0661423ae90970aee262..99d41757a69edbe9e27232563f2f8ba624edb8d2 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
