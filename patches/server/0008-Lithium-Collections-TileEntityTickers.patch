@@ -7,24 +7,8 @@ Mirai - etil2jz - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
-diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b1f8ca32f 100644
---- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -123,8 +123,10 @@ public class FusionWorldConfig {
-     }
-
-     public boolean lithiumEnable = true;
-+    public boolean lithiumCollectionsTileEntityTickers = true;
-
-     private void lithiumConfig() {
-          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-+         lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
-     }
- }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 69c126bc8e29d0fc2c13dc421791daf2177c3173..81e3fa8624fb0cffb7ed2c7cf657b4e304cf94a4 100644
+index be134bd540a50024d2e1bdc7ea633b8ac29a212b..75ff663fd64ecf34ba684119ff19185d2fe264b4 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -117,9 +117,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -39,15 +23,31 @@ index 69c126bc8e29d0fc2c13dc421791daf2177c3173..81e3fa8624fb0cffb7ed2c7cf657b4e3
      private boolean tickingBlockEntities;
      public final Thread thread;
      private final boolean isDebug;
-@@ -332,7 +332,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
-         this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
-         this.fusionConfig = new com.github.ipecter.fusion.FusionWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Fusion
+@@ -337,6 +337,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+ 
 +        // Fusion start - Lithium: Collections Tile Entity Tickers
 +        this.blockEntityTickers = this.fusionConfig.lithiumCollectionsTileEntityTickers ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList();
 +        this.pendingBlockEntityTickers = this.fusionConfig.lithiumCollectionsTileEntityTickers ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList();
 +        // Fusion end
-         this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
-         this.generator = gen;
-         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
++
+         // CraftBukkit Ticks things
+         for (SpawnCategory spawnCategory : SpawnCategory.values()) {
+             if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 57a4a4f89a7d45ada4841ab479bda69a0fa49f49..9f031354e786044f0b7e08f0eee7bbf394e947eb 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -123,8 +123,10 @@ public class FusionWorldConfig {
+     }
+
+     public boolean lithiumEnable = true;
++    public boolean lithiumCollectionsTileEntityTickers = true;
+
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++        lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
