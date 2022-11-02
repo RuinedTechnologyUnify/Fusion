@@ -42,7 +42,7 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..3908708107aea6ecbf07797ea25785b1
  
      public static Direction getRandom(RandomSource random) {
 -        return Util.getRandom(VALUES, random);
-+        return com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[random.nextInt(VALUES.length)] :Util.getRandom(VALUES, random); // Fusion - Lithium: Fast Util
++        return com.github.ipecter.fusion.FusionConfig.lithiumFastUtil ? VALUES[random.nextInt(VALUES.length)] : Util.getRandom(VALUES, random); // Fusion - Lithium: Fast Util
      }
  
      public static Direction getNearest(double x, double y, double z) {
