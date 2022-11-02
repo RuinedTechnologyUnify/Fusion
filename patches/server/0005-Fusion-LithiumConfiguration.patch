@@ -21,3 +21,19 @@ index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d73846735a00be86665e554c5b752c88
 +    }
  }
 \ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b1f8ca32f 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -121,4 +121,10 @@ public class FusionWorldConfig {
+         final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
++
++    public boolean lithiumEnable = true;
++	
++    private void lithiumConfig() {
++		lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++    }
+ }
+\ No newline at end of file
