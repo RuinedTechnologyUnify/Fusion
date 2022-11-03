@@ -7,7 +7,7 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 5742ad4ea8b1e9d8a74309ee25cb29c137236540..5f73dcd5d213d287c3645462d3a24be707999122 100644
+index 10d6b5c9812ff5c5371d95da09daec275501f9c2..d822d9df5f4e100f3956ad494bdab30d8b4e378a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -201,6 +201,7 @@ public class FusionConfig {
@@ -18,7 +18,7 @@ index 5742ad4ea8b1e9d8a74309ee25cb29c137236540..5f73dcd5d213d287c3645462d3a24be7
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -211,5 +212,6 @@ public class FusionConfig {
+@@ -210,5 +211,6 @@ public class FusionConfig {
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
          lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
          lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
@@ -27,7 +27,7 @@ index 5742ad4ea8b1e9d8a74309ee25cb29c137236540..5f73dcd5d213d287c3645462d3a24be7
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/core/Direction.java b/src/main/java/net/minecraft/core/Direction.java
-index 3908708107aea6ecbf07797ea25785b1ed44854b..3af7034a9030b54acf0ae8bd0db2f9875db974ae 100644
+index b1f04813d5c6a114c3051a6feaad4fb0e32d6916..fb926dec7d6273bc9e2ba84d74c605725cd51624 100644
 --- a/src/main/java/net/minecraft/core/Direction.java
 +++ b/src/main/java/net/minecraft/core/Direction.java
 @@ -41,7 +41,7 @@ public enum Direction implements StringRepresentable {
@@ -40,7 +40,7 @@ index 3908708107aea6ecbf07797ea25785b1ed44854b..3af7034a9030b54acf0ae8bd0db2f987
          return direction.data3d;
      })).toArray((i) -> {
 diff --git a/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java b/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java
-index a544db042c8d2ecec8d323770552c4f10ca758a6..19a2e0f93953a4ee7cac85d2f960b6e778a9b48a 100644
+index a544db042c8d2ecec8d323770552c4f10ca758a6..1778960780d22fa16b8036eaf794bb24c46cb498 100644
 --- a/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java
 +++ b/src/main/java/net/minecraft/world/phys/shapes/CubePointRange.java
 @@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
@@ -65,7 +65,7 @@ index a544db042c8d2ecec8d323770552c4f10ca758a6..19a2e0f93953a4ee7cac85d2f960b6e7
  
      public int size() {
 diff --git a/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java b/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
-index 68e89dbd79171627046e89699057964e44c40e7d..0fb6b2916c174008c5bf535ea0cc2fa89edd09cb 100644
+index 68e89dbd79171627046e89699057964e44c40e7d..48ac83762694bac06e04feaaaac1a5fda34eec0e 100644
 --- a/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
 +++ b/src/main/java/net/minecraft/world/phys/shapes/CubeVoxelShape.java
 @@ -5,13 +5,21 @@ import net.minecraft.core.Direction;

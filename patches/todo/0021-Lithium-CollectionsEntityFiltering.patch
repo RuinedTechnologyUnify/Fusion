@@ -26,7 +26,7 @@ diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/m
 index 2707311b46d4645ffe718cfc2e866b4f480544f0..df35b2889a36112ab5a7b267a9905d8c75fe00fc 100644
 --- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
 +++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
-@@ -55,15 +55,41 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+@@ -56,15 +56,41 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
      }
  
      public <S> Collection<S> find(Class<S> type) {

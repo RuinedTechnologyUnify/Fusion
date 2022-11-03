@@ -11,11 +11,11 @@ index 9f031354e786044f0b7e08f0eee7bbf394e947eb..68b59a4631c23ff4dbb7182bcb992d39
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -124,9 +124,11 @@ public class FusionWorldConfig {
-
+ 
      public boolean lithiumEnable = true;
      public boolean lithiumCollectionsTileEntityTickers = true;
 +    public boolean lithiumEntityFastElytraCheck = true;
-
+ 
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
@@ -24,7 +24,7 @@ index 9f031354e786044f0b7e08f0eee7bbf394e947eb..68b59a4631c23ff4dbb7182bcb992d39
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 1ec9a48f2f44f5bd647e0661423ae90970aee262..99d41757a69edbe9e27232563f2f8ba624edb8d2 100644
+index 1ec9a48f2f44f5bd647e0661423ae90970aee262..0c9aca5186b1fdb7e7d3dcb8ee41223551383572 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3528,6 +3528,8 @@ public abstract class LivingEntity extends Entity {

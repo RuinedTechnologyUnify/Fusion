@@ -5,7 +5,7 @@ Subject: [PATCH] Lithium-Collections-StoreGameRules
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index e03aed57035c768eea4dfa537fae6aaacdadc716..5742ad4ea8b1e9d8a74309ee25cb29c137236540 100644
+index cfecf046b334bd59eaa994e38f644c93537686f3..10d6b5c9812ff5c5371d95da09daec275501f9c2 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -200,6 +200,7 @@ public class FusionConfig {
@@ -16,7 +16,7 @@ index e03aed57035c768eea4dfa537fae6aaacdadc716..5742ad4ea8b1e9d8a74309ee25cb29c1
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -209,5 +210,6 @@ public class FusionConfig {
+@@ -208,5 +209,6 @@ public class FusionConfig {
          lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
          lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
@@ -25,7 +25,7 @@ index e03aed57035c768eea4dfa537fae6aaacdadc716..5742ad4ea8b1e9d8a74309ee25cb29c1
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 17e869074b8cf29a8c3280499a27e95179896750..a2caae37bde3e64add81f68917e48220a6e5f343 100644
+index 17e869074b8cf29a8c3280499a27e95179896750..d1d4dd6c661b0b487dc7101e04d70fe63546cd7e 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -111,14 +111,17 @@ public class GameRules {
