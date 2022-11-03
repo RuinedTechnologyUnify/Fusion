@@ -1,24 +1,26 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Tue, 1 Nov 2022 19:50:50 +0900
-Subject: [PATCH] Lithium-ChunkSerialization
+Subject: [PATCH] Lithium-Chunk-Serialization
 
 JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index aceb5f620e0d2bfae9ad7cc55a19f3d6aaeb2867..56f68c2cb7ce48e71e64f6b7579bd03ac890c958 100644
+index b1f52f6bdb0a93c0797d1296a029e7f12b2f8e49..99d5673cb07a1368ffd2ac22aba9a46968b21682 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -204,5 +204,6 @@ public class FusionConfig {
-     public static boolean lithiumCollectionsAttributes = true;
+@@ -205,6 +205,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsEntityAttributes = true;
+     public static boolean lithiumCollectionsEntityByType = true;
      public static boolean lithiumCollectionsEntityFiltering = true;
 +    public static boolean lithiumChunkSerialization = true;
- 
+
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -221,4 +222,5 @@ public class FusionConfig {
-         lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
+@@ -218,5 +219,6 @@ public class FusionConfig {
+         lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
+         lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
          lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
 +        lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
      }
