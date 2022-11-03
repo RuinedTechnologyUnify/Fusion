@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Tue, 1 Nov 2022 09:46:28 +0900
-Subject: [PATCH] Lithium-Collections-Attributes
+Subject: [PATCH] Lithium-Collections-EntityAttributes
 
 Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
@@ -56,8 +56,8 @@ index 00fc98797aea23e1f586b8e7f85fc27e2019352f..538169642afb6209bd6bff9f3df55b60
      private static final Logger LOGGER = LogUtils.getLogger();
 -    private final Map<Attribute, AttributeInstance> attributes = Maps.newHashMap();
 -    private final Set<AttributeInstance> dirtyAttributes = Sets.newHashSet();
-+    private final Map<Attribute, AttributeInstance> attributes; // Fusion - Lithium: Collections Attributes
-+    private final Set<AttributeInstance> dirtyAttributes; // Fusion - Lithium: Collections Attributes
++    private final Map<Attribute, AttributeInstance> attributes; // Fusion - Lithium: Collections Entity Attributes
++    private final Set<AttributeInstance> dirtyAttributes; // Fusion - Lithium: Collections Entity Attributes
      private final AttributeSupplier supplier;
      private final net.minecraft.world.entity.LivingEntity entity; // Purpur
      private final java.util.function.Function<Attribute, AttributeInstance> createInstance; // Pufferfish
@@ -65,7 +65,7 @@ index 00fc98797aea23e1f586b8e7f85fc27e2019352f..538169642afb6209bd6bff9f3df55b60
      public AttributeMap(AttributeSupplier defaultAttributes, net.minecraft.world.entity.LivingEntity entity) {
          this.entity = entity;
          // Purpur end
-+        // Fusion start - Lithium: Collections Attributes
++        // Fusion start - Lithium: Collections Entity Attributes
 +        if (this.entity != null){
 +            attributes = this.entity.level.fusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
 +            dirtyAttributes = this.entity.level.fusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();

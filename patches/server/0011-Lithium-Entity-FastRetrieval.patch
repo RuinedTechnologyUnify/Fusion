@@ -35,7 +35,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..07099952e6c8a518417392fa3c1c987b
  
      public void forEachAccessibleNonEmptySection(AABB box, Consumer<EntitySection<T>> action) {
 -        int i = 2;
-+        // Fusion start - Lithium: Fast Retrieval
++        // Fusion start - Lithium: Entity Fast Retrieval
          int j = SectionPos.posToSectionCoord(box.minX - 2.0D);
          int k = SectionPos.posToSectionCoord(box.minY - 4.0D);
          int l = SectionPos.posToSectionCoord(box.minZ - 2.0D);
@@ -118,7 +118,7 @@ index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..07099952e6c8a518417392fa3c1c987b
 +        // Fusion end
 +    }
  
-+    // Fusion start - Lithium: Fast Retrieval
++    // Fusion start - Lithium: Entity Fast Retrieval
 +    private void forEachInColumn(int x, int k, int n, int z, Consumer<EntitySection<T>> action) {
 +        //y from negative to positive, but y is treated as unsigned
 +        for (int y = Math.max(k, 0); y <= n; y++) {
