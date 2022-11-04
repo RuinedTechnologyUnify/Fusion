@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Fri, 4 Nov 2022 12:40:32 +0900
-Subject: [PATCH] Lithium-Collections-CachedBlockPosIteration
+Subject: [PATCH] Lithium-Collections-CachedBlockPositions
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
