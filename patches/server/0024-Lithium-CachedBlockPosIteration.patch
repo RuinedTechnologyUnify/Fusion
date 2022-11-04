@@ -3,6 +3,7 @@ From: IPECTER <ipectert@gmail.com>
 Date: Fri, 4 Nov 2022 12:30:04 +0900
 Subject: [PATCH] Lithium-CachedBlockPosIteration
 
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/me/jellysquid/mods/lithium/common/cached_blockpos_iteration/IterateOutwardsCache.java b/src/main/java/me/jellysquid/mods/lithium/common/cached_blockpos_iteration/IterateOutwardsCache.java
 new file mode 100644
