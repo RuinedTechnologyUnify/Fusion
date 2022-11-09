@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 9 Nov 2022 19:58:50 +0900
 Subject: [PATCH] Lithium-Entity-AISecondaryPoiSensor
 
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index a9f46db1bc7031aef515e131f22b8e252d9d32c4..e25c7c4b991a21b26036234eb0422047cb24845f 100644
