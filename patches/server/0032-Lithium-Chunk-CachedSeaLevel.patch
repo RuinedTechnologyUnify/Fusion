@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 9 Nov 2022 19:44:48 +0900
+Subject: [PATCH] Lithium-Chunk-CachedSeaLevel
+
+Mirai - etil2jz - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 80c4f22a0b4eda59f08b4d7193c8224254c9cc0d..0f7c3df3c6ec8c20050d95c8e14bfc3a7741fbf6 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -207,6 +207,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsEntityFiltering = true;
+     public static boolean lithiumChunkSerialization = true;
+     public static boolean lithiumCollectionsCachedBlockPositions = true;
++    public static boolean lithiumChunkCachedSeaLevel = true;
+
+     private static void lithiumConfig() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+@@ -222,5 +223,6 @@ public class FusionConfig {
+         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
+         lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
+         lithiumCollectionsCachedBlockPositions = getBoolean("lithium.collections.cached-block-positions", lithiumCollectionsCachedBlockPositions) && lithiumEnable;
++        lithiumChunkCachedSeaLevel = getBoolean("lithium.chunk.cached-sea-level", lithiumChunkCachedSeaLevel) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+index cf87490a446285132daaf9d90154ac6d477a62fe..43b2b0a349b60c8bce482ee7c86fd66912532b93 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -67,6 +67,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+     public final Registry<NormalNoise.NoiseParameters> noises;
+     public final Holder<NoiseGeneratorSettings> settings;
+     private final Aquifer.FluidPicker globalFluidPicker;
++    private int cachedSeaLevel; // Fusion - Lithium: Chunk Cached SeaLevel
+ 
+     public NoiseBasedChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<NormalNoise.NoiseParameters> noiseRegistry, BiomeSource populationSource, Holder<NoiseGeneratorSettings> settings) {
+         super(structureSetRegistry, Optional.empty(), populationSource);
+@@ -83,6 +84,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+         this.globalFluidPicker = (j, k, l) -> {
+             return k < Math.min(-54, i) ? aquifer_b : aquifer_b1;
+         };
++        this.cachedSeaLevel = ((NoiseGeneratorSettings) this.settings.value()).seaLevel(); // Fusion - Lithium: Chunk Cached SeaLevel
+     }
+ 
+     @Override
+@@ -398,10 +400,19 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+         return ((NoiseGeneratorSettings) this.settings.value()).noiseSettings().height();
+     }
+ 
++    // Fusion start - Lithium: Chunk Cached SeaLevel
++    /**
++     * Use cached sea level instead of retrieving from the registry every time.
++     * This method is called for every block in the chunk so this will save a lot of registry lookups.
++     *
++     * @author SuperCoder79
++     * @reason avoid registry lookup
++     */
+     @Override
+     public int getSeaLevel() {
+-        return ((NoiseGeneratorSettings) this.settings.value()).seaLevel();
++        return com.github.ipecter.fusion.FusionConfig.lithiumChunkCachedSeaLevel ? this.cachedSeaLevel : ((NoiseGeneratorSettings) this.settings.value()).seaLevel();  // Fusion - Lithium: Chunk Cached SeaLevel
+     }
++    // Fusion end
+ 
+     @Override
+     public int getMinY() {
