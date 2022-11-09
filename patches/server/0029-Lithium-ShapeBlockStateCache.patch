@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 9 Nov 2022 18:50:48 +0900
+Subject: [PATCH] Lithium-ShapeBlockStateCache
+
+Mirai - etil2jz - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Lithium - CaffeineMC  - GPL 3.0
+
+diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
+index 0a229ef3f0853899ff902b43c8e389182864c17a..b0cc333f51785bf7c9776cc9d7246830e682ca5d 100644
+--- a/src/main/java/net/minecraft/world/level/block/Block.java
++++ b/src/main/java/net/minecraft/world/level/block/Block.java
+@@ -77,11 +77,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final Holder.Reference<Block> builtInRegistryHolder;
+     public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
+-    private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>() {
+-        public Boolean load(VoxelShape voxelshape) {
+-            return !Shapes.joinIsNotEmpty(Shapes.block(), voxelshape, BooleanOp.NOT_SAME);
+-        }
+-    });
++    // Fusion start - Lithium: Shape BlockState Cache
++    private static final me.jellysquid.mods.lithium.common.util.collections.Object2BooleanCacheTable<VoxelShape> FULL_CUBE_CACHE = new me.jellysquid.mods.lithium.common.util.collections.Object2BooleanCacheTable<>(
++            512,
++            shape -> !Shapes.joinIsNotEmpty(Shapes.block(), shape, BooleanOp.NOT_SAME)
++    );
++    // Fusion end
+     public static final int UPDATE_NEIGHBORS = 1;
+     public static final int UPDATE_CLIENTS = 2;
+     public static final int UPDATE_INVISIBLE = 4;
+@@ -292,7 +293,7 @@ public class Block extends BlockBehaviour implements ItemLike {
+     }
+ 
+     public static boolean isShapeFullBlock(VoxelShape shape) {
+-        return (Boolean) Block.SHAPE_FULL_BLOCK_CACHE.getUnchecked(shape);
++        return FULL_CUBE_CACHE.get(shape); // Fusion - Lithium: Shape BlockState Cache
+     }
+ 
+     public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
