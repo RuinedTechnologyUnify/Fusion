@@ -15,7 +15,7 @@ index 80c4f22a0b4eda59f08b4d7193c8224254c9cc0d..0f7c3df3c6ec8c20050d95c8e14bfc3a
      public static boolean lithiumChunkSerialization = true;
      public static boolean lithiumCollectionsCachedBlockPositions = true;
 +    public static boolean lithiumChunkCachedSeaLevel = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -222,5 +223,6 @@ public class FusionConfig {

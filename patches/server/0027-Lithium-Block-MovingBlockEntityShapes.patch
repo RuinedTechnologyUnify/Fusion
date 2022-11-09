@@ -16,7 +16,7 @@ index 2e5913c767982806b613cdff266abac60c86af80..8bbf512266cc21e56d6fce6612ff652a
      public boolean lithiumCollectionsEntityAttributes = true;
      public boolean lithiumEntityRaiderAI = true;
 +    public boolean lithiumBlockMovingBlockEntityShapes = true;
-
+ 
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 @@ -138,5 +139,6 @@ public class FusionWorldConfig {
