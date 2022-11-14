@@ -43,9 +43,33 @@ index 04ca6d27a13706fbddc708df0fcca42b4098bcba..123dbe18be5748ac9867b59abd015c8f
  
      public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index a1bd848bbf924267e74e61dabdb840628712b1ad..888547daad00c5801ae7372a4d014584ee50043f 100644
+index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221e374a257 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -86,10 +86,10 @@ public class WorldConfiguration extends ConfigurationPart {
+             public int updateRadius = 2;
+             public boolean lavaObscures = false;
+             public boolean usePermission = false;
+-            public List<String> hiddenBlocks = List.of("copper_ore", "deepslate_copper_ore", "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore",
+-                "coal_ore", "deepslate_coal_ore", "lapis_ore", "deepslate_lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "deepslate_diamond_ore",
+-                "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"); // TODO update type to List<Block>
+-            public List<String> replacementBlocks = List.of("stone", "oak_planks", "deepslate"); // TODO update type to List<Block>
++            public List<String> hiddenBlocks = List.of("air", "copper_ore", "deepslate_copper_ore", "raw_copper_block", "diamond_ore", "deepslate_diamond_ore",
++                    "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "raw_iron_block", "lapis_ore", "deepslate_lapis_ore", "redstone_ore", "deepslate_redstone_ore"); // TODO update type to List<Block>
++            public List<String> replacementBlocks = List.of("chest", "amethyst_block", "andesite", "budding_amethyst", "calcite", "coal_ore", "deepslate_coal_ore", "deepslate",
++                    "diorite", "dirt", "emerald_ore", "deepslate_emerald_ore", "granite", "gravel", "oak_planks", "smooth_basalt", "stone", "tuff"); // TODO update type to List<Block>
+         }
+     }
+ 
+@@ -129,7 +129,7 @@ public class WorldConfiguration extends ConfigurationPart {
+             @MergeMap
+             public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
+             @MergeMap
+-            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
++            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), 56))); // Fusion - Optimize Default Configuration
+ 
+             @ConfigSerializable
+             public record DespawnRange(@Required int soft, @Required int hard) {
 @@ -309,7 +309,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Environment extends ConfigurationPart {
          public boolean disableThunder = false;
@@ -88,7 +112,7 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..888547daad00c5801ae7372a4d014584
          public Duration delayChunkUnloadsBy = Duration.of("10s");
          public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(Registry.ENTITY_TYPE.size()), map -> {
              map.defaultReturnValue(-1);
-@@ -424,9 +424,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -424,11 +424,22 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
  
      public class TickRates extends ConfigurationPart {
@@ -96,11 +120,26 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..888547daad00c5801ae7372a4d014584
 +        public int grassSpread = 4; // Fusion - Optimize Default Configuration
          public int containerUpdate = 1;
 -        public int mobSpawner = 1;
+-        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "secondarypoisensor", 40));
+-        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "validatenearbypoi", -1));
 +        public int mobSpawner = 2; // Fusion - Optimize Default Configuration
-         public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "secondarypoisensor", 40));
-         public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "validatenearbypoi", -1));
++        // Fusion start - Optimize Default Configuration
++        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "secondarypoisensor", 80);
++            table.put(EntityType.VILLAGER, "nearestbedsensor", 80);
++            table.put(EntityType.VILLAGER, "villagerbabiessensor", 40);
++            table.put(EntityType.VILLAGER, "playersensor", 40);
++            table.put(EntityType.VILLAGER, "nearestlivingentitysensor", 40);
++        });
++        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "validatenearbypoi", 60);
++            table.put(EntityType.VILLAGER, "acquirepoi", 120);
++        });
++        // Fusion end
      }
-@@ -450,9 +450,9 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+     @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
+@@ -450,9 +461,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
@@ -112,6 +151,27 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..888547daad00c5801ae7372a4d014584
          public boolean disableEndCredits = false;
          public float maxLeashDistance = 10f;
          public boolean disableSprintInterruptionOnAttack = false;
+diff --git a/src/main/java/io/papermc/paper/configuration/transformation/world/LegacyPaperWorldConfig.java b/src/main/java/io/papermc/paper/configuration/transformation/world/LegacyPaperWorldConfig.java
+index 6af307481a6752529d87869760945cb140d05bed..56722c335eaefeac3c3a66ffeec9e3c2753a701b 100644
+--- a/src/main/java/io/papermc/paper/configuration/transformation/world/LegacyPaperWorldConfig.java
++++ b/src/main/java/io/papermc/paper/configuration/transformation/world/LegacyPaperWorldConfig.java
+@@ -88,14 +88,14 @@ public final class LegacyPaperWorldConfig {
+                     .build(),
+                 ConfigurationTransformation.builder().addAction(path("despawn-ranges"), (path, value) -> {
+                     final int softDistance = value.node("soft").getInt(32);
+-                    final int hardDistance = value.node("hard").getInt(128);
++                    final int hardDistance = value.node("hard").getInt(56); // Fusion - Optimize Default Configuration
+                     value.node("soft").raw(null);
+                     value.node("hard").raw(null);
+                     for (final MobCategory category : MobCategory.values()) {
+                         if (softDistance != 32) {
+                             value.node(category.getName(), "soft").raw(softDistance);
+                         }
+-                        if (hardDistance != 128) {
++                        if (hardDistance != 56) { // Fusion - Optimize Default Configuration
+                             value.node(category.getName(), "hard").raw(hardDistance);
+                         }
+                     }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 index bd6085798bfbba776fb66adecc09ba89a7fe6ce9..e88b8bc4a737771060ca504aeea0920c39d8cd24 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
@@ -267,3 +327,43 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
          this.hopperAmount = this.getInt( "hopper-amount", 1 );
          this.hopperCanLoadChunks = this.getBoolean( "hopper-can-load-chunks", false );
          this.log( "Hopper Transfer: " + this.hopperTransfer + " Hopper Check: " + this.hopperCheck + " Hopper Amount: " + this.hopperAmount + " Hopper Can Load Chunks: " + this.hopperCanLoadChunks );
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index eef7c125b2689f29cae5464659eacdf33f5695b2..f5515789f596bac7dd7361118387464cf8776653 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -24,22 +24,22 @@ settings:
+     minimum-api: none
+     use-map-color-cache: true
+ spawn-limits:
+-    monsters: 70
+-    animals: 10
+-    water-animals: 5
+-    water-ambient: 20
+-    water-underground-creature: 5
+-    axolotls: 5
+-    ambient: 15
++    monsters: 20
++    animals: 5
++    water-animals: 2
++    water-ambient: 2
++    water-underground-creature: 3
++    axolotls: 3
++    ambient: 1
+ chunk-gc:
+     period-in-ticks: 600
+ ticks-per:
++    monster-spawns: 10
+     animal-spawns: 400
+-    monster-spawns: 1
+-    water-spawns: 1
+-    water-ambient-spawns: 1
+-    water-underground-creature-spawns: 1
+-    axolotl-spawns: 1
+-    ambient-spawns: 1
++    water-spawns: 400
++    water-ambient-spawns: 400
++    water-underground-creature-spawns: 400
++    axolotl-spawns: 400
++    ambient-spawns: 400
+     autosave: 6000
+ aliases: now-in-commands.yml

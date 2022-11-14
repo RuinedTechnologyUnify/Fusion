@@ -5,10 +5,10 @@ Subject: [PATCH] Lithium-Collections-StoreGameRules
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index cfecf046b334bd59eaa994e38f644c93537686f3..10d6b5c9812ff5c5371d95da09daec275501f9c2 100644
+index e0d69ef5dcb52cd04f319bcf33375cbc7f310b7b..44daabaf536efc12def89989040f9f6532fd7e49 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -200,6 +200,7 @@ public class FusionConfig {
+@@ -209,6 +209,7 @@ public class FusionConfig {
      public static boolean lithiumGeneralBetterMath = true;
      public static boolean lithiumEntityFastRetrieval = true;
      public static boolean lithiumCollectionsEntityAIGoals = true;
@@ -16,14 +16,14 @@ index cfecf046b334bd59eaa994e38f644c93537686f3..10d6b5c9812ff5c5371d95da09daec27
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -208,5 +209,6 @@ public class FusionConfig {
+@@ -217,6 +218,7 @@ public class FusionConfig {
          lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
          lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
 +        lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
 index 17e869074b8cf29a8c3280499a27e95179896750..d1d4dd6c661b0b487dc7101e04d70fe63546cd7e 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java

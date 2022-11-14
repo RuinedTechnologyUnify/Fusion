@@ -7,25 +7,25 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index a9f46db1bc7031aef515e131f22b8e252d9d32c4..e25c7c4b991a21b26036234eb0422047cb24845f 100644
+index 05001d2717ff2f40f95742587e7876c1735e10c2..f2e8b460fb275302c48aa6431481ba647f77d54a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -131,6 +131,7 @@ public class FusionWorldConfig {
+@@ -139,6 +139,7 @@ public class FusionWorldConfig {
      public boolean lithiumEntityRaiderAI = true;
      public boolean lithiumBlockMovingBlockEntityShapes = true;
-     public boolean lithiumChunkFastAccess = true;
+     public boolean lithiumWorldFastChunkAccess = true;
 +    public boolean lithiumEntityAISecondaryPoiSensor = true;
  
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -142,5 +143,6 @@ public class FusionWorldConfig {
+@@ -150,6 +151,7 @@ public class FusionWorldConfig {
          lithiumEntityRaiderAI = getBoolean("lithium.entity.raider-ai", lithiumEntityRaiderAI) && lithiumEnable;
          lithiumBlockMovingBlockEntityShapes = getBoolean("lithium.block.moving-block-entity-shapes", lithiumBlockMovingBlockEntityShapes) && lithiumEnable;
-         lithiumChunkFastAccess = getBoolean("lithium.chunk.fast-access", lithiumChunkFastAccess) && lithiumEnable;
+         lithiumWorldFastChunkAccess = getBoolean("lithium.world.fast-chunk-access", lithiumWorldFastChunkAccess) && lithiumEnable;
 +        lithiumEntityAISecondaryPoiSensor = getBoolean("lithium.entity.ai-secondary-poi-sensor", lithiumEntityAISecondaryPoiSensor) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
 index d2703432af207c74ea8d298a784329c3219d2f13..8999e183d95d33493fe3b0a60f9f014ba0683004 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java

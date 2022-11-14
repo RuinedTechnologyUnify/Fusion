@@ -7,10 +7,10 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 68b59a4631c23ff4dbb7182bcb992d3966997ca0..66a4a8701dfe8f8fa369706911ea6afac8e8759a 100644
+index bc0d8d9695c3fdac59b040fd05ac90ba4ccd7070..74e676a0e16d455d50eb5c786170c1a381e9f7b6 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -125,10 +125,12 @@ public class FusionWorldConfig {
+@@ -133,11 +133,13 @@ public class FusionWorldConfig {
      public boolean lithiumEnable = true;
      public boolean lithiumCollectionsTileEntityTickers = true;
      public boolean lithiumEntityFastElytraCheck = true;
@@ -22,8 +22,8 @@ index 68b59a4631c23ff4dbb7182bcb992d3966997ca0..66a4a8701dfe8f8fa369706911ea6afa
          lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
 +        lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 index 0c9aca5186b1fdb7e7d3dcb8ee41223551383572..4f9746675160cd9986514b93f4dc25171a36024b 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java

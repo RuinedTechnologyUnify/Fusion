@@ -3,3 +3,8 @@ minecraft net/minecraft/world/phys/shapes/CubeVoxelShape.java
 minecraft net/minecraft/world/phys/shapes/CubePointRange.java
 minecraft net/minecraft/world/level/chunk/PaletteResize.java
 minecraft net/minecraft/util/ClassInstanceMultiMap.java
+minecraft net/minecraft/world/entity/MobCategory.java
+minecraft net/minecraft/world/level/levelgen/synth/ImprovedNoise.java
+minecraft net/minecraft/world/level/levelgen/synth/PerlinNoise.java
+minecraft net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+minecraft net/minecraft/world/level/levelgen/feature/OreFeature.java

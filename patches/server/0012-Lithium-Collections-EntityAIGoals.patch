@@ -7,10 +7,10 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 9b61c26564545a48810e37ed2597fa375b040f24..cfecf046b334bd59eaa994e38f644c93537686f3 100644
+index 6883e59630e3f24ec2070f4b6c439146dd2c15bc..e0d69ef5dcb52cd04f319bcf33375cbc7f310b7b 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -199,6 +199,7 @@ public class FusionConfig {
+@@ -208,6 +208,7 @@ public class FusionConfig {
      public static boolean lithiumGeneralFastUtil = true;
      public static boolean lithiumGeneralBetterMath = true;
      public static boolean lithiumEntityFastRetrieval = true;
@@ -18,14 +18,14 @@ index 9b61c26564545a48810e37ed2597fa375b040f24..cfecf046b334bd59eaa994e38f644c93
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -206,5 +207,6 @@ public class FusionConfig {
+@@ -215,6 +216,7 @@ public class FusionConfig {
          lithiumGeneralFastUtil = getBoolean("lithium.general.fast-util", lithiumGeneralFastUtil) && lithiumEnable;
          lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
 +        lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java b/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
 index 872ec431ae6beb0ef603d833f38aedb9d87e5466..345431019c2d699b23a53692c819c3629d42b525 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java

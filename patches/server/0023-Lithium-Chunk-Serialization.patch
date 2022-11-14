@@ -7,27 +7,27 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index b1f52f6bdb0a93c0797d1296a029e7f12b2f8e49..99d5673cb07a1368ffd2ac22aba9a46968b21682 100644
+index 7bbee2fc71ed09ab7e46a20fbfe029bff7846861..e21b84ce4c31151c42c121179d7f34b78148ea0e 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -205,6 +205,7 @@ public class FusionConfig {
+@@ -214,6 +214,7 @@ public class FusionConfig {
      public static boolean lithiumCollectionsEntityAttributes = true;
      public static boolean lithiumCollectionsEntityByType = true;
      public static boolean lithiumCollectionsEntityFiltering = true;
-+    public static boolean lithiumChunkSerialization = true;
++    public static boolean lithiumWorldChunkSerialization = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -218,5 +219,6 @@ public class FusionConfig {
+@@ -227,6 +228,7 @@ public class FusionConfig {
          lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
          lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
          lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
-+        lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
++        lithiumWorldChunkSerialization = getBoolean("lithium.world.chunk-serialization", lithiumWorldChunkSerialization) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/util/BitStorage.java b/src/main/java/net/minecraft/util/BitStorage.java
-index 106610ccc74b70b557b01c61262d56c4f1147acf..dad0f64933b98de4ed96da6ca6f4b26f4b1c851d 100644
+index 106610ccc74b70b557b01c61262d56c4f1147acf..435a3d612ae64c7c1265dede1e464229c4e5103b 100644
 --- a/src/main/java/net/minecraft/util/BitStorage.java
 +++ b/src/main/java/net/minecraft/util/BitStorage.java
 @@ -1,5 +1,6 @@
@@ -42,10 +42,10 @@ index 106610ccc74b70b557b01c61262d56c4f1147acf..dad0f64933b98de4ed96da6ca6f4b26f
      }
      // Paper end
 +
-+    <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out); // Fusion - Lithium: Chunk Serialization
++    <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out); // Fusion - Lithium: World Chunk Serialization
  }
 diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-index 36e33923bf48e56c743ed043bcbc66bc32f0422f..d63d8103dc9551a7706df5d382205fddff22a96e 100644
+index 36e33923bf48e56c743ed043bcbc66bc32f0422f..8eba23e2a3802132afb6889e179ab13c7040fe35 100644
 --- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
 +++ b/src/main/java/net/minecraft/util/SimpleBitStorage.java
 @@ -2,6 +2,7 @@ package net.minecraft.util;
@@ -61,7 +61,7 @@ index 36e33923bf48e56c743ed043bcbc66bc32f0422f..d63d8103dc9551a7706df5d382205fdd
          }
      }
 +
-+    // Fusion start - Lithium: Chunk Serialization
++    // Fusion start - Lithium: World Chunk Serialization
 +    @Override
 +    public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
 +        if (this.size >= Short.MAX_VALUE) {
@@ -102,7 +102,7 @@ index 36e33923bf48e56c743ed043bcbc66bc32f0422f..d63d8103dc9551a7706df5d382205fdd
 +    // Fusion end
  }
 diff --git a/src/main/java/net/minecraft/util/ZeroBitStorage.java b/src/main/java/net/minecraft/util/ZeroBitStorage.java
-index 5d8e9bdf5538b19681f21949368d862fab8a89ad..043869a05c50073a2c742e86c731151a38b9aad0 100644
+index 5d8e9bdf5538b19681f21949368d862fab8a89ad..2fe3cdd991386a55a2d41002f5f6b12d76241a23 100644
 --- a/src/main/java/net/minecraft/util/ZeroBitStorage.java
 +++ b/src/main/java/net/minecraft/util/ZeroBitStorage.java
 @@ -2,6 +2,8 @@ package net.minecraft.util;
@@ -119,7 +119,7 @@ index 5d8e9bdf5538b19681f21949368d862fab8a89ad..043869a05c50073a2c742e86c731151a
          return this;
      }
 +
-+    @Override public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {} // Fusion - Lithium: Chunk Serialization
++    @Override public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {} // Fusion - Lithium: World Chunk Serialization
  }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java b/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java
 index acae3eb30e0689048937f479dc3070f0688abdad..0c595fc1e26d9fa8c36c90bf8d72791c3f67838d 100644
@@ -133,14 +133,14 @@ index acae3eb30e0689048937f479dc3070f0688abdad..0c595fc1e26d9fa8c36c90bf8d72791c
      int onResize(int newBits, T object);
  }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
-index 7908360dd47937b2cb702e381802b7b278a5198e..7a4fbe89ed40d546776025e61db86f816e7f5c63 100644
+index 7908360dd47937b2cb702e381802b7b278a5198e..5fa4967bf72f4059b63c5d75fe1b7a2e08a2b853 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 @@ -24,6 +24,20 @@ import net.minecraft.util.ThreadingDetector;
  import net.minecraft.util.ZeroBitStorage;
  
  public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainerRO<T> {
-+    // Fusion start - Lithium: Chunk Serialization
++    // Fusion start - Lithium: World Chunk Serialization
 +    private static final ThreadLocal<short[]> CACHED_ARRAY_4096 = ThreadLocal.withInitial(() -> new short[4096]);
 +    private static final ThreadLocal<short[]> CACHED_ARRAY_64 = ThreadLocal.withInitial(() -> new short[64]);
 +    private Optional<LongStream> asOptional(long[] data) {
@@ -177,8 +177,8 @@ index 7908360dd47937b2cb702e381802b7b278a5198e..7a4fbe89ed40d546776025e61db86f81
 -                optional = Optional.of(Arrays.stream(simpleBitStorage.getRaw()));
 -            } else {
 -                optional = Optional.empty();
-+        // Fusion start - Lithium: Chunk Serialization
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumChunkSerialization) {
++        // Fusion start - Lithium: World Chunk Serialization
++        if (com.github.ipecter.fusion.FusionConfig.lithiumWorldChunkSerialization) {
 +            Optional<LongStream> data = Optional.empty();
 +            List<T> elements = null;
 +            try {
@@ -265,8 +265,8 @@ index 7908360dd47937b2cb702e381802b7b278a5198e..7a4fbe89ed40d546776025e61db86f81
      public void count(PalettedContainer.CountConsumer<T> counter) {
 -        if (this.data.palette.getSize() == 1) {
 -            counter.accept(this.data.palette.valueFor(0), this.data.storage.getSize());
-+        // Fusion start - Lithium: Chunk Serialization
-+        if (com.github.ipecter.fusion.FusionConfig.lithiumChunkSerialization) {
++        // Fusion start - Lithium: World Chunk Serialization
++        if (com.github.ipecter.fusion.FusionConfig.lithiumWorldChunkSerialization) {
 +            int len = this.data.palette().getSize();
 +
 +            // Do not allocate huge arrays if we're using a large palette

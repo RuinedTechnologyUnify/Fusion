@@ -7,10 +7,10 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index d822d9df5f4e100f3956ad494bdab30d8b4e378a..dc6d930f4f1c6e9e0f4449e8a4440ae8b1d91dd6 100644
+index 86eda633be9ef6d21236d5d42a5daedee4cd8a7a..813b009dc6c0f6e838c611291b8d250916a4372e 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -202,6 +202,7 @@ public class FusionConfig {
+@@ -211,6 +211,7 @@ public class FusionConfig {
      public static boolean lithiumCollectionsEntityAIGoals = true;
      public static boolean lithiumCollectionsStoreGameRules = true;
      public static boolean lithiumCollectionsPrecomputeShapeArrays = true;
@@ -18,19 +18,19 @@ index d822d9df5f4e100f3956ad494bdab30d8b4e378a..dc6d930f4f1c6e9e0f4449e8a4440ae8
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -212,5 +213,6 @@ public class FusionConfig {
+@@ -221,6 +222,7 @@ public class FusionConfig {
          lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
          lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
          lithiumCollectionsPrecomputeShapeArrays = getBoolean("lithium.collections.precompute-shape-arrays", lithiumCollectionsPrecomputeShapeArrays) && lithiumEnable;
 +        lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index c8d26138574a512fc89c24c87eb1a3ca0abf98d2..e1deeb6a72b9f5ad433070577bc97c993d6f9f95 100644
+index 411a3a84dbd2450f292c42d43eeb3a3bccb2a5cc..7690920bc65e4fc3e2d23cdc5bc8fe9c57dd3bc9 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -127,6 +127,7 @@ public class FusionWorldConfig {
+@@ -135,6 +135,7 @@ public class FusionWorldConfig {
      public boolean lithiumEntityFastElytraCheck = true;
      public boolean lithiumEntityFastHandSwing = true;
      public boolean lithiumEntityFastPowderSnowCheck = true;
@@ -38,16 +38,16 @@ index c8d26138574a512fc89c24c87eb1a3ca0abf98d2..e1deeb6a72b9f5ad433070577bc97c99
  
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -134,5 +135,6 @@ public class FusionWorldConfig {
+@@ -142,6 +143,7 @@ public class FusionWorldConfig {
          lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
          lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
          lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
 +        lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 00fc98797aea23e1f586b8e7f85fc27e2019352f..538169642afb6209bd6bff9f3df55b60db496627 100644
+index 00fc98797aea23e1f586b8e7f85fc27e2019352f..77a7f3a04ef33cb238b0a635a7bafc79278744a9 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 @@ -19,8 +19,8 @@ import org.slf4j.Logger;

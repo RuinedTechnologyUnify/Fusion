@@ -7,34 +7,34 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 8bbf512266cc21e56d6fce6612ff652a17dabd32..a9f46db1bc7031aef515e131f22b8e252d9d32c4 100644
+index baedc4d6cf89b2bfe0367116438c65af5668f519..05001d2717ff2f40f95742587e7876c1735e10c2 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -130,6 +130,7 @@ public class FusionWorldConfig {
+@@ -138,6 +138,7 @@ public class FusionWorldConfig {
      public boolean lithiumCollectionsEntityAttributes = true;
      public boolean lithiumEntityRaiderAI = true;
      public boolean lithiumBlockMovingBlockEntityShapes = true;
-+    public boolean lithiumChunkFastAccess = true;
++    public boolean lithiumWorldFastChunkAccess = true;
  
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -140,5 +141,6 @@ public class FusionWorldConfig {
+@@ -148,6 +149,7 @@ public class FusionWorldConfig {
          lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
          lithiumEntityRaiderAI = getBoolean("lithium.entity.raider-ai", lithiumEntityRaiderAI) && lithiumEnable;
          lithiumBlockMovingBlockEntityShapes = getBoolean("lithium.block.moving-block-entity-shapes", lithiumBlockMovingBlockEntityShapes) && lithiumEnable;
-+        lithiumChunkFastAccess = getBoolean("lithium.chunk.fast-access", lithiumChunkFastAccess) && lithiumEnable;
++        lithiumWorldFastChunkAccess = getBoolean("lithium.world.fast-chunk-access", lithiumWorldFastChunkAccess) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/server/level/WorldGenRegion.java b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
-index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edbcc454c21 100644
+index c677a55db62b4d197eeb1bf5d929e24019fed5ec..730ea5545ef0ebe9b4b0015ab6c8510a971f51b5 100644
 --- a/src/main/java/net/minecraft/server/level/WorldGenRegion.java
 +++ b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
 @@ -82,6 +82,10 @@ public class WorldGenRegion implements WorldGenLevel {
      private Supplier<String> currentlyGenerating;
      private final AtomicLong subTickCount = new AtomicLong();
      private static final ResourceLocation WORLDGEN_REGION_RANDOM = new ResourceLocation("worldgen_region_random");
-+    // Fusion start - Lithium: Fast Chunk Access
++    // Fusion start - Lithium: World Fast Chunk Access
 +    private ChunkAccess[] chunksArr;
 +    private int minChunkX, minChunkZ;
 +    // Fusion end
@@ -45,7 +45,7 @@ index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edb
              this.lastPos = ((ChunkAccess) chunks.get(chunks.size() - 1)).getPos();
              this.structureManager = world.structureManager().forWorldGenRegion(this);
          }
-+        // Fusion start - Lithium: Fast Chunk Access
++        // Fusion start - Lithium: World Fast Chunk Access
 +        this.minChunkX = this.firstPos.x;
 +        this.minChunkZ = this.firstPos.z;
 +
@@ -58,7 +58,7 @@ index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edb
          this.currentlyGenerating = structureName;
      }
  
-+    // Fusion start - Lithium: Fast Chunk Access
++    // Fusion start - Lithium: World Fast Chunk Access
 +    /**
 +     * @reason Use the chunk array for faster access
 +     * @author SuperCoder7979, 2No2Name
@@ -66,7 +66,7 @@ index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edb
      @Override
      public ChunkAccess getChunk(int chunkX, int chunkZ) {
 -        return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
-+        if (this.level.fusionConfig.lithiumChunkFastAccess) {
++        if (this.level.fusionConfig.lithiumWorldFastChunkAccess) {
 +            return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
 +        } else {
 +            int x = chunkX - this.minChunkX;
@@ -96,7 +96,7 @@ index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edb
      }
      // Paper end
  
-+    // Fusion start - Lithium: Fast Chunk Access
++    // Fusion start - Lithium: World Fast Chunk Access
 +    /**
 +     * @reason Avoid pointer de-referencing, make method easier to inline
 +     * @author JellySquid
@@ -104,7 +104,7 @@ index c677a55db62b4d197eeb1bf5d929e24019fed5ec..63ca616410865c5050b48c02f2d34edb
      @Override
      public BlockState getBlockState(BlockPos pos) {
 -        return this.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ())).getBlockState(pos);
-+        if (this.level.fusionConfig.lithiumChunkFastAccess) {
++        if (this.level.fusionConfig.lithiumWorldFastChunkAccess) {
 +            return this.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ())).getBlockState(pos);
 +        } else {
 +            int x = (me.jellysquid.mods.lithium.common.util.Pos.ChunkCoord.fromBlockCoord(pos.getX())) - this.minChunkX;

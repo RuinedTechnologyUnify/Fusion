@@ -8,10 +8,10 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 09fcfc9a531312c8178866e8e51b5a71e4f24973..9f031354e786044f0b7e08f0eee7bbf394e947eb 100644
+index 5d7f7008c42b3976ce57f704861788f39bd329ad..aac84aa56e52a6410fbae6380172df1995bd4911 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -123,8 +123,10 @@ public class FusionWorldConfig {
+@@ -131,9 +131,11 @@ public class FusionWorldConfig {
      }
  
      public boolean lithiumEnable = true;
@@ -21,8 +21,8 @@ index 09fcfc9a531312c8178866e8e51b5a71e4f24973..9f031354e786044f0b7e08f0eee7bbf3
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +        lithiumCollectionsTileEntityTickers = getBoolean("lithium.collections.tile-entity-tickers", lithiumCollectionsTileEntityTickers) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
 index be134bd540a50024d2e1bdc7ea633b8ac29a212b..75ff663fd64ecf34ba684119ff19185d2fe264b4 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java

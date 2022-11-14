@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 14 Nov 2022 16:07:35 +0900
+Subject: [PATCH] C2ME-ReduceAllocs
+
+Mirai - etil2jz - GPL 3.0
+C2ME - RelativityMC - MIT
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 8ed530e5fba8c421324fe7321ddcf43b9b7b93d1..8efbdfc5ef48b329988bc90606c7e0fccfd504fd 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -160,9 +160,11 @@ public class FusionWorldConfig {
+     }
+ 
+     public boolean c2meEnable = true;
++    public boolean c2meReduceAllocs = true;
+ 
+     private void c2meConfig() {
+         c2meEnable = getBoolean("c2me.enable", c2meEnable);
++        c2meEnable = getBoolean("c2me.enable", c2meEnable) && c2meReduceAllocs;
+     }
+ 
+     private void c2meConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+index 2f67705132df06ae6231dd1b89a4f61a90616ef5..36910b1ea08b152d8dfff29a3fca337ede3b0f27 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+@@ -21,7 +21,26 @@ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Featu
+     public static final Codec<HolderSet<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.homogeneousList(Registry.CONFIGURED_FEATURE_REGISTRY, DIRECT_CODEC);
+ 
+     public boolean place(WorldGenLevel world, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+-        return this.feature.place(this.config, world, chunkGenerator, random, origin);
++        // Fusion start - C2ME: Reduce Allocs
++        if (!world.getLevel().fusionConfig.c2meReduceAllocs) {
++            return this.feature.place(this.config, world, chunkGenerator, random, origin);
++        } else {
++            /**
++             * @author ishland
++             * @reason pool FeatureContext
++             */
++            if (!world.ensureCanWrite(origin)) return false;
++            final com.ishland.c2me.opts.allocs.common.SimpleObjectPool<com.ishland.c2me.opts.allocs.common.PooledFeatureContext<?>> pool = com.ishland.c2me.opts.allocs.common.PooledFeatureContext.POOL.get();
++            final com.ishland.c2me.opts.allocs.common.PooledFeatureContext<FC> context = (com.ishland.c2me.opts.allocs.common.PooledFeatureContext<FC>) pool.alloc();
++            try {
++                context.reInit(java.util.Optional.empty(), world, chunkGenerator, random, origin, this.config);
++                return this.feature.place(context);
++            } finally {
++                context.reInit();
++                pool.release(context);
++            }
++        }
++        // Fusion end
+     }
+ 
+     public Stream<ConfiguredFeature<?, ?>> getFeatures() {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+index b2f36a998437e2a63a3cbc6c3aa95b1402bff2f1..2ac1663956e0a97784f5cac18b2d19ecbb8d98e2 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+@@ -54,7 +54,7 @@ public class OreFeature extends Feature<OreConfiguration> {
+ 
+     protected boolean doPlace(WorldGenLevel world, RandomSource randomSource, OreConfiguration config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
+         int i = 0;
+-        BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
++        BitSet bitSet = world.getMinecraftWorld().fusionConfig.c2meReduceAllocs ? com.ishland.c2me.opts.allocs.common.ObjectCachingUtils.getCachedOrNewBitSet(horizontalSize * verticalSize * horizontalSize) : new BitSet(horizontalSize * verticalSize * horizontalSize); // Fusion - C2ME: Reduce Allocs
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+         int j = config.size;
+         double[] ds = new double[j * 4];

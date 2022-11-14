@@ -9,7 +9,7 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949a23a8f8f
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -0,0 +1,197 @@
+@@ -0,0 +1,206 @@
 +package com.github.ipecter.fusion;
 +
 +import com.google.common.base.Throwables;
@@ -50,6 +50,14 @@ index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949
 +    static boolean verbose;
 +
 +    public static void init(File configFile) {
++        init(configFile, true);
++    }
++
++    public static void reload(File configFile) {
++        init(configFile, false);
++    }
++
++    private static void init(File configFile, boolean setup) {
 +        CONFIG_FILE = configFile;
 +        config = new YamlFile();
 +        if (configFile.exists()) {
@@ -71,7 +79,7 @@ index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949
 +        version = getInt("config-version", 1);
 +        set("config-version", 1);
 +
-+        readConfig(FusionConfig.class, null);
++        readConfig(FusionConfig.class, null, setup);
 +    }
 +
 +    protected static void log(String s) {
@@ -90,10 +98,11 @@ index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949
 +        }
 +    }
 +
-+    static void readConfig(Class<?> clazz, Object instance) {
++    static void readConfig(Class<?> clazz, Object instance, boolean setup) {
 +        for (Method method : clazz.getDeclaredMethods()) {
 +            if (Modifier.isPrivate(method.getModifiers())) {
 +                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
++                    if (method.getName().endsWith("Setup") && !setup) continue;
 +                    try {
 +                        method.setAccessible(true);
 +                        method.invoke(instance);
@@ -213,7 +222,7 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..300dec4fca20c0d9dc18f228cd8157057dc2b74e
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,132 @@
 +package com.github.ipecter.fusion;
 +
 +import org.apache.commons.lang.BooleanUtils;
@@ -237,8 +246,16 @@ index 0000000000000000000000000000000000000000..300dec4fca20c0d9dc18f228cd815705
 +    }
 +
 +    public void init() {
++        init(true);
++    }
++
++    public void reload() {
++        init(false);
++    }
++
++    private void init(boolean setup) {
 +        log("-------- World Settings For [" + worldName + "] --------");
-+        FusionConfig.readConfig(FusionWorldConfig.class, this);
++        FusionConfig.readConfig(FusionWorldConfig.class, this, setup);
 +    }
 +
 +    protected static void setComment(String path, String... comment){
@@ -396,9 +413,9 @@ index 0000000000000000000000000000000000000000..b3e83a0b29ab9a095c4a087df3250e73
 +            Command.broadcastCommandMessage(sender, prefix + ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
 +
 +            MinecraftServer console = MinecraftServer.getServer();
-+            FusionConfig.init((File) console.options.valueOf("fusion-settings"));
++            FusionConfig.reload((File) console.options.valueOf("fusion-settings"));
 +            for (ServerLevel level : console.getAllLevels()) {
-+                level.fusionConfig.init();
++                level.fusionConfig.reload();
 +                level.resetBreedingCooldowns();
 +            }
 +            console.server.reloadCount++;

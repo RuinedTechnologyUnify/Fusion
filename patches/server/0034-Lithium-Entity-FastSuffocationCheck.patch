@@ -7,25 +7,25 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index e25c7c4b991a21b26036234eb0422047cb24845f..47ae464e576ce3f71492eb25e1748848c48013ab 100644
+index f2e8b460fb275302c48aa6431481ba647f77d54a..9a9f9daad5e552eb1310e6039f109fe50e43535a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -132,6 +132,7 @@ public class FusionWorldConfig {
+@@ -140,6 +140,7 @@ public class FusionWorldConfig {
      public boolean lithiumBlockMovingBlockEntityShapes = true;
-     public boolean lithiumChunkFastAccess = true;
+     public boolean lithiumWorldFastChunkAccess = true;
      public boolean lithiumEntityAISecondaryPoiSensor = true;
 +    public boolean lithiumEntityFastSuffocationCheck = true;
  
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -144,5 +145,6 @@ public class FusionWorldConfig {
+@@ -152,6 +153,7 @@ public class FusionWorldConfig {
          lithiumBlockMovingBlockEntityShapes = getBoolean("lithium.block.moving-block-entity-shapes", lithiumBlockMovingBlockEntityShapes) && lithiumEnable;
-         lithiumChunkFastAccess = getBoolean("lithium.chunk.fast-access", lithiumChunkFastAccess) && lithiumEnable;
+         lithiumWorldFastChunkAccess = getBoolean("lithium.world.fast-chunk-access", lithiumWorldFastChunkAccess) && lithiumEnable;
          lithiumEntityAISecondaryPoiSensor = getBoolean("lithium.entity.ai-secondary-poi-sensor", lithiumEntityAISecondaryPoiSensor) && lithiumEnable;
 +        lithiumEntityFastSuffocationCheck = getBoolean("lithium.entity.fast-suffocation-check", lithiumEntityFastSuffocationCheck) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
 index 385850b7a2802b4315a33aa2972a9a44127f8987..048509cc6fb824dad6c30c668b0c96eca3257d94 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java

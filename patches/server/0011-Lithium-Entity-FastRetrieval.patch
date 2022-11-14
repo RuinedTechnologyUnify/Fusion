@@ -8,10 +8,10 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 7c82a81026815ff275dfe998fa195a61594c3561..9b61c26564545a48810e37ed2597fa375b040f24 100644
+index 57a99e525c7c6dbd54644b79ca49ff1553361470..6883e59630e3f24ec2070f4b6c439146dd2c15bc 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -198,11 +198,13 @@ public class FusionConfig {
+@@ -207,12 +207,14 @@ public class FusionConfig {
      public static boolean lithiumEnable = true;
      public static boolean lithiumGeneralFastUtil = true;
      public static boolean lithiumGeneralBetterMath = true;
@@ -24,10 +24,10 @@ index 7c82a81026815ff275dfe998fa195a61594c3561..9b61c26564545a48810e37ed2597fa37
          lithiumGeneralBetterMath = getBoolean("lithium.general.better-math", lithiumGeneralBetterMath) && lithiumEnable;
 +        lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
-index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..07099952e6c8a518417392fa3c1c987b07205060 100644
+index 4c1e7c219e1ca153be4423347bd239ebaec4a31d..078b60cce2ccbde522e5f7038d0c80906564a751 100644
 --- a/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 +++ b/src/main/java/net/minecraft/world/level/entity/EntitySectionStorage.java
 @@ -33,7 +33,7 @@ public class EntitySectionStorage<T extends EntityAccess> {

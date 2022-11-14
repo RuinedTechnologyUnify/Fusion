@@ -8,10 +8,10 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index d73846735a00be86665e554c5b752c8865233eae..5e8a5d5da3713a88e6577cf70c73fa4f0808874f 100644
+index 2712832c753357896210072e698fed731b359b81..0b6ae2dcf0b4358704aa6cc4232a45ea27715809 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -196,9 +196,11 @@ public class FusionConfig {
+@@ -205,10 +205,12 @@ public class FusionConfig {
      }
  
      public static boolean lithiumEnable = true;
@@ -22,10 +22,10 @@ index d73846735a00be86665e554c5b752c8865233eae..5e8a5d5da3713a88e6577cf70c73fa4f
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 +        lithiumGeneralFastUtil = getBoolean("lithium.general.fast-util", lithiumGeneralFastUtil) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/core/Direction.java b/src/main/java/net/minecraft/core/Direction.java
-index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..3908708107aea6ecbf07797ea25785b1ed44854b 100644
+index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..b1f04813d5c6a114c3051a6feaad4fb0e32d6916 100644
 --- a/src/main/java/net/minecraft/core/Direction.java
 +++ b/src/main/java/net/minecraft/core/Direction.java
 @@ -196,7 +196,7 @@ public enum Direction implements StringRepresentable {
@@ -47,7 +47,7 @@ index 6c27b22dd1d497687c0f4d3835e34149bcf952c1..3908708107aea6ecbf07797ea25785b1
  
      public static Direction getNearest(double x, double y, double z) {
 diff --git a/src/main/java/net/minecraft/world/phys/AABB.java b/src/main/java/net/minecraft/world/phys/AABB.java
-index cfb2e46b34b2982d6724f18214557fc80cf4adfa..0985dc18803f61e14c2865148a6caf3ae3410235 100644
+index cfb2e46b34b2982d6724f18214557fc80cf4adfa..fbcafeea2cf18cdd4b7f999b5a24f85a3b0582a1 100644
 --- a/src/main/java/net/minecraft/world/phys/AABB.java
 +++ b/src/main/java/net/minecraft/world/phys/AABB.java
 @@ -16,6 +16,17 @@ public class AABB {

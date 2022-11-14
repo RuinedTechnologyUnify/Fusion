@@ -7,10 +7,10 @@ Mirai - etil2jz - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 66a4a8701dfe8f8fa369706911ea6afac8e8759a..c8d26138574a512fc89c24c87eb1a3ca0abf98d2 100644
+index 74e676a0e16d455d50eb5c786170c1a381e9f7b6..411a3a84dbd2450f292c42d43eeb3a3bccb2a5cc 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -126,11 +126,13 @@ public class FusionWorldConfig {
+@@ -134,12 +134,14 @@ public class FusionWorldConfig {
      public boolean lithiumCollectionsTileEntityTickers = true;
      public boolean lithiumEntityFastElytraCheck = true;
      public boolean lithiumEntityFastHandSwing = true;
@@ -23,8 +23,8 @@ index 66a4a8701dfe8f8fa369706911ea6afac8e8759a..c8d26138574a512fc89c24c87eb1a3ca
          lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
 +        lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
      }
- }
-\ No newline at end of file
+ 
+     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 index 4f9746675160cd9986514b93f4dc25171a36024b..bb23e7b04c6fd14ce953ae4f96644b6ec59f15b3 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java

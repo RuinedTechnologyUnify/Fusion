@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 14 Nov 2022 17:20:32 +0900
+Subject: [PATCH] Suki-FlushAfterMorePackets
+
+Suki - SuCraft - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 1db413994e8d7186f0ee9631966fb1572c9bce88..b11d33296d6f29a74302360bb353c3e6a6e1f658 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -252,7 +252,10 @@ public class FusionConfig {
+     private static void c2meConfigSetup() {
+     }
+ 
++    public static boolean packetFlushAfterMorePackets = true;
++
+     private static void packetSettings() {
++        packetFlushAfterMorePackets = getBoolean("packet.flush-after-more-packets", packetFlushAfterMorePackets);
+     }
+ 
+     private static void packetSettingsSetup() {
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 2a71c8e6901944af90c4ad4dfa39dba7fafc0126..cf32984cb2ab87582415abfc2d3db74f2b4154a3 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -407,7 +407,15 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     private void sendPacket(Packet<?> packet, @Nullable PacketSendListener callbacks, Boolean flushConditional) {
+         this.packetWrites.getAndIncrement(); // must be befeore using canFlush
+         boolean effectiveFlush = flushConditional == null ? this.canFlush : flushConditional.booleanValue();
+-        final boolean flush = effectiveFlush || packet instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket || packet instanceof ClientboundDisconnectPacket; // no delay for certain packets
++        // Fusion start - Suki: Flush After More Packets
++        final boolean flush = effectiveFlush ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket ||
++                packet instanceof ClientboundDisconnectPacket || (com.github.ipecter.fusion.FusionConfig.packetFlushAfterMorePackets &&
++                (packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundMapItemDataPacket)); // no delay for certain packets
++        // Fusion end
+         // Paper end - add flush parameter
+         ConnectionProtocol enumprotocol = ConnectionProtocol.getProtocolForPacket(packet);
+         ConnectionProtocol enumprotocol1 = this.getCurrentProtocol();

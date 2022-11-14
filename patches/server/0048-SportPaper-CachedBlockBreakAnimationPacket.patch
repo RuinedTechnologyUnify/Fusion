@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 14 Nov 2022 17:06:20 +0900
+Subject: [PATCH] SportPaper-CachedBlockBreakAnimationPacket
+
+Mirai - etil2jz - GPL 3.0
+SportPaper - Electroid - GPL 3.0
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index c888e654ab9449bfdc7dfe16078eb0786ae6c15e..1f8132c634260d5aa05e5f1c927d99eee1fd4a50 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -1631,6 +1631,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         if (entity instanceof Player) entityhuman = (Player) entity;
+         // CraftBukkit end
+ 
++        ClientboundBlockDestructionPacket packet = null; // Fusion - SportPaper: Cached Block Break Animation Packet
+         while (iterator.hasNext()) {
+             ServerPlayer entityplayer = (ServerPlayer) iterator.next();
+ 
+@@ -1646,7 +1647,10 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                 // CraftBukkit end
+ 
+                 if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
+-                    entityplayer.connection.send(new ClientboundBlockDestructionPacket(entityId, pos, progress));
++                    // Fusion start - SportPaper: Cached Block Break Animation Packet
++                    if (packet == null) packet = new ClientboundBlockDestructionPacket(entityId, pos, progress);
++                    entityplayer.connection.send(packet);
++                    // Fusion end
+                 }
+             }
+         }
