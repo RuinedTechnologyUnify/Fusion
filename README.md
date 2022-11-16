@@ -14,7 +14,6 @@
 
 ## Features
 - ❗ Work In Progress ❗
-- 10 Patches per Week until non-WIP
 - **High Performance** - **Stable** - **Compatible**
 - [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
 - **ZeroChunk**: Extreme Optimized MultiThread View-Distance System to replace Vanilla System. 
