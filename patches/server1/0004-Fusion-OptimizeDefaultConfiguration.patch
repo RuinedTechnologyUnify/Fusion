@@ -60,14 +60,14 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 +                    "diorite", "dirt", "emerald_ore", "deepslate_emerald_ore", "granite", "gravel", "oak_planks", "smooth_basalt", "stone", "tuff"); // TODO update type to List<Block>
          }
      }
- 
+
 @@ -129,7 +129,7 @@ public class WorldConfiguration extends ConfigurationPart {
              @MergeMap
              public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
              @MergeMap
 -            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
 +            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), 56))); // Fusion - Optimize Default Configuration
- 
+
              @ConfigSerializable
              public record DespawnRange(@Required int soft, @Required int hard) {
 @@ -309,7 +309,7 @@ public class WorldConfiguration extends ConfigurationPart {
@@ -81,7 +81,7 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
          public FrostedIce frostedIce;
 @@ -361,7 +361,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public Fixes fixes;
- 
+
      public class Fixes extends ConfigurationPart {
 -        public boolean fixItemsMergingThroughWalls = false;
 +        public boolean fixItemsMergingThroughWalls = true;
@@ -99,9 +99,9 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 +        public int maxEntityCollisions = 2; // Fusion - Optimize Default Configuration
          public boolean allowPlayerCrammingDamage = false;
      }
- 
+
 @@ -399,9 +399,9 @@ public class WorldConfiguration extends ConfigurationPart {
- 
+
      public class Chunks extends ConfigurationPart {
          public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
 -        public int maxAutoSaveChunksPerTick = 24;
@@ -114,7 +114,7 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
              map.defaultReturnValue(-1);
 @@ -424,11 +424,22 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
- 
+
      public class TickRates extends ConfigurationPart {
 -        public int grassSpread = 1;
 +        public int grassSpread = 4; // Fusion - Optimize Default Configuration
@@ -137,10 +137,10 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 +        });
 +        // Fusion end
      }
- 
+
      @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
 @@ -450,9 +461,9 @@ public class WorldConfiguration extends ConfigurationPart {
- 
+
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
 -        public boolean updatePathfindingOnBlockUpdate = true;
@@ -178,7 +178,7 @@ index bd6085798bfbba776fb66adecc09ba89a7fe6ce9..e88b8bc4a737771060ca504aeea0920c
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -438,7 +438,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          BufferedWriter bufferedwriter = Files.newBufferedWriter(file);
- 
+
          try {
 -            bufferedwriter.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", dedicatedserverproperties.syncChunkWrites));
 +            //bufferedwriter.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", dedicatedserverproperties.syncChunkWrites)); // Fusion - Optimize Default Configuration
@@ -214,7 +214,7 @@ index cba660a0506994f66cbcb890ccd464bd412a6211..9150d46bb379e2e9b6d529488e28d914
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
 @@ -37,8 +37,10 @@ public class CraftSpawnCategory {
- 
+
      public static long getDefaultTicksPerSpawn(SpawnCategory spawnCategory) {
          return switch (spawnCategory) {
 -            case MONSTER, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 1;
@@ -233,7 +233,7 @@ index 1a0392afc36e015d1df784a80d9682629cafe2de..54edd9e14b82dca29e0d522bd5965649
 @@ -254,7 +254,7 @@ public class PurpurConfig {
          laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
      }
- 
+
 -    public static boolean useAlternateKeepAlive = false;
 +    public static boolean useAlternateKeepAlive = true; // Fusion - Optimize Default Configuration
      private static void useAlternateKeepAlive() {
@@ -273,7 +273,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.itemMerge = this.getDouble("merge-radius.item", 3.5 ); // Fusion - Optimize Default Configuration
          this.log( "Item Merge Radius: " + this.itemMerge );
      }
- 
+
      public double expMerge;
      private void expMerge()
      {
@@ -281,7 +281,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.expMerge = this.getDouble("merge-radius.exp", 4.0 ); // Fusion - Optimize Default Configuration
          this.log( "Experience Merge Radius: " + this.expMerge );
      }
- 
+
 @@ -192,7 +192,7 @@ public class SpigotWorldConfig
      public byte mobSpawnRange;
      private void mobSpawnRange()
@@ -290,7 +290,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 2 ); // Paper - Vanilla // Fusion - Optimize Default Configuration
          this.log( "Mob Spawn Range: " + this.mobSpawnRange );
      }
- 
+
 @@ -202,15 +202,16 @@ public class SpigotWorldConfig
          this.itemDespawnRate = this.getInt( "item-despawn-rate", 6000 );
          this.log( "Item Despawn Rate: " + this.itemDespawnRate );
