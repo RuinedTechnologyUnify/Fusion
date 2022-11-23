@@ -29,4 +29,4 @@
 - [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
 
 ## bStats
-[![](https://bstats.org/signatures/server-implementation/fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion)
+[![](https://bstats.org/signatures/server-implementation/Fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion/16924)
