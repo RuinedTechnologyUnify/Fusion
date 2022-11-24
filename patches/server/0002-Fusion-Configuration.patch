@@ -4,9 +4,24 @@ Date: Wed, 5 Oct 2022 15:53:15 +0900
 Subject: [PATCH] Fusion-Configuration
 
 
+diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
+index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..56eb31d2f7b1a92c427111a594173a5e95d3ceec 100644
+--- a/src/main/java/co/aikar/timings/TimingsExport.java
++++ b/src/main/java/co/aikar/timings/TimingsExport.java
+@@ -242,7 +242,9 @@ public class TimingsExport extends Thread {
+             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
+             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
+             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
+-            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
++            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
++            pair("purpur", mapAsJSON(Bukkit.spigot().getPurpurConfig(), null)), // Fusion
++            pair("fusion", mapAsJSON(Bukkit.spigot().getFusionConfig(), null)) // Fusion
+         ));
+ 
+         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949a23a8f8f
+index 0000000000000000000000000000000000000000..62a83e77c6539b1e5bd4c9ade3350326b9a8398d
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -0,0 +1,206 @@
@@ -219,7 +234,7 @@ index 0000000000000000000000000000000000000000..d409506a4aa19faa3dc8cb36a48d1949
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..300dec4fca20c0d9dc18f228cd8157057dc2b74e
+index 0000000000000000000000000000000000000000..fde38b20fae3050f18f11a5098ad482aff0587c1
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -0,0 +1,132 @@
@@ -358,7 +373,7 @@ index 0000000000000000000000000000000000000000..300dec4fca20c0d9dc18f228cd815705
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b3e83a0b29ab9a095c4a087df3250e73af3b7559
+index 0000000000000000000000000000000000000000..38066d67105cd02df2939cb46d4c579e55c2737d
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
 @@ -0,0 +1,69 @@
@@ -433,7 +448,7 @@ index 0000000000000000000000000000000000000000..b3e83a0b29ab9a095c4a087df3250e73
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index a029f51983bcfe49beab1359f282f0f957723ef2..a7ac224a45cc4daf58ef11cd8f4435a439fbd8c5 100644
+index d6c563dff2e816e043e096f8286e3d975cc86290..bd6085798bfbba776fb66adecc09ba89a7fe6ce9 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -232,6 +232,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -453,7 +468,7 @@ index a029f51983bcfe49beab1359f282f0f957723ef2..a7ac224a45cc4daf58ef11cd8f4435a4
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 8c10ecf293a4dec725b650f0820916256c2c3c4e..69c126bc8e29d0fc2c13dc421791daf2177c3173 100644
+index dc0f8bf1b3b6cc13f8b9ada94ca91cc517f63a6a..be134bd540a50024d2e1bdc7ea633b8ac29a212b 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -175,6 +175,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -473,7 +488,7 @@ index 8c10ecf293a4dec725b650f0820916256c2c3c4e..69c126bc8e29d0fc2c13dc421791daf2
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c03570aca0800c1a12fbc62cfe8960ce28c9e5ff..6aca14f6feed489fa4f87ec3ec77dba0173252b2 100644
+index 5386c16e76fbe51d0a674fbf85f2385cd3b6d4d6..ee25980bb78c567a052ced15440fa294085cc896 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1013,6 +1013,7 @@ public final class CraftServer implements Server {

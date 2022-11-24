@@ -8,7 +8,7 @@ JettPack - Titaniumtown - GPL 3.0
 Lithium - CaffeineMC  - GPL 3.0
 
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 0a229ef3f0853899ff902b43c8e389182864c17a..b0cc333f51785bf7c9776cc9d7246830e682ca5d 100644
+index 0a229ef3f0853899ff902b43c8e389182864c17a..9f21f02955df9f168ff7a20053dae8b767c607b4 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
 @@ -77,11 +77,12 @@ public class Block extends BlockBehaviour implements ItemLike {

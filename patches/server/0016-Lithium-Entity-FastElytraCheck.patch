@@ -24,10 +24,10 @@ index aac84aa56e52a6410fbae6380172df1995bd4911..bc0d8d9695c3fdac59b040fd05ac90ba
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 1ec9a48f2f44f5bd647e0661423ae90970aee262..0c9aca5186b1fdb7e7d3dcb8ee41223551383572 100644
+index 61a162007b1773ca707d88972d0fcda2c98c5614..a94796d9904d736f306054dad8d0da28547ae8c3 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3528,6 +3528,8 @@ public abstract class LivingEntity extends Entity {
+@@ -3541,6 +3541,8 @@ public abstract class LivingEntity extends Entity {
      }
  
      private void updateFallFlying() {

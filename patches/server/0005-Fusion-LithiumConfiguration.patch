@@ -5,7 +5,7 @@ Subject: [PATCH] Fusion-LithiumConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d73846735a00be86665e554c5b752c8865233eae 100644
+index 62a83e77c6539b1e5bd4c9ade3350326b9a8398d..2712832c753357896210072e698fed731b359b81 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -203,4 +203,14 @@ public class FusionConfig {
@@ -25,7 +25,7 @@ index d409506a4aa19faa3dc8cb36a48d1949a23a8f8f..d73846735a00be86665e554c5b752c88
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 300dec4fca20c0d9dc18f228cd8157057dc2b74e..a6065211e7f2634963eb5020dbf9997b1f8ca32f 100644
+index fde38b20fae3050f18f11a5098ad482aff0587c1..5d7f7008c42b3976ce57f704861788f39bd329ad 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -129,4 +129,13 @@ public class FusionWorldConfig {

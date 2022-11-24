@@ -23,10 +23,10 @@ index aa042a466af7ce45d04d06996937e0c323b6c932..4f941f262195d66244ee7b9d3c98c9bf
  
      private void packetSettingsSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 048509cc6fb824dad6c30c668b0c96eca3257d94..228222eb30bc8d1e25c3108a51daa3203dfa8d23 100644
+index c840efaa3f76783e6afe6add067288a5b4b16dec..9b2da6a202c797c90b5eaf53505f6ad452447b4e 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -879,7 +879,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -880,7 +880,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
  
          this.checkOutOfWorld();
          if (!this.level.isClientSide) {

@@ -7,10 +7,10 @@ Mirai - etil2jz - GPL 3.0
 SportPaper - Electroid - GPL 3.0
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c888e654ab9449bfdc7dfe16078eb0786ae6c15e..1f8132c634260d5aa05e5f1c927d99eee1fd4a50 100644
+index 2833d47fd1e8913d2160cbf48f34e941ad885a78..5a37fbbd3b71a2bafc92f8dc2f52f54be6e9aad8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1631,6 +1631,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1632,6 +1632,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          if (entity instanceof Player) entityhuman = (Player) entity;
          // CraftBukkit end
  
@@ -18,7 +18,7 @@ index c888e654ab9449bfdc7dfe16078eb0786ae6c15e..1f8132c634260d5aa05e5f1c927d99ee
          while (iterator.hasNext()) {
              ServerPlayer entityplayer = (ServerPlayer) iterator.next();
  
-@@ -1646,7 +1647,10 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1647,7 +1648,10 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  // CraftBukkit end
  
                  if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {

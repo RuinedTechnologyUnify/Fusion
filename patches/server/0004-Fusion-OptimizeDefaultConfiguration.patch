@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Tue, 4 Oct 2022 19:22:51 +0900
+Date: Thu, 24 Nov 2022 18:28:40 +0900
 Subject: [PATCH] Fusion-OptimizeDefaultConfiguration
 
 Prismarine - AlphaKR93 - MIT
@@ -8,7 +8,7 @@ JettPack - Titaniumtown - GPL 3.0
 Reference: YouHaveTrouble/minecraft-optimization
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index c9ae76401278057f87ebef13619a114722e81a1d..eb6c03d5407677a2aacd3bb917a7f80eb0fc4ceb 100644
+index c9ae76401278057f87ebef13619a114722e81a1d..7ca52c85793ca6e8ed483bb1db3ab417565b7cb2 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -226,7 +226,7 @@ public class PufferfishConfig {
@@ -16,7 +16,7 @@ index c9ae76401278057f87ebef13619a114722e81a1d..eb6c03d5407677a2aacd3bb917a7f80e
      private static void projectileLoading() {
          maxProjectileLoadsPerTick = getInt("projectile.max-loads-per-tick", 10, "Controls how many chunks are allowed", "to be sync loaded by projectiles in a tick.");
 -        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 10, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed.");
-+        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 8, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed."); // Fusion - Optimize Default Configuration
++		 maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 8, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed."); // Fusion - Optimize Default Configuration
  
          setComment("projectile", "Optimizes projectile settings");
      }
@@ -25,7 +25,7 @@ index c9ae76401278057f87ebef13619a114722e81a1d..eb6c03d5407677a2aacd3bb917a7f80e
                  "This value defines how often in ticks, the furthest entity",
                  "will get their pathfinders and behaviors ticked. 20 = 1s");
 -        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 8,
-+        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 7, // Fusion - Optimize Default Configuration
++		 activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 7, // Fusion - Optimize Default Configuration
                  "This value defines how much distance modifies an entity's",
                  "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
                  "If you want further away entities to tick less often, use 7.",
@@ -43,10 +43,10 @@ index 04ca6d27a13706fbddc708df0fcca42b4098bcba..123dbe18be5748ac9867b59abd015c8f
  
      public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221e374a257 100644
+index 7e995bb83a06e302fd70a8e6f079e3ac55c60473..481663ec385ba2966ab070cf42dcff727ecadda6 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -86,10 +86,10 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -87,10 +87,12 @@ public class WorldConfiguration extends ConfigurationPart {
              public int updateRadius = 2;
              public boolean lavaObscures = false;
              public boolean usePermission = false;
@@ -54,23 +54,25 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 -                "coal_ore", "deepslate_coal_ore", "lapis_ore", "deepslate_lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "deepslate_diamond_ore",
 -                "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"); // TODO update type to List<Block>
 -            public List<String> replacementBlocks = List.of("stone", "oak_planks", "deepslate"); // TODO update type to List<Block>
++            // Fusion start - Optimize Default Configuration
 +            public List<String> hiddenBlocks = List.of("air", "copper_ore", "deepslate_copper_ore", "raw_copper_block", "diamond_ore", "deepslate_diamond_ore",
 +                    "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "raw_iron_block", "lapis_ore", "deepslate_lapis_ore", "redstone_ore", "deepslate_redstone_ore"); // TODO update type to List<Block>
 +            public List<String> replacementBlocks = List.of("chest", "amethyst_block", "andesite", "budding_amethyst", "calcite", "coal_ore", "deepslate_coal_ore", "deepslate",
 +                    "diorite", "dirt", "emerald_ore", "deepslate_emerald_ore", "granite", "gravel", "oak_planks", "smooth_basalt", "stone", "tuff"); // TODO update type to List<Block>
++            // Fusion end
          }
      }
-
-@@ -129,7 +129,7 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+@@ -130,7 +132,7 @@ public class WorldConfiguration extends ConfigurationPart {
              @MergeMap
              public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
              @MergeMap
 -            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
 +            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), 56))); // Fusion - Optimize Default Configuration
-
+ 
              @ConfigSerializable
              public record DespawnRange(@Required int soft, @Required int hard) {
-@@ -309,7 +309,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -310,7 +312,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Environment extends ConfigurationPart {
          public boolean disableThunder = false;
          public boolean disableIceAndSnow = false;
@@ -79,16 +81,16 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
          public boolean disableExplosionKnockback = false;
          public boolean generateFlatBedrock = false;
          public FrostedIce frostedIce;
-@@ -361,7 +361,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -362,7 +364,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public Fixes fixes;
-
+ 
      public class Fixes extends ConfigurationPart {
 -        public boolean fixItemsMergingThroughWalls = false;
-+        public boolean fixItemsMergingThroughWalls = true;
++        public boolean fixItemsMergingThroughWalls = true; // Fusion - Optimize Default Configuration
          public boolean disableUnloadedChunkEnderpearlExploit = true;
          public boolean preventTntFromMovingInWater = false;
          public boolean splitOverstackedLoot = true;
-@@ -389,9 +389,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -390,9 +392,9 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Collisions extends ConfigurationPart {
          public boolean onlyPlayersCollide = false;
          public boolean allowVehicleCollisions = true;
@@ -99,9 +101,9 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 +        public int maxEntityCollisions = 2; // Fusion - Optimize Default Configuration
          public boolean allowPlayerCrammingDamage = false;
      }
-
-@@ -399,9 +399,9 @@ public class WorldConfiguration extends ConfigurationPart {
-
+ 
+@@ -400,9 +402,9 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
      public class Chunks extends ConfigurationPart {
          public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
 -        public int maxAutoSaveChunksPerTick = 24;
@@ -112,9 +114,9 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
          public Duration delayChunkUnloadsBy = Duration.of("10s");
          public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(Registry.ENTITY_TYPE.size()), map -> {
              map.defaultReturnValue(-1);
-@@ -424,11 +424,22 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -425,11 +427,22 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
-
+ 
      public class TickRates extends ConfigurationPart {
 -        public int grassSpread = 1;
 +        public int grassSpread = 4; // Fusion - Optimize Default Configuration
@@ -137,10 +139,10 @@ index a1bd848bbf924267e74e61dabdb840628712b1ad..2b2441f63bf06f45269bf8124f665221
 +        });
 +        // Fusion end
      }
-
+ 
      @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
-@@ -450,9 +461,9 @@ public class WorldConfiguration extends ConfigurationPart {
-
+@@ -451,9 +464,9 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
 -        public boolean updatePathfindingOnBlockUpdate = true;
@@ -173,20 +175,20 @@ index 6af307481a6752529d87869760945cb140d05bed..56722c335eaefeac3c3a66ffeec9e3c2
                          }
                      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index bd6085798bfbba776fb66adecc09ba89a7fe6ce9..e88b8bc4a737771060ca504aeea0920c39d8cd24 100644
+index bd6085798bfbba776fb66adecc09ba89a7fe6ce9..55b2223b83ef68014537e93c7cf7b4427a7bca47 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -438,7 +438,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          BufferedWriter bufferedwriter = Files.newBufferedWriter(file);
-
+ 
          try {
 -            bufferedwriter.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", dedicatedserverproperties.syncChunkWrites));
-+            //bufferedwriter.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", dedicatedserverproperties.syncChunkWrites)); // Fusion - Optimize Default Configuration
++            // bufferedwriter.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", dedicatedserverproperties.syncChunkWrites)); // Fusion - Optimize Default Configuration
              bufferedwriter.write(String.format(Locale.ROOT, "gamemode=%s%n", dedicatedserverproperties.gamemode));
              bufferedwriter.write(String.format(Locale.ROOT, "spawn-monsters=%s%n", dedicatedserverproperties.spawnMonsters));
              bufferedwriter.write(String.format(Locale.ROOT, "entity-broadcast-range-percentage=%d%n", dedicatedserverproperties.entityBroadcastRangePercentage));
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
-index 01ca7156d86243a80cd343a2a66be9ebedcc3b7c..a616916cda2932e984f4702fc034ea7f2abd26af 100644
+index 01ca7156d86243a80cd343a2a66be9ebedcc3b7c..ce7d6986aed6ccc040716ba9e725c730c8f73241 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 @@ -128,8 +128,8 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
@@ -205,23 +207,23 @@ index 01ca7156d86243a80cd343a2a66be9ebedcc3b7c..a616916cda2932e984f4702fc034ea7f
              return Mth.clamp(integer, (int) 1, 29999984);
          }, 29999984);
 -        this.syncChunkWrites = this.get("sync-chunk-writes", true) && Boolean.getBoolean("Paper.enable-sync-chunk-writes"); // Paper - hide behind flag
-+        this.syncChunkWrites = false; // Paper - hide behind flag // Fusion - Optimize Default Configuration
++        this.syncChunkWrites = false; // Fusion - Optimize Default Configuration
          this.enableJmxMonitoring = this.get("enable-jmx-monitoring", false);
          this.enableStatus = this.get("enable-status", true);
          this.hideOnlinePlayers = this.get("hide-online-players", false);
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java b/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
-index cba660a0506994f66cbcb890ccd464bd412a6211..9150d46bb379e2e9b6d529488e28d914b100e048 100644
+index cba660a0506994f66cbcb890ccd464bd412a6211..04c5347e3d762dce212d52a9e8002be89bd1c5af 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
 @@ -37,8 +37,10 @@ public class CraftSpawnCategory {
-
+ 
      public static long getDefaultTicksPerSpawn(SpawnCategory spawnCategory) {
          return switch (spawnCategory) {
 -            case MONSTER, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 1;
 -            case ANIMAL -> 400; // This value come from commit 2995a08324f
 +            // Fusion start - Optimize Default Configuration
 +            case ANIMAL, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 400;
-+            case MONSTER -> 10; // This value come from commit 2995a08324f
++            case MONSTER -> 10;
 +            // Fusion end
              default -> throw new UnsupportedOperationException("Unknown Config value " + spawnCategory + " for ticks-per");
          };
@@ -233,14 +235,14 @@ index 1a0392afc36e015d1df784a80d9682629cafe2de..54edd9e14b82dca29e0d522bd5965649
 @@ -254,7 +254,7 @@ public class PurpurConfig {
          laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
      }
-
+ 
 -    public static boolean useAlternateKeepAlive = false;
 +    public static boolean useAlternateKeepAlive = true; // Fusion - Optimize Default Configuration
      private static void useAlternateKeepAlive() {
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 3409480d4e01db19e3e54474c9e122232043e4b0..6fb0fa98257f15038bfb434e9b157e34f258bdbc 100644
+index bb352ed86e4047e38ad27900f72fc0ddb741bf71..bd23bb52ad7ad70909f6a09579857ea0755abe48 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -417,7 +417,7 @@ public class PurpurWorldConfig {
@@ -249,10 +251,10 @@ index 3409480d4e01db19e3e54474c9e122232043e4b0..6fb0fa98257f15038bfb434e9b157e34
      public int playerDeathExpDropMax = 100;
 -    public boolean teleportIfOutsideBorder = false;
 +    public boolean teleportIfOutsideBorder = true; // Fusion - Optimize Default Configuration
+     public boolean teleportOnNetherCeilingDamage = false;
      public boolean totemOfUndyingWorksInInventory = false;
      public boolean playerFixStuckPortal = false;
-     public boolean creativeOnePunch = false;
-@@ -2726,7 +2726,7 @@ public class PurpurWorldConfig {
+@@ -2728,7 +2728,7 @@ public class PurpurWorldConfig {
      public boolean villagerRidableInWater = false;
      public boolean villagerControllable = true;
      public double villagerMaxHealth = 20.0D;
@@ -262,7 +264,7 @@ index 3409480d4e01db19e3e54474c9e122232043e4b0..6fb0fa98257f15038bfb434e9b157e34
      public boolean villagerFollowEmeraldBlock = false;
      public boolean villagerCanBeLeashed = false;
 diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
-index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb241c2690 100644
+index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..2f425357c4823c2610f6ad1471e701c50daefa9f 100644
 --- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
 @@ -146,14 +146,14 @@ public class SpigotWorldConfig
@@ -273,7 +275,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.itemMerge = this.getDouble("merge-radius.item", 3.5 ); // Fusion - Optimize Default Configuration
          this.log( "Item Merge Radius: " + this.itemMerge );
      }
-
+ 
      public double expMerge;
      private void expMerge()
      {
@@ -281,7 +283,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.expMerge = this.getDouble("merge-radius.exp", 4.0 ); // Fusion - Optimize Default Configuration
          this.log( "Experience Merge Radius: " + this.expMerge );
      }
-
+ 
 @@ -192,7 +192,7 @@ public class SpigotWorldConfig
      public byte mobSpawnRange;
      private void mobSpawnRange()
@@ -290,12 +292,11 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
 +        this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 2 ); // Paper - Vanilla // Fusion - Optimize Default Configuration
          this.log( "Mob Spawn Range: " + this.mobSpawnRange );
      }
-
-@@ -202,15 +202,16 @@ public class SpigotWorldConfig
-         this.itemDespawnRate = this.getInt( "item-despawn-rate", 6000 );
+ 
+@@ -203,14 +203,16 @@ public class SpigotWorldConfig
          this.log( "Item Despawn Rate: " + this.itemDespawnRate );
      }
--
+ 
 -    public int animalActivationRange = 32;
 -    public int monsterActivationRange = 32;
 +    // Fusion start - Optimize Default Configuration
@@ -315,7 +316,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
      public int wakeUpInactiveAnimals = 4;
      public int wakeUpInactiveAnimalsEvery = 60*20;
      public int wakeUpInactiveAnimalsFor = 5*20;
-@@ -291,9 +292,9 @@ public class SpigotWorldConfig
+@@ -291,9 +293,9 @@ public class SpigotWorldConfig
          this.hopperTransfer = this.getInt( "ticks-per.hopper-transfer", 8 );
          if ( SpigotConfig.version < 11 )
          {
@@ -328,7 +329,7 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..0465e7c30aa7fe45d21cf934026f0fbb
          this.hopperCanLoadChunks = this.getBoolean( "hopper-can-load-chunks", false );
          this.log( "Hopper Transfer: " + this.hopperTransfer + " Hopper Check: " + this.hopperCheck + " Hopper Amount: " + this.hopperAmount + " Hopper Can Load Chunks: " + this.hopperCanLoadChunks );
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index eef7c125b2689f29cae5464659eacdf33f5695b2..f5515789f596bac7dd7361118387464cf8776653 100644
+index eef7c125b2689f29cae5464659eacdf33f5695b2..91e4f942000d1a3cd99fc9862136ac32a5ded628 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
 @@ -24,22 +24,22 @@ settings:
@@ -352,7 +353,6 @@ index eef7c125b2689f29cae5464659eacdf33f5695b2..f5515789f596bac7dd7361118387464c
  chunk-gc:
      period-in-ticks: 600
  ticks-per:
-+    monster-spawns: 10
      animal-spawns: 400
 -    monster-spawns: 1
 -    water-spawns: 1
@@ -360,6 +360,7 @@ index eef7c125b2689f29cae5464659eacdf33f5695b2..f5515789f596bac7dd7361118387464c
 -    water-underground-creature-spawns: 1
 -    axolotl-spawns: 1
 -    ambient-spawns: 1
++    monster-spawns: 10
 +    water-spawns: 400
 +    water-ambient-spawns: 400
 +    water-underground-creature-spawns: 400

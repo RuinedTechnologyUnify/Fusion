@@ -5,13 +5,14 @@ Subject: [PATCH] Fusion-PacketSettingsConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 9a7cf0d4540d7de4060a60922aa1e7624705f68a..1db413994e8d7186f0ee9631966fb1572c9bce88 100644
+index 9a7cf0d4540d7de4060a60922aa1e7624705f68a..480c6d53d769b36f29801a913f489d75594addd4 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -251,4 +251,10 @@ public class FusionConfig {
+@@ -251,4 +251,11 @@ public class FusionConfig {
  
      private static void c2meConfigSetup() {
      }
++
 +
 +    private static void packetSettings() {
 +    }
@@ -21,13 +22,14 @@ index 9a7cf0d4540d7de4060a60922aa1e7624705f68a..1db413994e8d7186f0ee9631966fb157
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 8efbdfc5ef48b329988bc90606c7e0fccfd504fd..df2695564698ac75e433348c8b6ed6deb3ca01a4 100644
+index 8efbdfc5ef48b329988bc90606c7e0fccfd504fd..566dadfe1f0461ff7e8e46a2467f364a24a5147d 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -169,4 +169,10 @@ public class FusionWorldConfig {
-
+@@ -169,4 +169,11 @@ public class FusionWorldConfig {
+ 
      private void c2meConfigSetup() {
      }
++
 +
 +    private void packetSettings() {
 +    }

@@ -47,7 +47,7 @@ index 411a3a84dbd2450f292c42d43eeb3a3bccb2a5cc..7690920bc65e4fc3e2d23cdc5bc8fe9c
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 00fc98797aea23e1f586b8e7f85fc27e2019352f..77a7f3a04ef33cb238b0a635a7bafc79278744a9 100644
+index 2c915c765ceef3ec28f5a58fa9a587282c1a906a..7130a81ff93c32d73070f5a1da0502e3ceff3885 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 @@ -19,8 +19,8 @@ import org.slf4j.Logger;

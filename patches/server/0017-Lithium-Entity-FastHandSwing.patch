@@ -25,10 +25,10 @@ index bc0d8d9695c3fdac59b040fd05ac90ba4ccd7070..74e676a0e16d455d50eb5c786170c1a3
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 0c9aca5186b1fdb7e7d3dcb8ee41223551383572..4f9746675160cd9986514b93f4dc25171a36024b 100644
+index a94796d9904d736f306054dad8d0da28547ae8c3..1b73bbc51416190dd425b076f6d336d61f63f65d 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -2549,6 +2549,8 @@ public abstract class LivingEntity extends Entity {
+@@ -2551,6 +2551,8 @@ public abstract class LivingEntity extends Entity {
      }
  
      protected void updateSwingTime() {

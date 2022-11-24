@@ -27,10 +27,10 @@ index f2e8b460fb275302c48aa6431481ba647f77d54a..9a9f9daad5e552eb1310e6039f109fe5
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 385850b7a2802b4315a33aa2972a9a44127f8987..048509cc6fb824dad6c30c668b0c96eca3257d94 100644
+index dd13fc7cbf82948b1474ea33411e64b465608672..c840efaa3f76783e6afe6add067288a5b4b16dec 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2589,39 +2589,94 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2591,39 +2591,94 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          return !this.isRemoved();
      }
  

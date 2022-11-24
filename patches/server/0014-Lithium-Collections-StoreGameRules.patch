@@ -25,7 +25,7 @@ index e0d69ef5dcb52cd04f319bcf33375cbc7f310b7b..44daabaf536efc12def89989040f9f65
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 17e869074b8cf29a8c3280499a27e95179896750..d1d4dd6c661b0b487dc7101e04d70fe63546cd7e 100644
+index 9fa0758c0a8c74dec6cfe8a16585ace1cf45df96..a90171040352c7d3dd9d1e67e8f8ed482a87e5e3 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -111,14 +111,17 @@ public class GameRules {

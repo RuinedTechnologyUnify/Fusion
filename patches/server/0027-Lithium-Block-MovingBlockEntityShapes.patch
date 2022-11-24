@@ -28,7 +28,7 @@ index 6b6c937ad2d882d9f649830f97f3d4513334b55b..baedc4d6cf89b2bfe0367116438c65af
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java b/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-index 7c59d44a3bafdc65f453d77ff3e25cffb742ad6c..76bce15f4154675776a014fdb5404d239d501eb5 100644
+index 4b61602a1d2d6817272e02cfd282ac5dabbd976d..3d8e96816eed13128adc0ca134d40f172082b92b 100644
 --- a/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 @@ -52,6 +52,74 @@ public class PistonMovingBlockEntity extends BlockEntity {

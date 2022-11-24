@@ -26,7 +26,7 @@ index 0b6ae2dcf0b4358704aa6cc4232a45ea27715809..57a99e525c7c6dbd54644b79ca49ff15
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 9b22034aa655ceb0da151d9d8ca3147f6487889a..2ca5b84973e4f9e786dbee89a035e56918448a34 100644
+index 46e3e884890a23f5f90efc795a21566dd40804df..7fa970d481f788afc6e2fd207389f4773c07f81c 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -32,6 +32,7 @@ public class Mth {

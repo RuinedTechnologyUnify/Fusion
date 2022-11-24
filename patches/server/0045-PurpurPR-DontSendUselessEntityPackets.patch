@@ -6,15 +6,15 @@ Subject: [PATCH] PurpurPR-DontSendUselessEntityPackets
 PurpurMC - Purpur - MIT
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index df2695564698ac75e433348c8b6ed6deb3ca01a4..6fb326f066b04abb6aa57a18f24dee0ebfc66e13 100644
+index 566dadfe1f0461ff7e8e46a2467f364a24a5147d..6fb326f066b04abb6aa57a18f24dee0ebfc66e13 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -170,7 +170,10 @@ public class FusionWorldConfig {
+@@ -170,8 +170,10 @@ public class FusionWorldConfig {
      private void c2meConfigSetup() {
      }
  
 +    public boolean packetDontSendUselessEntityPackets = true;
-+
+ 
      private void packetSettings() {
 +        packetDontSendUselessEntityPackets = getBoolean("packet.dont-send-useless-entity-packets", packetDontSendUselessEntityPackets);
      }

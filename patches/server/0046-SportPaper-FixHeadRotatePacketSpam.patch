@@ -23,7 +23,7 @@ index 6fb326f066b04abb6aa57a18f24dee0ebfc66e13..aa042a466af7ce45d04d06996937e0c3
  
      private void packetSettingsSetup() {
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index 88765672b90936718d39483da2e762a54eddf1a8..4dce2f73774f003b8befedbc29ed9a4ca503a977 100644
+index 88765672b90936718d39483da2e762a54eddf1a8..56c76388c878a50bd8a0cacc7b8f61efaf16d2aa 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
 @@ -343,8 +343,12 @@ public class ServerEntity {
