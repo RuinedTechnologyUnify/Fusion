@@ -11,15 +11,15 @@ index b11d33296d6f29a74302360bb353c3e6a6e1f658..e72aba64b15c870a7d6fd78a9ab090bd
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -253,9 +253,11 @@ public class FusionConfig {
      }
-
+ 
      public static boolean packetFlushAfterMorePackets = true;
 +    public static boolean packetSendMorePacketsImmediately = true;
-
+ 
      private static void packetSettings() {
          packetFlushAfterMorePackets = getBoolean("packet.flush-after-more-packets", packetFlushAfterMorePackets);
 +        packetSendMorePacketsImmediately = getBoolean("packet.send-more-packets-immediately", packetSendMorePacketsImmediately);
      }
-
+ 
      private static void packetSettingsSetup() {
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index ded646f98f95556ac1253bdfbc441c32b8509d76..bc5b77a475223cbd946e34f1b99d84badb184f0b 100644

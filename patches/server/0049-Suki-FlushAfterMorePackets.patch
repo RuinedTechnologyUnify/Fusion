@@ -12,13 +12,13 @@ index 480c6d53d769b36f29801a913f489d75594addd4..b11d33296d6f29a74302360bb353c3e6
 @@ -252,8 +252,10 @@ public class FusionConfig {
      private static void c2meConfigSetup() {
      }
-
+ 
 +    public static boolean packetFlushAfterMorePackets = true;
-
+ 
      private static void packetSettings() {
 +        packetFlushAfterMorePackets = getBoolean("packet.flush-after-more-packets", packetFlushAfterMorePackets);
      }
-
+ 
      private static void packetSettingsSetup() {
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index 2a71c8e6901944af90c4ad4dfa39dba7fafc0126..ded646f98f95556ac1253bdfbc441c32b8509d76 100644
