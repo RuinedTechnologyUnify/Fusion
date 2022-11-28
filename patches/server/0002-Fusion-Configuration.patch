@@ -373,10 +373,10 @@ index 0000000000000000000000000000000000000000..fde38b20fae3050f18f11a5098ad482a
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..38066d67105cd02df2939cb46d4c579e55c2737d
+index 0000000000000000000000000000000000000000..727da5e041e93fa6e23505422d6a231fc72f8f93
 --- /dev/null
 +++ b/src/main/java/com/github/ipecter/fusion/command/FusionCommand.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,70 @@
 +package com.github.ipecter.fusion.command;
 +
 +
@@ -436,6 +436,7 @@ index 0000000000000000000000000000000000000000..38066d67105cd02df2939cb46d4c579e
 +            console.server.reloadCount++;
 +
 +            Command.broadcastCommandMessage(sender, prefix + ChatColor.GREEN + "Fusion config reload complete.");
++            Command.broadcastCommandMessage(sender, prefix + ChatColor.GOLD + "Some config requires restarting server.");
 +        } else if (args[0].equalsIgnoreCase("version")) {
 +            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
 +            if (verCmd != null) {
