@@ -16,6 +16,7 @@
 - ❗ Work In Progress ❗
 - **High Performance** - **Stable** - **Compatible**
 - [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
+- **EVDS**: Extend View Distance System, More Extended, Optimized, Configurable System.
 - **ZeroChunk**: Extreme Optimized MultiThread View-Distance System to replace Vanilla System. 
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
 - Bukkit Server Based on [Bukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse) / [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) / [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)

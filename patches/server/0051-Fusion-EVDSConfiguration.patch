@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 28 Nov 2022 14:20:14 +0900
+Subject: [PATCH] Fusion-EVDSConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index e72aba64b15c870a7d6fd78a9ab090bd295cc38e..ef9ce279c16ea8f96c6ddc494ae018e96e70b11b 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -262,4 +262,12 @@ public class FusionConfig {
+ 
+     private static void packetSettingsSetup() {
+     }
++
++
++    private static void evdsConfig() {
++        setComment("evds", "[ EVDS ] Extend View Distance System");
++    }
++
++    private static void evdsConfigSetup() {
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 4f941f262195d66244ee7b9d3c98c9bfc160fd08..613aeac56a89f7f336ae5907fb12d47db7b5ab71 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -182,4 +182,11 @@ public class FusionWorldConfig {
+ 
+     private void packetSettingsSetup() {
+     }
++
++
++    private static void evdsConfig() {
++    }
++
++    private static void evdsConfigSetup() {
++    }
+ }
+\ No newline at end of file

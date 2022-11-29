@@ -1,0 +1,172 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 28 Nov 2022 15:02:36 +0900
+Subject: [PATCH] EVDS-ExtendMinMaxDistance
+
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index ef9ce279c16ea8f96c6ddc494ae018e96e70b11b..b23b3ae78fe1b91ef1a73436b9db14996a20415a 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -263,11 +263,15 @@ public class FusionConfig {
+     private static void packetSettingsSetup() {
+     }
+ 
++    public static int evdsMinDistance = 1;
++    public static int evdsMaxDistance = 64;
+ 
+     private static void evdsConfig() {
+         setComment("evds", "[ EVDS ] Extend View Distance System");
+     }
+ 
+     private static void evdsConfigSetup() {
++        evdsMinDistance = Math.max(getInt("evds.min-distance", 1, "This adjusts min view-distance of server.properties (Min 0)"), 0);
++        evdsMaxDistance = Math.min(getInt("evds.max-distance", 64, "This adjusts max view-distance of server.properties (Max 128)"), 128);
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+index 0b060183429f4c72ec767075538477b4302bbf0d..fee40237bdad7ef3039bcb7e5d4e634ee587e4f7 100644
+--- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
++++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ public final class PlayerChunkLoader {
+ 
+-    public static final int MIN_VIEW_DISTANCE = 2;
+-    public static final int MAX_VIEW_DISTANCE = 32;
++    public static final int MIN_VIEW_DISTANCE = com.github.ipecter.fusion.FusionConfig.evdsMinDistance; // Fusion - EVDS: Extend Max & Min Distance
++    public static final int MAX_VIEW_DISTANCE = com.github.ipecter.fusion.FusionConfig.evdsMaxDistance; // Fusion - EVDS: Extend Max & Min Distance
+ 
+     public static final int TICK_TICKET_LEVEL = 31;
+     public static final int LOADED_TICKET_LEVEL = 33;
+@@ -824,6 +824,7 @@ public final class PlayerChunkLoader {
+ 
+         // these view distance methods are for api
+         public int getTargetSendViewDistance() {
++            if (MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance <= 1) return MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance;
+             final int tickViewDistance = this.tickViewDistance == -1 ? this.loader.getTickDistance() : this.tickViewDistance;
+             final int loadViewDistance = Math.max(tickViewDistance + 1, this.loadViewDistance == -1 ? this.loader.getLoadDistance() : this.loadViewDistance);
+             final int clientViewDistance = this.getClientViewDistance();
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index ce7d6986aed6ccc040716ba9e725c730c8f73241..1a0f2c0db7c0bb1388d357c5dc9c12b034147e17 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -79,7 +79,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+     public final long maxTickTime;
+     public final int maxChainedNeighborUpdates;
+     public final int rateLimitPacketsPerSecond;
+-    public final int viewDistance;
++    public int viewDistance; // Fusion - EVDS: Extend Max & Min Distance
+     public final int simulationDistance;
+     public final int maxPlayers;
+     public final int networkCompressionThreshold;
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index ceaa44e8fbf02aef36f5ae663269dfc1026e4086..99154ae6da9b07bc4eb4b9b68f26404a050c2ee0 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -121,8 +121,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     private static final int CHUNK_SAVED_PER_TICK = 200;
+     private static final int CHUNK_SAVED_EAGERLY_PER_TICK = 20;
+     private static final int EAGER_CHUNK_SAVE_COOLDOWN_IN_MILLIS = 10000;
+-    private static final int MIN_VIEW_DISTANCE = 3;
+-    public static final int MAX_VIEW_DISTANCE = 33;
++    private static final int MIN_VIEW_DISTANCE = com.github.ipecter.fusion.FusionConfig.evdsMinDistance + 1; // Fusion - EVDS: Extend Max & Min Distance
++    public static final int MAX_VIEW_DISTANCE = com.github.ipecter.fusion.FusionConfig.evdsMaxDistance + 1; // Fusion - EVDS: Extend Max & Min Distance
+     public static final int MAX_CHUNK_DISTANCE = 33 + ChunkStatus.maxDistance();
+     public static final int FORCED_TICKET_LEVEL = 31;
+     // Paper - rewrite chunk system
+@@ -805,7 +805,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+     // Paper end - replace player loader system
+     public void setViewDistance(int watchDistance) {
+-        int j = Mth.clamp(watchDistance + 1, (int) 3, (int) 33);
++        int j = Mth.clamp(watchDistance + 1, (int) com.github.ipecter.fusion.FusionConfig.evdsMinDistance + 1, (int) com.github.ipecter.fusion.FusionConfig.evdsMaxDistance + 1); // Fusion - EVDS: Extend Max & Min Distance
+ 
+         if (j != this.viewDistance) {
+             int k = this.viewDistance;
+@@ -192,7 +192,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     // Paper end - use distance map to optimise tracker
+
+     void addPlayerToDistanceMaps(ServerPlayer player) {
+-        this.playerChunkManager.addPlayer(player); // Paper - replace chunk loader
++        if (MinecraftServer.getServer().server.getServer().getProperties().viewDistance != 0) this.playerChunkManager.addPlayer(player); // Paper - replace chunk loader
+         int chunkX = MCUtil.getChunkCoordinate(player.getX());
+         int chunkZ = MCUtil.getChunkCoordinate(player.getZ());
+         // Note: players need to be explicitly added to distance maps before they can be updated
+@@ -214,7 +214,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+
+     void removePlayerFromDistanceMaps(ServerPlayer player) {
+-        this.playerChunkManager.removePlayer(player); // Paper - replace chunk loader
++        if (MinecraftServer.getServer().server.getServer().getProperties().viewDistance != 0) this.playerChunkManager.removePlayer(player); // Paper - replace chunk loader
+
+         // Paper start - optimise ChunkMap#anyPlayerCloseEnoughForSpawning
+         this.playerMobSpawnMap.remove(player);
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 5a37fbbd3b71a2bafc92f8dc2f52f54be6e9aad8..94017eeace955b070603bf40c282661700438099 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -587,7 +587,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+         // this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage, this.entitySliceManager); // Paper // Paper - rewrite chunk system
+         StructureTemplateManager structuretemplatemanager = minecraftserver.getStructureManager();
+-        int j = this.spigotConfig.viewDistance; // Spigot
++        int j = MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance; // Spigot // Fusion - EVDS: Extend Max & Min Distance
+         int k = this.spigotConfig.simulationDistance; // Spigot
+         //PersistentEntitySectionManager persistententitysectionmanager = this.entityManager; // Paper - rewrite chunk system
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index ee25980bb78c567a052ced15440fa294085cc896..fedc519e19900fa2aa28770891425527d3b37503 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -740,7 +740,7 @@ public final class CraftServer implements Server {
+ 
+     @Override
+     public int getViewDistance() {
+-        return this.getProperties().viewDistance;
++        return this.getProperties().viewDistance == 0 ? this.getProperties().simulationDistance : this.getProperties().viewDistance; // Fusion - EVDS: Extend Min & Max Distance
+     }
+ 
+     @Override
+@@ -1014,6 +1014,7 @@ public final class CraftServer implements Server {
+         this.console.paperConfigurations.reloadConfigs(this.console);
+         org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
+         com.github.ipecter.fusion.FusionConfig.init((File) console.options.valueOf("fusion-settings")); // Fusion
++        config.viewDistance = Math.max(Math.min(config.viewDistance, com.github.ipecter.fusion.FusionConfig.evdsMaxDistance), com.github.ipecter.fusion.FusionConfig.evdsMinDistance); // Fusion - EVDS: Extend Max & Min Distance
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 41fafd4a1583e748d763439e8838739ec1ff8e1d..f4baf7ec54ddc6c6d7d6fdb218b8a42ee4785958 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -2307,8 +2307,8 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+     // Paper start - view distance api
+     @Override
+     public void setViewDistance(int viewDistance) {
+-        if (viewDistance < 2 || viewDistance > 32) {
+-            throw new IllegalArgumentException("View distance " + viewDistance + " is out of range of [2, 32]");
++        if (viewDistance < com.github.ipecter.fusion.FusionConfig.evdsMinDistance || viewDistance > com.github.ipecter.fusion.FusionConfig.evdsMaxDistance) { // Fusion - EVDS: Extend Max & Min Distance
++            throw new IllegalArgumentException("View distance " + viewDistance + " is out of range of [" + com.github.ipecter.fusion.FusionConfig.evdsMinDistance +", " + com.github.ipecter.fusion.FusionConfig.evdsMaxDistance + "]"); // Fusion - EVDS: Extend Max & Min Distance
+         }
+         net.minecraft.server.level.ChunkMap chunkMap = getHandle().getChunkSource().chunkMap;
+         chunkMap.setViewDistance(viewDistance);
+diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+index 2f425357c4823c2610f6ad1471e701c50daefa9f..9f192215d3fc53d1e792d623d7aeeb304c6d60ac 100644
+--- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
++++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+@@ -169,10 +169,10 @@ public class SpigotWorldConfig
+         this.viewDistance = ( viewDistanceObject ) instanceof Number ? ( (Number) viewDistanceObject ).intValue() : -1;
+         if ( this.viewDistance <= 0 )
+         {
+-            this.viewDistance = Bukkit.getViewDistance();
++            this.viewDistance = net.minecraft.server.MinecraftServer.getServer().server.getServer().getProperties().viewDistance; // Fusion - EVDS: Extend Max & Min Distance
+         }
+ 
+-        this.viewDistance = Math.max( Math.min( viewDistance, 32 ), 3 );
++        this.viewDistance = Math.max( Math.min( viewDistance, com.github.ipecter.fusion.FusionConfig.evdsMaxDistance ), com.github.ipecter.fusion.FusionConfig.evdsMinDistance ); // Fusion - EVDS: Extend Max & Min Distance
+         this.log( "View Distance: " + this.viewDistance );
+     }
+ 
