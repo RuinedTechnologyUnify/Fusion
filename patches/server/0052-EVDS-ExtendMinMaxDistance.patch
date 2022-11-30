@@ -41,14 +41,6 @@ index 0b060183429f4c72ec767075538477b4302bbf0d..fee40237bdad7ef3039bcb7e5d4e634e
  
      public static final int TICK_TICKET_LEVEL = 31;
      public static final int LOADED_TICKET_LEVEL = 33;
-@@ -824,6 +824,7 @@ public final class PlayerChunkLoader {
- 
-         // these view distance methods are for api
-         public int getTargetSendViewDistance() {
-+            if (MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance <= 1) return MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance;
-             final int tickViewDistance = this.tickViewDistance == -1 ? this.loader.getTickDistance() : this.tickViewDistance;
-             final int loadViewDistance = Math.max(tickViewDistance + 1, this.loadViewDistance == -1 ? this.loader.getLoadDistance() : this.loadViewDistance);
-             final int clientViewDistance = this.getClientViewDistance();
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 index ce7d6986aed6ccc040716ba9e725c730c8f73241..1a0f2c0db7c0bb1388d357c5dc9c12b034147e17 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
@@ -86,37 +78,6 @@ index ceaa44e8fbf02aef36f5ae663269dfc1026e4086..99154ae6da9b07bc4eb4b9b68f26404a
  
          if (j != this.viewDistance) {
              int k = this.viewDistance;
-@@ -192,7 +192,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
-     // Paper end - use distance map to optimise tracker
-
-     void addPlayerToDistanceMaps(ServerPlayer player) {
--        this.playerChunkManager.addPlayer(player); // Paper - replace chunk loader
-+        if (MinecraftServer.getServer().server.getServer().getProperties().viewDistance != 0) this.playerChunkManager.addPlayer(player); // Paper - replace chunk loader
-         int chunkX = MCUtil.getChunkCoordinate(player.getX());
-         int chunkZ = MCUtil.getChunkCoordinate(player.getZ());
-         // Note: players need to be explicitly added to distance maps before they can be updated
-@@ -214,7 +214,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
-     }
-
-     void removePlayerFromDistanceMaps(ServerPlayer player) {
--        this.playerChunkManager.removePlayer(player); // Paper - replace chunk loader
-+        if (MinecraftServer.getServer().server.getServer().getProperties().viewDistance != 0) this.playerChunkManager.removePlayer(player); // Paper - replace chunk loader
-
-         // Paper start - optimise ChunkMap#anyPlayerCloseEnoughForSpawning
-         this.playerMobSpawnMap.remove(player);
-diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 5a37fbbd3b71a2bafc92f8dc2f52f54be6e9aad8..94017eeace955b070603bf40c282661700438099 100644
---- a/src/main/java/net/minecraft/server/level/ServerLevel.java
-+++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -587,7 +587,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
- 
-         // this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage, this.entitySliceManager); // Paper // Paper - rewrite chunk system
-         StructureTemplateManager structuretemplatemanager = minecraftserver.getStructureManager();
--        int j = this.spigotConfig.viewDistance; // Spigot
-+        int j = MinecraftServer.getServer().server.getHandle().getServer().getProperties().viewDistance; // Spigot // Fusion - EVDS: Extend Max & Min Distance
-         int k = this.spigotConfig.simulationDistance; // Spigot
-         //PersistentEntitySectionManager persistententitysectionmanager = this.entityManager; // Paper - rewrite chunk system
- 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index ee25980bb78c567a052ced15440fa294085cc896..fedc519e19900fa2aa28770891425527d3b37503 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
