@@ -1,0 +1,1173 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 1 Dec 2022 20:01:27 +0900
+Subject: [PATCH] 123
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Chunk.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Chunk.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6d8345e2f6a3a9ea520ef0e98cc6da9cb227af6b
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Chunk.java
+@@ -0,0 +1,287 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import net.minecraft.core.Registry;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.world.level.block.Block;
++import net.minecraft.world.level.block.Blocks;
++import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.level.chunk.*;
++import net.minecraft.world.level.levelgen.Heightmap;
++import net.minecraft.world.level.material.FluidState;
++import org.bukkit.block.data.BlockData;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.block.data.CraftBlockData;
++import org.bukkit.util.Vector;
++
++import java.lang.reflect.Field;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.concurrent.atomic.AtomicInteger;
++
++public final class Chunk {
++    private final ChunkAccess chunkAccess;
++    private final ServerLevel worldServer;
++
++
++    public Chunk(ServerLevel worldServer, ChunkAccess chunkAccess) {
++        this.chunkAccess = chunkAccess;
++        this.worldServer = worldServer;
++    }
++
++
++    public NBT toNBT(ChunkLight light, List<Runnable> asyncRunnable) {
++        return new NBT(ChunkRegionLoader.saveChunk(worldServer, chunkAccess, (ChunkLight) light, asyncRunnable));
++    }
++
++
++    public org.bukkit.Chunk getChunk() {
++        ChunkAccess chunk = chunkAccess;
++        if (chunk instanceof EmptyLevelChunk)
++            return ((LevelChunk) chunk).bukkitChunk;
++        else if (chunk instanceof LevelChunk)
++            return ((LevelChunk) chunk).bukkitChunk;
++        else if (chunk instanceof ProtoChunk)
++            return new LevelChunk(worldServer, ((ProtoChunk) chunk), v -> {
++            }).getBukkitChunk();
++        else
++            return null;
++    }
++
++    public org.bukkit.World getWorld() {
++        return worldServer.getWorld();
++    }
++
++
++    public BlockState getIBlockData(int x, int y, int z) {
++        int indexY = (y >> 4) - chunkAccess.getMinSection();
++        LevelChunkSection[] chunkSections = chunkAccess.getSections();
++        if (indexY >= 0 && indexY < chunkSections.length) {
++            LevelChunkSection chunkSection = chunkSections[indexY];
++            if (chunkSection != null && !chunkSection.hasOnlyAir())
++                return chunkSection.getBlockState(x & 15, y & 15, z & 15);
++        }
++        return Blocks.AIR.defaultBlockState();
++    }
++    public void setIBlockData(int x, int y, int z, BlockState iBlockData) {
++        int indexY = (y >> 4) - chunkAccess.getMinSection();
++        LevelChunkSection[] chunkSections = chunkAccess.getSections();
++        if (indexY >= 0 && indexY < chunkSections.length) {
++            LevelChunkSection chunkSection = chunkSections[indexY];
++            if (chunkSection == null)
++                chunkSection = chunkSections[indexY] = new LevelChunkSection(indexY, worldServer.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY));
++            chunkSection.setBlockState(x & 15, y & 15, z & 15, iBlockData, false);
++        }
++    }
++
++
++    public boolean equalsBlockData(int x, int y, int z, BlockData blockData) {
++        return equalsBlockData(x, y, z, ((CraftBlockData) blockData).getState());
++    }
++    public boolean equalsBlockData(int x, int y, int z, BlockState other) {
++        BlockState state = getIBlockData(x, y, z);
++        return state != null && state.equals(other);
++    }
++
++
++    public BlockData getBlockData(int x, int y, int z) {
++        BlockState blockData = getIBlockData(x, y, z);
++        return blockData != null ? CraftBlockData.fromData(blockData) : CraftBlockData.fromData(Blocks.AIR.defaultBlockState());
++    }
++
++
++    public void setBlockData(int x, int y, int z, BlockData blockData) {
++        BlockState iBlockData = ((CraftBlockData) blockData).getState();
++        if (iBlockData != null)
++            setIBlockData(x, y, z, iBlockData);
++    }
++
++
++    public Map<Vector, BlockData> getBlockDataMap() {
++        Map<Vector, BlockData> vectorBlockDataMap = new HashMap<>();
++        int maxHeight = worldServer.getMaxBuildHeight();
++        int minHeight = worldServer.getMinBuildHeight();
++        for (int x = 0; x < 16; x++) {
++            for (int y = minHeight; y < maxHeight; y++) {
++                for (int z = 0; z < 16; z++) {
++                    BlockData blockData = this.getBlockData(x, y, z);
++                    org.bukkit.Material material = blockData.getMaterial();
++                    if (material != org.bukkit.Material.AIR && material != org.bukkit.Material.VOID_AIR && material != org.bukkit.Material.CAVE_AIR) {
++                        vectorBlockDataMap.put(new Vector(x, y, z), blockData);
++                    }
++                }
++            }
++        }
++
++        return vectorBlockDataMap;
++    }
++
++
++    public int getX() {
++        return chunkAccess.getPos().x;
++    }
++
++    public int getZ() {
++        return chunkAccess.getPos().z;
++    }
++
++
++    private static Field field_LevelChunkSection_nonEmptyBlockCount;
++    static {
++        try {
++            field_LevelChunkSection_nonEmptyBlockCount = LevelChunkSection.class.getDeclaredField("f"); // TODO 映射 nonEmptyBlockCount
++            field_LevelChunkSection_nonEmptyBlockCount.setAccessible(true);
++        } catch (NoSuchFieldException exception) {
++            exception.printStackTrace();
++        }
++    }
++
++
++    public void replaceAllMaterial(BlockData[] target, BlockData to) {
++        Map<Block, BlockState> targetMap = new HashMap<>();
++        for (BlockData targetData : target) {
++            BlockState targetState = ((CraftBlockData) targetData).getState();
++            targetMap.put(targetState.getBlock(), targetState);
++        }
++        BlockState toI = ((CraftBlockData) to).getState();
++        for (LevelChunkSection section :chunkAccess.getSections()) {
++            if (section != null) {
++                AtomicInteger counts = new AtomicInteger();
++                PalettedContainer<BlockState> blocks = section.getStates();
++                List<Integer> conversionLocationList = new ArrayList<>();
++                PalettedContainer.CountConsumer<BlockState> forEachLocation = (state, location) -> {
++                    if (state == null)
++                        return;
++                    BlockState targetState = targetMap.get(state.getBlock());
++                    if (targetState != null) {
++                        conversionLocationList.add(location);
++                        state = toI;
++                    }
++                    if (!state.isAir())
++                        counts.incrementAndGet();
++                    FluidState fluid = state.getFluidState();
++                    if (!fluid.isEmpty())
++                        counts.incrementAndGet();
++                };
++                try {
++                    // 適用於 paper
++                    blocks.forEachLocation(forEachLocation);
++                } catch (NoSuchMethodError noSuchMethodError) {
++                    // 適用於 spigot (不推薦)
++                    blocks.count(forEachLocation);
++                }
++                conversionLocationList.forEach(location -> {
++                    blocks.getAndSetUnchecked(location & 15, location >> 8 & 15, location >> 4 & 15, toI);
++
++                });
++                try {
++                    field_LevelChunkSection_nonEmptyBlockCount.set(section, counts.shortValue());
++                } catch (IllegalAccessException exception) {
++                    exception.printStackTrace();
++                }
++            }
++        }
++    }
++
++
++    public org.bukkit.Material getMaterial(int x, int y, int z) {
++        return getBlockData(x, y, z).getMaterial();
++    }
++
++    public void setMaterial(int x, int y, int z, org.bukkit.Material material) {
++        setBlockData(x, y, z, material.createBlockData());
++    }
++
++
++    @Deprecated
++    public org.bukkit.block.Biome getBiome(int x, int z) {
++        return this.getBiome(x, 0, z);
++    }
++
++    public org.bukkit.block.Biome getBiome(int x, int y, int z) {
++        return CraftBlock.biomeBaseToBiome(chunkAccess.biomeRegistry, chunkAccess.getNoiseBiome(x, y, z));
++    }
++
++    @Deprecated
++    public void setBiome(int x, int z, org.bukkit.block.Biome biome) {
++        setBiome(x, 0, z, biome);
++    }
++    public void setBiome(int x, int y, int z, org.bukkit.block.Biome biome) {
++        chunkAccess.setBiome(x, y, z, CraftBlock.biomeToBiomeBase(chunkAccess.biomeRegistry, biome));
++    }
++
++    public boolean hasFluid(int x, int y, int z) {
++        return !getIBlockData(x, y, z).getFluidState().isEmpty();
++    }
++    public boolean isAir(int x, int y, int z) {
++        return getIBlockData(x, y, z).isAir();
++    }
++
++    public int getHighestY(int x, int z) {
++        return chunkAccess.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
++    }
++
++
++    public static Status ofStatus(ChunkStatus chunkStatus) {
++        if (chunkStatus == ChunkStatus.EMPTY) {
++            return Status.EMPTY;
++        } else if (chunkStatus == ChunkStatus.STRUCTURE_STARTS) {
++            return Status.STRUCTURE_STARTS;
++        } else if (chunkStatus == ChunkStatus.STRUCTURE_REFERENCES) {
++            return Status.STRUCTURE_REFERENCES;
++        } else if (chunkStatus == ChunkStatus.BIOMES) {
++            return Status.BIOMES;
++        } else if (chunkStatus == ChunkStatus.NOISE) {
++            return Status.NOISE;
++        } else if (chunkStatus == ChunkStatus.SURFACE) {
++            return Status.SURFACE;
++        } else if (chunkStatus == ChunkStatus.CARVERS) {
++            return Status.CARVERS;
++        } else if (chunkStatus == ChunkStatus.LIQUID_CARVERS) {
++            return Status.LIQUID_CARVERS;
++        } else if (chunkStatus == ChunkStatus.FEATURES) {
++            return Status.FEATURES;
++        } else if (chunkStatus == ChunkStatus.LIGHT) {
++            return Status.LIGHT;
++        } else if (chunkStatus == ChunkStatus.SPAWN) {
++            return Status.SPAWN;
++        } else if (chunkStatus == ChunkStatus.HEIGHTMAPS) {
++            return Status.HEIGHTMAPS;
++        } else if (chunkStatus == ChunkStatus.FULL) {
++            return Status.FULL;
++        }
++        return Status.EMPTY;
++    }
++    public Status getStatus() {
++        return ofStatus(chunkAccess.getStatus());
++    }
++
++    enum Status {
++        EMPTY               (0),
++        STRUCTURE_STARTS    (1),
++        STRUCTURE_REFERENCES(2),
++        BIOMES              (3),
++        NOISE               (4),
++        SURFACE             (5),
++        CARVERS             (6),
++        LIQUID_CARVERS      (7),
++        FEATURES            (8),
++        LIGHT               (9),
++        SPAWN               (10),
++        HEIGHTMAPS          (11),
++        FULL                (12);
++
++        private final int sequence;
++        Status(int sequence) {
++            this.sequence = sequence;
++        }
++
++        public boolean isAbove(Status status) {
++            return this.sequence >= status.sequence;
++        }
++        public boolean isUnder(Status status) {
++            return this.sequence <= status.sequence;
++        }
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkLight.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkLight.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e93535bdf2616a8202652c4ace54fd99c815af37
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkLight.java
+@@ -0,0 +1,62 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import net.minecraft.server.level.ServerLevel;
++import org.bukkit.World;
++import org.bukkit.craftbukkit.CraftWorld;
++
++import java.util.Arrays;
++
++public final class ChunkLight {
++    public static final byte[] EMPTY = new byte[0];
++
++    private final ServerLevel worldServer;
++    private final byte[][] blockLights;
++    private final byte[][] skyLights;
++
++    public ChunkLight(World world) {
++        this(((CraftWorld) world).getHandle());
++    }
++    public ChunkLight(ServerLevel worldServer) {
++        this(worldServer, new byte[worldServer.getSectionsCount() + 2][], new byte[worldServer.getSectionsCount() + 2][]);
++    }
++    public ChunkLight(ServerLevel worldServer, byte[][] blockLights, byte[][] skyLights) {
++        this.worldServer = worldServer;
++        this.blockLights = blockLights;
++        this.skyLights = skyLights;
++        Arrays.fill(blockLights, EMPTY);
++        Arrays.fill(skyLights, EMPTY);
++    }
++
++    public ServerLevel getWorldServer() {
++        return worldServer;
++    }
++
++    public int getArrayLength() {
++        return blockLights.length;
++    }
++
++    public static int indexFromSectionY(ServerLevel worldServer, int sectionY) {
++        return sectionY - worldServer.getMinSection() + 1;
++    }
++
++    public void setBlockLight(int sectionY, byte[] blockLight) {
++        blockLights[indexFromSectionY(worldServer, sectionY)] = blockLight;
++    }
++    public void setSkyLight(int sectionY, byte[] skyLight) {
++        skyLights[indexFromSectionY(worldServer, sectionY)] = skyLight;
++    }
++
++    public byte[] getBlockLight(int sectionY) {
++        return blockLights[indexFromSectionY(worldServer, sectionY)];
++    }
++    public byte[] getSkyLight(int sectionY) {
++        return skyLights[indexFromSectionY(worldServer, sectionY)];
++    }
++
++    public byte[][] getBlockLights() {
++        return blockLights;
++    }
++    public byte[][] getSkyLights() {
++        return skyLights;
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkRegionLoader.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkRegionLoader.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5f4651ace524364179ad83a1926b02d10a713d85
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ChunkRegionLoader.java
+@@ -0,0 +1,384 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import com.mojang.serialization.Codec;
++import com.mojang.serialization.Dynamic;
++import it.unimi.dsi.fastutil.shorts.ShortList;
++import net.minecraft.SharedConstants;
++import net.minecraft.core.BlockPos;
++import net.minecraft.core.Holder;
++import net.minecraft.core.Registry;
++import net.minecraft.core.SectionPos;
++import net.minecraft.nbt.*;
++import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.level.ServerChunkCache;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.server.level.ThreadedLevelLightEngine;
++import net.minecraft.world.level.ChunkPos;
++import net.minecraft.world.level.LightLayer;
++import net.minecraft.world.level.biome.Biome;
++import net.minecraft.world.level.biome.Biomes;
++import net.minecraft.world.level.block.Block;
++import net.minecraft.world.level.block.Blocks;
++import net.minecraft.world.level.block.entity.BlockEntity;
++import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.level.chunk.*;
++import net.minecraft.world.level.chunk.storage.ChunkSerializer;
++import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
++import net.minecraft.world.level.levelgen.Heightmap;
++import net.minecraft.world.level.levelgen.blending.BlendingData;
++import net.minecraft.world.level.lighting.LevelLightEngine;
++import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.ticks.LevelChunkTicks;
++import net.minecraft.world.ticks.ProtoChunkTicks;
++
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.util.EnumSet;
++import java.util.List;
++import java.util.Map;
++import java.util.Objects;
++
++/**
++ * @see ChunkSerializer
++ * 參考 XuanCatAPI.CodeExtendChunkLight
++ */
++public final class ChunkRegionLoader {
++    private static final int        CURRENT_DATA_VERSION    = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
++    private static final boolean    JUST_CORRUPT_IT         = Boolean.getBoolean("Paper.ignoreWorldDataVersion");
++
++
++    public static Chunk.Status loadStatus(CompoundTag nbt) {
++        try {
++            // 適用於 paper
++            return Chunk.ofStatus(ChunkStatus.getStatus(nbt.getString("Status")));
++        } catch (NoSuchMethodError noSuchMethodError) {
++            // 適用於 spigot (不推薦)
++            return Chunk.ofStatus(ChunkStatus.byName(nbt.getString("Status")));
++        }
++    }
++
++    private static Codec<PalettedContainerRO<Holder<Biome>>> makeBiomeCodec(Registry<Biome> biomeRegistry) {
++        return PalettedContainer.codecRO(biomeRegistry.asHolderIdMap(), biomeRegistry.holderByNameCodec(), PalettedContainer.Strategy.SECTION_BIOMES, biomeRegistry.getHolderOrThrow(Biomes.PLAINS));
++    }
++
++
++    private static Method method_ChunkSerializer_makeBiomeCodecRW;
++    static {
++        try {
++            method_ChunkSerializer_makeBiomeCodecRW = ChunkSerializer.class.getDeclaredMethod("makeBiomeCodecRW", Registry.class);
++            method_ChunkSerializer_makeBiomeCodecRW.setAccessible(true);
++        } catch (NoSuchMethodException ex) {
++            ex.printStackTrace();
++        }
++
++    }
++    private static Codec<PalettedContainer<Holder<Biome>>> makeBiomeCodecRW(Registry<Biome> biomeRegistry) {
++        try {
++            return (Codec<PalettedContainer<Holder<Biome>>>) method_ChunkSerializer_makeBiomeCodecRW.invoke(null, biomeRegistry);
++        } catch (InvocationTargetException | IllegalAccessException ex) {
++            ex.printStackTrace();
++            return null;
++        }
++    }
++
++
++    public static Chunk loadChunk(ServerLevel world, int chunkX, int chunkZ, CompoundTag nbt, boolean integralHeightmap) {
++        if (nbt.contains("DataVersion", 99)) {
++            int dataVersion = nbt.getInt("DataVersion");
++            if (!JUST_CORRUPT_IT && dataVersion > CURRENT_DATA_VERSION) {
++                (new RuntimeException("Server attempted to load chunk saved with newer version of minecraft! " + dataVersion + " > " + CURRENT_DATA_VERSION)).printStackTrace();
++                System.exit(1);
++            }
++        }
++
++        ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
++        UpgradeData upgradeData = nbt.contains("UpgradeData", 10) ? new UpgradeData(nbt.getCompound("UpgradeData"), world) : UpgradeData.EMPTY;
++        boolean isLightOn = Objects.requireNonNullElse(ChunkStatus.byName(nbt.getString("Status")), ChunkStatus.EMPTY).isOrAfter(ChunkStatus.LIGHT) && (nbt.get("isLightOn") != null || nbt.getInt("starlight.light_version") == 6);
++        ListTag sectionArrayNBT = nbt.getList("sections", 10);
++        int sectionsCount = world.getSectionsCount();
++        LevelChunkSection[] sections = new LevelChunkSection[sectionsCount];
++        ServerChunkCache chunkSource = world.getChunkSource();
++        LevelLightEngine lightEngine = chunkSource.getLightEngine();
++        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
++        Codec<PalettedContainer<Holder<Biome>>> paletteCodec = makeBiomeCodecRW(biomeRegistry);
++        for(int sectionIndex = 0; sectionIndex < sectionArrayNBT.size(); ++sectionIndex) {
++            CompoundTag sectionNBT = sectionArrayNBT.getCompound(sectionIndex);
++            byte locationY = sectionNBT.getByte("Y");
++            int sectionY = world.getSectionIndexFromSectionY(locationY);
++            if (sectionY >= 0 && sectionY < sections.length) {
++                // 方塊轉換器
++                PalettedContainer<BlockState> paletteBlock;
++                if (sectionNBT.contains("block_states", 10)) {
++                    paletteBlock = ChunkSerializer.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, sectionNBT.getCompound("block_states")).promotePartial((sx) -> {}).getOrThrow(false, (message) -> {});
++                } else {
++                    paletteBlock = new PalettedContainer<>(Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
++                }
++
++                // 生態轉換器
++                PalettedContainer<Holder<Biome>> paletteBiome;
++                if (sectionNBT.contains("biomes", 10)) {
++                    paletteBiome = paletteCodec.parse(NbtOps.INSTANCE, sectionNBT.getCompound("biomes")).promotePartial((sx) -> {}).getOrThrow(false, (message) -> {});
++                } else {
++                    try {
++                        // 適用於 paper
++                        paletteBiome = new PalettedContainer<>(biomeRegistry.asHolderIdMap(), biomeRegistry.getHolderOrThrow(Biomes.PLAINS), PalettedContainer.Strategy.SECTION_BIOMES, null);
++                    } catch (NoSuchMethodError noSuchMethodError) {
++                        // 適用於 spigot (不推薦)
++                        paletteBiome = new PalettedContainer<>(biomeRegistry.asHolderIdMap(), biomeRegistry.getHolderOrThrow(Biomes.PLAINS), PalettedContainer.Strategy.SECTION_BIOMES);
++                    }
++                }
++
++                LevelChunkSection chunkSection = new LevelChunkSection(locationY, paletteBlock, paletteBiome);
++                sections[sectionY] = chunkSection;
++            }
++        }
++
++        long inhabitedTime = nbt.getLong("InhabitedTime");
++        ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkTypeFromTag(nbt);
++        BlendingData blendingData;
++        if (nbt.contains("blending_data", 10)) {
++            blendingData = BlendingData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial((sx) -> {}).orElse(null);
++        } else {
++            blendingData = null;
++        }
++
++        ChunkAccess chunk;
++        if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
++            LevelChunkTicks<Block> ticksBlock = LevelChunkTicks.load(nbt.getList("block_ticks", 10), (sx) -> Registry.BLOCK.getOptional(ResourceLocation.tryParse(sx)), chunkPos);
++            LevelChunkTicks<Fluid> ticksFluid = LevelChunkTicks.load(nbt.getList("fluid_ticks", 10), (sx) -> Registry.FLUID.getOptional(ResourceLocation.tryParse(sx)), chunkPos);
++            LevelChunk levelChunk = new LevelChunk(world.getLevel(), chunkPos, upgradeData, ticksBlock, ticksFluid, inhabitedTime, sections, null, blendingData);
++            chunk = levelChunk;
++
++            // 實體方塊
++            ListTag blockEntities = nbt.getList("block_entities", 10);
++            for(int entityIndex = 0; entityIndex < blockEntities.size(); ++entityIndex) {
++                CompoundTag entityNBT = blockEntities.getCompound(entityIndex);
++                boolean keepPacked = entityNBT.getBoolean("keepPacked");
++                if (keepPacked) {
++                    chunk.setBlockEntityNbt(entityNBT);
++                } else {
++                    BlockPos blockPos = BlockEntity.getPosFromTag(entityNBT);
++                    BlockEntity blockEntity = BlockEntity.loadStatic(blockPos, chunk.getBlockState(blockPos), entityNBT);
++                    if (blockEntity != null) {
++                        levelChunk.getBlockEntities().put(blockPos, blockEntity);
++                    }
++                }
++            }
++        } else {
++            ProtoChunkTicks<Block> ticksBlock = ProtoChunkTicks.load(nbt.getList("block_ticks", 10), (sx) -> Registry.BLOCK.getOptional(ResourceLocation.tryParse(sx)), chunkPos);
++            ProtoChunkTicks<Fluid> ticksFluid = ProtoChunkTicks.load(nbt.getList("fluid_ticks", 10), (sx) -> Registry.FLUID.getOptional(ResourceLocation.tryParse(sx)), chunkPos);
++            ProtoChunk protochunk = new ProtoChunk(chunkPos, upgradeData, sections, ticksBlock, ticksFluid, world, biomeRegistry, blendingData);
++            chunk = protochunk;
++            protochunk.setInhabitedTime(inhabitedTime);
++            if (nbt.contains("below_zero_retrogen", 10)) {
++                BelowZeroRetrogen.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("below_zero_retrogen"))).resultOrPartial((sx) -> {}).ifPresent(protochunk::setBelowZeroRetrogen);
++            }
++
++            ChunkStatus chunkStatus = ChunkStatus.byName(nbt.getString("Status"));
++            protochunk.setStatus(chunkStatus);
++            if (chunkStatus.isOrAfter(ChunkStatus.FEATURES)) {
++                protochunk.setLightEngine(lightEngine);
++            }
++        }
++        chunk.setLightCorrect(isLightOn);
++
++        // 高度圖
++        CompoundTag heightmapsNBT = nbt.getCompound("Heightmaps");
++        EnumSet<Heightmap.Types> enumHeightmapType = EnumSet.noneOf(Heightmap.Types.class);
++        for (Heightmap.Types heightmapTypes : chunk.getStatus().heightmapsAfter()) {
++            String serializationKey = heightmapTypes.getSerializationKey();
++            if (heightmapsNBT.contains(serializationKey, 12)) {
++                chunk.setHeightmap(heightmapTypes, heightmapsNBT.getLongArray(serializationKey));
++            } else {
++                enumHeightmapType.add(heightmapTypes);
++            }
++        }
++        if (integralHeightmap) {
++            Heightmap.primeHeightmaps(chunk, enumHeightmapType);
++        }
++
++        ListTag processListNBT = nbt.getList("PostProcessing", 9);
++        for(int indexList = 0; indexList < processListNBT.size(); ++indexList) {
++            ListTag processNBT = processListNBT.getList(indexList);
++            for (int index = 0; index < processNBT.size(); ++index) {
++                chunk.addPackedPostProcess(processNBT.getShort(index), indexList);
++            }
++        }
++
++        if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
++            return new Chunk(world, chunk);
++        } else {
++            ProtoChunk protoChunk = (ProtoChunk) chunk;
++            return new Chunk(world, protoChunk);
++        }
++    }
++
++    public static ChunkLight loadLight(ServerLevel world, CompoundTag nbt) {
++        // 檢查資料版本
++        if (nbt.contains("DataVersion", 99)) {
++            int dataVersion = nbt.getInt("DataVersion");
++            if (!JUST_CORRUPT_IT && dataVersion > CURRENT_DATA_VERSION) {
++                (new RuntimeException("Server attempted to load chunk saved with newer version of minecraft! " + dataVersion + " > " + CURRENT_DATA_VERSION)).printStackTrace();
++                System.exit(1);
++            }
++        }
++
++        boolean isLightOn = Objects.requireNonNullElse(ChunkStatus.byName(nbt.getString("Status")), ChunkStatus.EMPTY).isOrAfter(ChunkStatus.LIGHT) && (nbt.get("isLightOn") != null || nbt.getInt("starlight.light_version") == 6);
++        boolean hasSkyLight = world.dimensionType().hasSkyLight();
++        ListTag sectionArrayNBT = nbt.getList("sections", 10);
++        ChunkLight chunkLight = new ChunkLight(world);
++        for(int sectionIndex = 0; sectionIndex < sectionArrayNBT.size(); ++sectionIndex) {
++            CompoundTag sectionNBT = sectionArrayNBT.getCompound(sectionIndex);
++            byte locationY = sectionNBT.getByte("Y");
++            if (isLightOn) {
++                if (sectionNBT.contains("BlockLight", 7)) {
++                    chunkLight.setBlockLight(locationY, sectionNBT.getByteArray("BlockLight"));
++                }
++                if (hasSkyLight) {
++                    if (sectionNBT.contains("SkyLight", 7)) {
++                        chunkLight.setSkyLight(locationY, sectionNBT.getByteArray("SkyLight"));
++                    }
++                }
++            }
++        }
++
++        return chunkLight;
++    }
++
++
++
++    public static CompoundTag saveChunk(ServerLevel world, ChunkAccess chunk, ChunkLight light, List<Runnable> asyncRunnable) {
++        int minSection = world.getMinSection() - 1;//WorldUtil.getMinLightSection();
++        ChunkPos chunkPos = chunk.getPos();
++        CompoundTag nbt = new CompoundTag();
++        nbt.putInt("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
++        nbt.putInt("xPos", chunkPos.x);
++        nbt.putInt("yPos", chunk.getMinSection());
++        nbt.putInt("zPos", chunkPos.z);
++        nbt.putLong("LastUpdate", world.getGameTime());
++        nbt.putLong("InhabitedTime", chunk.getInhabitedTime());
++        nbt.putString("Status", chunk.getStatus().getName());
++        BlendingData blendingData = chunk.getBlendingData();
++        if (blendingData != null) {
++            BlendingData.CODEC.encodeStart(NbtOps.INSTANCE, blendingData).resultOrPartial((sx) -> {}).ifPresent((nbtData) -> nbt.put("blending_data", nbtData));
++        }
++
++        BelowZeroRetrogen belowZeroRetrogen = chunk.getBelowZeroRetrogen();
++        if (belowZeroRetrogen != null) {
++            BelowZeroRetrogen.CODEC.encodeStart(NbtOps.INSTANCE, belowZeroRetrogen).resultOrPartial((sx) -> {}).ifPresent((nbtData) -> nbt.put("below_zero_retrogen", nbtData));
++        }
++
++        LevelChunkSection[] chunkSections = chunk.getSections();
++        ListTag sectionArrayNBT = new ListTag();
++        ThreadedLevelLightEngine lightEngine = world.getChunkSource().getLightEngine();
++
++        // 生態解析器
++        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
++        Codec<PalettedContainerRO<Holder<Biome>>> paletteCodec = makeBiomeCodec(biomeRegistry);
++        boolean lightCorrect = false;
++
++        for(int locationY = lightEngine.getMinLightSection(); locationY < lightEngine.getMaxLightSection(); ++locationY) {
++            int sectionY = chunk.getSectionIndexFromSectionY(locationY);
++            boolean inSections = sectionY >= 0 && sectionY < chunkSections.length;
++            ThreadedLevelLightEngine lightEngineThreaded = world.getChunkSource().getLightEngine();
++            DataLayer blockNibble;
++            DataLayer skyNibble;
++            try {
++                // 適用於 paper
++                blockNibble = chunk.getBlockNibbles()[locationY - minSection].toVanillaNibble();
++                skyNibble = chunk.getSkyNibbles()[locationY - minSection].toVanillaNibble();
++            } catch (NoSuchMethodError noSuchMethodError) {
++                // 適用於 spigot (不推薦)
++                blockNibble = lightEngineThreaded.getLayerListener(LightLayer.BLOCK).getDataLayerData(SectionPos.of(chunkPos, locationY));
++                skyNibble = lightEngineThreaded.getLayerListener(LightLayer.SKY).getDataLayerData(SectionPos.of(chunkPos, locationY));
++            }
++
++            if (inSections || blockNibble != null || skyNibble != null) {
++                CompoundTag sectionNBT = new CompoundTag();
++                if (inSections) {
++                    LevelChunkSection chunkSection = chunkSections[sectionY];
++                    asyncRunnable.add(() -> {
++                        sectionNBT.put("block_states", ChunkSerializer.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, chunkSection.getStates()).getOrThrow(false, (message) -> {}));
++                        sectionNBT.put("biomes", paletteCodec.encodeStart(NbtOps.INSTANCE, chunkSection.getBiomes()).getOrThrow(false, (message) -> {}));
++                    });
++                }
++
++                if (blockNibble != null) {
++                    if (!blockNibble.isEmpty()) {
++                        if (light != null) {
++                            light.setBlockLight(locationY, blockNibble.getData());
++                        } else {
++                            sectionNBT.putByteArray("BlockLight", blockNibble.getData());
++                            lightCorrect = true;
++                        }
++                    }
++                }
++
++                if (skyNibble != null) {
++                    if (!skyNibble.isEmpty()) {
++                        if (light != null) {
++                            light.setSkyLight(locationY, skyNibble.getData());
++                        } else {
++                            sectionNBT.putByteArray("SkyLight", skyNibble.getData());
++                            lightCorrect = true;
++                        }
++                    }
++                }
++
++                // 增加 inSections 確保 asyncRunnable 不會出資料錯誤
++                if (!sectionNBT.isEmpty() || inSections) {
++                    sectionNBT.putByte("Y", (byte) locationY);
++                    sectionArrayNBT.add(sectionNBT);
++                }
++            }
++        }
++        nbt.put("sections", sectionArrayNBT);
++
++        if (lightCorrect) {
++            nbt.putInt("starlight.light_version", 6);
++            nbt.putBoolean("isLightOn", true);
++        }
++
++        // 實體方塊
++        ListTag blockEntitiesNBT = new ListTag();
++        for (BlockPos blockPos : chunk.getBlockEntitiesPos()) {
++            CompoundTag blockEntity = chunk.getBlockEntityNbtForSaving(blockPos);
++            if (blockEntity != null) {
++                blockEntitiesNBT.add(blockEntity);
++            }
++        }
++        nbt.put("block_entities", blockEntitiesNBT);
++
++        if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK) {
++        }
++
++        ChunkAccess.TicksToSave tickSchedulers = chunk.getTicksForSerialization();
++        long gameTime = world.getLevelData().getGameTime();
++        nbt.put("block_ticks", tickSchedulers.blocks().save(gameTime, (block) -> Registry.BLOCK.getKey(block).toString()));
++        nbt.put("fluid_ticks", tickSchedulers.fluids().save(gameTime, (fluid) -> Registry.FLUID.getKey(fluid).toString()));
++
++        ShortList[] packOffsetList = chunk.getPostProcessing();
++        ListTag packOffsetsNBT = new ListTag();
++        for (ShortList shortlist : packOffsetList) {
++            ListTag packsNBT = new ListTag();
++            if (shortlist != null) {
++                for (Short shortData : shortlist) {
++                    packsNBT.add(ShortTag.valueOf(shortData));
++                }
++            }
++            packOffsetsNBT.add(packsNBT);
++        }
++        nbt.put("PostProcessing", packOffsetsNBT);
++
++        // 高度圖
++        CompoundTag heightmapsNBT = new CompoundTag();
++        for (Map.Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
++            if (chunk.getStatus().heightmapsAfter().contains(entry.getKey())) {
++                heightmapsNBT.put(entry.getKey().getSerializationKey(), new LongArrayTag(entry.getValue().getRawData()));
++            }
++        }
++        nbt.put("Heightmaps", heightmapsNBT);
++
++        return nbt;
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Minecraft.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Minecraft.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..83785f7cabbb5903c550c122d14c7ae2a167c26b
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Minecraft.java
+@@ -0,0 +1,119 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import io.netty.channel.*;
++import net.minecraft.nbt.CompoundTag;
++import net.minecraft.network.protocol.Packet;
++import net.minecraft.server.level.ChunkHolder;
++import net.minecraft.server.level.ServerPlayer;
++import net.minecraft.server.network.ServerGamePacketListenerImpl;
++import net.minecraft.world.level.ChunkPos;
++import net.minecraft.world.level.chunk.ChunkAccess;
++import net.minecraft.world.level.chunk.EmptyLevelChunk;
++import net.minecraft.world.level.chunk.LevelChunk;
++import org.bukkit.World;
++import org.bukkit.craftbukkit.CraftChunk;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.entity.Player;
++
++import java.io.IOException;
++import java.util.Optional;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ExecutionException;
++
++public final class Minecraft {
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public NBT getChunkNBTFromDisk(World world, int chunkX, int chunkZ) throws IOException {
++        CompoundTag nbt = null;
++        try {
++            CompletableFuture<Optional<CompoundTag>> futureNBT = ((CraftWorld) world).getHandle().getChunkSource().chunkMap.read(new ChunkPos(chunkX, chunkZ));
++            Optional<CompoundTag> optionalNBT = futureNBT.get();
++            nbt = optionalNBT.orElse(null);
++        } catch (InterruptedException | ExecutionException ignored) {
++        }
++        return nbt != null ? new NBT(nbt) : null;
++    }
++
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public org.bukkit.Chunk getChunkFromMemoryCache(World world, int chunkX, int chunkZ) {
++        try {
++            // 適用於 paper
++            ChunkHolder playerChunk = ((CraftWorld) world).getHandle().getChunkSource().chunkMap.getVisibleChunkIfPresent((long) chunkZ << 32 | (long) chunkX & 4294967295L);
++            if (playerChunk != null) {
++                ChunkAccess chunk = playerChunk.getAvailableChunkNow();
++                if (chunk != null && !(chunk instanceof EmptyLevelChunk) && chunk instanceof LevelChunk) {
++                    LevelChunk levelChunk = (LevelChunk) chunk;
++                    return levelChunk.bukkitChunk;
++                }
++            }
++            return null;
++        } catch (NoSuchMethodError ignored) {
++            return null;
++        }
++    }
++
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public Chunk fromChunk(World world, int chunkX, int chunkZ, NBT nbt, boolean integralHeightmap) {
++        return ChunkRegionLoader.loadChunk(((CraftWorld) world).getHandle(), chunkX, chunkZ, ((NBT) nbt).getNMSTag(), integralHeightmap);
++    }
++
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public ChunkLight fromLight(World world, NBT nbt) {
++        return ChunkRegionLoader.loadLight(((CraftWorld) world).getHandle(), ((NBT) nbt).getNMSTag());
++    }
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public ChunkLight fromLight(World world) {
++        return new ChunkLight(((CraftWorld) world).getHandle());
++    }
++
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public Chunk.Status fromStatus(NBT nbt) {
++        return ChunkRegionLoader.loadStatus(((NBT) nbt).getNMSTag());
++    }
++
++    /**
++     * 參考 XuanCatAPI.CodeExtendWorld
++     */
++    public Chunk fromChunk(World world, org.bukkit.Chunk chunk) {
++        return new Chunk(((CraftChunk) chunk).getCraftWorld().getHandle(), ((CraftChunk) chunk).getHandle());
++    }
++
++    public void injectPlayer(Player player) {
++        ServerPlayer entityPlayer = ((CraftPlayer) player).getHandle();
++        ServerGamePacketListenerImpl connection = entityPlayer.connection;
++        Channel channel = connection.connection.channel;
++        ChannelPipeline pipeline = channel.pipeline();
++        pipeline.addAfter("packet_handler", "farther_view_distance_write", new ChannelDuplexHandler() {
++            @Override
++            public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
++                if (msg instanceof Packet) {
++                    if (!ProxyPlayerConnection.write(player, (Packet<?>) msg))
++                        return;
++                }
++                super.write(ctx, msg, promise);
++            }
++        });
++        pipeline.addAfter("encoder", "farther_view_distance_read", new ChannelInboundHandlerAdapter() {
++            @Override
++            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
++                if (msg instanceof Packet) {
++                    if (!ProxyPlayerConnection.read(player, (Packet<?>) msg))
++                        return;
++                }
++                super.channelRead(ctx, msg);
++            }
++        });
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/NBT.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/NBT.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a541b196f15fa07647aadaa0ab76e29621c5aa69
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/NBT.java
+@@ -0,0 +1,26 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import net.minecraft.nbt.CompoundTag;
++
++public final class NBT {
++
++    protected CompoundTag tag;
++
++    public NBT() {
++        this.tag = new CompoundTag();
++    }
++
++    public NBT(CompoundTag tag) {
++        this.tag = tag;
++    }
++
++
++    public CompoundTag getNMSTag() {
++        return tag;
++    }
++
++    @Override
++    public String toString() {
++        return tag.toString();
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Packet.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Packet.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3dd7698cf42240be6d4b98d4354115c32a47447b
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/Packet.java
+@@ -0,0 +1,55 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import io.netty.buffer.Unpooled;
++import net.minecraft.network.Connection;
++import net.minecraft.network.FriendlyByteBuf;
++import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
++import net.minecraft.network.protocol.game.ClientboundKeepAlivePacket;
++import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
++import net.minecraft.network.protocol.game.ClientboundSetChunkCacheRadiusPacket;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.entity.Player;
++
++import java.util.function.Consumer;
++
++public final class Packet {
++    private final PacketHandleChunk handleChunk = new PacketHandleChunk();
++    private final PacketHandleLightUpdate handleLightUpdate = new PacketHandleLightUpdate();
++
++    public void sendPacket(Player player, net.minecraft.network.protocol.Packet<?> packet) {
++        try {
++            Connection container = ((CraftPlayer) player).getHandle().connection.connection;
++            container.send(packet);
++        } catch (IllegalArgumentException ignored) {
++        }
++    }
++
++    public void sendViewDistance(Player player, int viewDistance) {
++        sendPacket(player, new ClientboundSetChunkCacheRadiusPacket(viewDistance));
++    }
++
++    public void sendUnloadChunk(Player player, int chunkX, int chunkZ) {
++        sendPacket(player, new ClientboundForgetLevelChunkPacket(chunkX, chunkZ));
++    }
++
++    public Consumer<Player> sendChunkAndLight(org.bukkit.Chunk chunk, ChunkLight light, boolean needTile, Consumer<Integer> consumeTraffic) {
++        FriendlyByteBuf serializer = new FriendlyByteBuf(Unpooled.buffer().writerIndex(0));
++        serializer.writeInt(chunk.getX());
++        serializer.writeInt(chunk.getZ());
++        this.handleChunk.write(serializer, chunk, needTile);
++        this.handleLightUpdate.write(serializer, (ChunkLight) light, true);
++        consumeTraffic.accept(serializer.readableBytes());
++        ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(serializer);
++        try {
++            // 適用於 paper
++            packet.setReady(true);
++        } catch (NoSuchMethodError noSuchMethodError) {
++            // 適用於 spigot (不推薦)
++        }
++        return (player) -> sendPacket(player, packet);
++    }
++
++    public void sendKeepAlive(Player player, long id) {
++        sendPacket(player, new ClientboundKeepAlivePacket(id));
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleChunk.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleChunk.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..bc7e738103d573707e6084e77aae6fc929d7b687
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleChunk.java
+@@ -0,0 +1,63 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import io.netty.buffer.Unpooled;
++import net.minecraft.core.BlockPos;
++import net.minecraft.core.Registry;
++import net.minecraft.core.SectionPos;
++import net.minecraft.nbt.CompoundTag;
++import net.minecraft.nbt.LongArrayTag;
++import net.minecraft.network.FriendlyByteBuf;
++import net.minecraft.world.level.block.entity.BlockEntity;
++import net.minecraft.world.level.chunk.LevelChunk;
++import net.minecraft.world.level.chunk.LevelChunkSection;
++import net.minecraft.world.level.levelgen.Heightmap;
++import org.bukkit.Chunk;
++import org.bukkit.craftbukkit.CraftChunk;
++
++import java.util.HashMap;
++import java.util.Map;
++
++public final class PacketHandleChunk {
++    public PacketHandleChunk() {
++    }
++
++    public void write(FriendlyByteBuf serializer, Chunk chunk, boolean needTile) {
++        this.write(serializer, ((CraftChunk) chunk).getHandle(), needTile);
++    }
++
++    public void write(FriendlyByteBuf serializer, LevelChunk chunk, boolean needTile) {
++        CompoundTag heightmapsNBT = new CompoundTag();
++        for (Map.Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
++            Heightmap.Types heightType = entry.getKey();
++            Heightmap heightMap = entry.getValue();
++            if (heightType.sendToClient())
++                heightmapsNBT.put(heightType.getSerializationKey(), new LongArrayTag(heightMap.getRawData()));
++        }
++
++        int chunkSize = 0;
++        for(LevelChunkSection section : chunk.getSections()) {
++            chunkSize += section.getSerializedSize();
++        }
++        byte[] bufferBytes = new byte[chunkSize];
++        FriendlyByteBuf bufferByteBuf = new FriendlyByteBuf(Unpooled.wrappedBuffer(bufferBytes));
++        bufferByteBuf.writerIndex(0);
++        for(LevelChunkSection section : chunk.getSections()) {
++            section.write(bufferByteBuf);
++        }
++
++        serializer.writeNbt(heightmapsNBT);
++        serializer.writeVarInt(bufferBytes.length);
++        serializer.writeBytes(bufferBytes);
++
++        Map<BlockPos, BlockEntity> blockEntityMap = !needTile ? new HashMap<>(0) : chunk.getBlockEntities();
++        serializer.writeCollection(blockEntityMap.entrySet(), (buf, entry) -> {
++            BlockEntity blockEntity = entry.getValue();
++            CompoundTag entityNBT = blockEntity.getUpdateTag(); // Unknown Method aa_()
++            BlockPos blockPos = blockEntity.getBlockPos();
++            buf.writeByte(SectionPos.sectionRelative(blockPos.getX()) << 4 | SectionPos.sectionRelative(blockPos.getZ()));
++            buf.writeShort(blockPos.getY());
++            buf.writeVarInt(Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
++            buf.writeNbt(entityNBT.isEmpty() ? null : entityNBT);
++        });
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleLightUpdate.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleLightUpdate.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7df6827786dff9af93ec2fe886c141a7b35c354f
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/PacketHandleLightUpdate.java
+@@ -0,0 +1,46 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import net.minecraft.network.FriendlyByteBuf;
++
++import java.util.ArrayList;
++import java.util.BitSet;
++import java.util.List;
++
++public final class PacketHandleLightUpdate {
++    public PacketHandleLightUpdate() {
++    }
++
++    public void write(FriendlyByteBuf serializer, ChunkLight light, boolean trustEdges) {
++        List<byte[]> dataSky = new ArrayList<>();
++        List<byte[]> dataBlock = new ArrayList<>();
++        BitSet notSkyEmpty = new BitSet();
++        BitSet notBlockEmpty = new BitSet();
++        BitSet isSkyEmpty = new BitSet();
++        BitSet isBlockEmpty = new BitSet();
++
++        for (int index = 0; index < light.getArrayLength(); ++index) {
++            saveBitSet(light.getSkyLights(), index, notSkyEmpty, isSkyEmpty, dataSky);
++            saveBitSet(light.getBlockLights(), index, notBlockEmpty, isBlockEmpty, dataBlock);
++        }
++
++        serializer.writeBoolean(trustEdges);
++        serializer.writeBitSet(notSkyEmpty);
++        serializer.writeBitSet(notBlockEmpty);
++        serializer.writeBitSet(isSkyEmpty);
++        serializer.writeBitSet(isBlockEmpty);
++        serializer.writeCollection(dataSky, FriendlyByteBuf::writeByteArray);
++        serializer.writeCollection(dataBlock, FriendlyByteBuf::writeByteArray);
++    }
++
++    private static void saveBitSet(byte[][] nibbleArrays, int index, BitSet notEmpty, BitSet isEmpty, List<byte[]> list) {
++        byte[] nibbleArray = nibbleArrays[index];
++        if (nibbleArray != ChunkLight.EMPTY) {
++            if (nibbleArray == null) {
++                isEmpty.set(index);
++            } else {
++                notEmpty.set(index);
++                list.add(nibbleArray);
++            }
++        }
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ProxyPlayerConnection.java b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ProxyPlayerConnection.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c2b85491bbad05889d437f6c984c3f7d3a50cbbf
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/evds/zerochunk/nms/ProxyPlayerConnection.java
+@@ -0,0 +1,71 @@
++package com.github.ipecter.fusion.evds.zerochunk.nms;
++
++import com.github.ipecter.fusion.event.PacketKeepAliveEvent;
++import com.github.ipecter.fusion.event.PacketMapChunkEvent;
++import com.github.ipecter.fusion.event.PacketUnloadChunkEvent;
++import com.github.ipecter.fusion.event.PacketViewDistanceEvent;
++import net.minecraft.network.protocol.Packet;
++import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
++import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
++import net.minecraft.network.protocol.game.ClientboundSetChunkCacheRadiusPacket;
++import net.minecraft.network.protocol.game.ServerboundKeepAlivePacket;
++import org.bukkit.Bukkit;
++import org.bukkit.entity.Player;
++import java.lang.reflect.Field;
++
++public final class ProxyPlayerConnection {
++    public static boolean read(Player player, Packet<?> packet) {
++        if (packet instanceof ServerboundKeepAlivePacket) {
++            PacketKeepAliveEvent event = new PacketKeepAliveEvent(player, ((ServerboundKeepAlivePacket) packet).getId());
++            Bukkit.getPluginManager().callEvent(event);
++            return !event.isCancelled();
++        } else {
++            return true;
++        }
++    }
++
++
++    private static Field field_PacketPlayOutUnloadChunk_chunkX;
++    private static Field field_PacketPlayOutUnloadChunk_chunkZ;
++    private static Field field_PacketPlayOutViewDistance_distance;
++    private static Field field_ClientboundLevelChunkWithLightPacket_chunkX;
++    private static Field field_ClientboundLevelChunkWithLightPacket_chunkZ;
++    static {
++        try {
++            field_PacketPlayOutUnloadChunk_chunkX = ClientboundForgetLevelChunkPacket.class.getDeclaredField("x");
++            field_PacketPlayOutUnloadChunk_chunkZ = ClientboundForgetLevelChunkPacket.class.getDeclaredField("y");
++            field_PacketPlayOutViewDistance_distance = ClientboundSetChunkCacheRadiusPacket.class.getDeclaredField("radius");
++            field_ClientboundLevelChunkWithLightPacket_chunkX = ClientboundLevelChunkWithLightPacket.class.getDeclaredField("x");
++            field_ClientboundLevelChunkWithLightPacket_chunkZ = ClientboundLevelChunkWithLightPacket.class.getDeclaredField("y");
++            field_PacketPlayOutUnloadChunk_chunkX.setAccessible(true);
++            field_PacketPlayOutUnloadChunk_chunkZ.setAccessible(true);
++            field_PacketPlayOutViewDistance_distance.setAccessible(true);
++            field_ClientboundLevelChunkWithLightPacket_chunkX.setAccessible(true);
++            field_ClientboundLevelChunkWithLightPacket_chunkZ.setAccessible(true);
++        } catch (Exception ex) {
++            ex.printStackTrace();
++        }
++    }
++    public static boolean write(Player player, Packet<?> packet) {
++        try {
++            if (packet instanceof ClientboundForgetLevelChunkPacket) {
++                PacketUnloadChunkEvent event = new PacketUnloadChunkEvent(player, field_PacketPlayOutUnloadChunk_chunkX.getInt(packet), field_PacketPlayOutUnloadChunk_chunkZ.getInt(packet));
++                Bukkit.getPluginManager().callEvent(event);
++                return !event.isCancelled();
++            } else if (packet instanceof ClientboundSetChunkCacheRadiusPacket) {
++                PacketViewDistanceEvent event = new PacketViewDistanceEvent(player, field_PacketPlayOutViewDistance_distance.getInt(packet));
++                Bukkit.getPluginManager().callEvent(event);
++                return !event.isCancelled();
++            } else if (packet instanceof ClientboundLevelChunkWithLightPacket) {
++                PacketMapChunkEvent event = new PacketMapChunkEvent(player, field_ClientboundLevelChunkWithLightPacket_chunkX.getInt(packet), field_ClientboundLevelChunkWithLightPacket_chunkZ.getInt(packet));
++                Bukkit.getPluginManager().callEvent(event);
++                return !event.isCancelled();
++            } else {
++                return true;
++            }
++        } catch (Exception ex) {
++            ex.printStackTrace();
++            return true;
++        }
++    }
++}

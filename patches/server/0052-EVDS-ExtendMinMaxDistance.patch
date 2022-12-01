@@ -4,7 +4,6 @@ Date: Mon, 28 Nov 2022 15:02:36 +0900
 Subject: [PATCH] EVDS-ExtendMinMaxDistance
 
 
-
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index ef9ce279c16ea8f96c6ddc494ae018e96e70b11b..b23b3ae78fe1b91ef1a73436b9db14996a20415a 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
@@ -27,7 +26,7 @@ index ef9ce279c16ea8f96c6ddc494ae018e96e70b11b..b23b3ae78fe1b91ef1a73436b9db1499
  }
 \ No newline at end of file
 diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
-index 0b060183429f4c72ec767075538477b4302bbf0d..fee40237bdad7ef3039bcb7e5d4e634ee587e4f7 100644
+index 0b060183429f4c72ec767075538477b4302bbf0d..6dd86290382be2a9ec31de482b1c0506cecd4e0b 100644
 --- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 +++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 @@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +54,7 @@ index ce7d6986aed6ccc040716ba9e725c730c8f73241..1a0f2c0db7c0bb1388d357c5dc9c12b0
      public final int maxPlayers;
      public final int networkCompressionThreshold;
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index ceaa44e8fbf02aef36f5ae663269dfc1026e4086..99154ae6da9b07bc4eb4b9b68f26404a050c2ee0 100644
+index ceaa44e8fbf02aef36f5ae663269dfc1026e4086..a6aedec2497e0b52c36797e3808e63c9c7e4f43b 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -121,8 +121,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

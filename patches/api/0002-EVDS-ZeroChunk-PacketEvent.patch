@@ -1,0 +1,179 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 1 Dec 2022 19:51:08 +0900
+Subject: [PATCH] EVDS-ZeroChunk-PacketEvent
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/event/PacketEvent.java b/src/main/java/com/github/ipecter/fusion/event/PacketEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4fd50902812f298321ddb7a0270c5c4e5c2253dc
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/event/PacketEvent.java
+@@ -0,0 +1,27 @@
++package com.github.ipecter.fusion.event;
++
++import org.bukkit.Bukkit;
++import org.bukkit.entity.Player;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++
++public abstract class PacketEvent extends Event implements Cancellable {
++    private final Player player;
++    private boolean cancel = false;
++
++    public PacketEvent(Player player) {
++        super(!Bukkit.isPrimaryThread());
++        this.player = player;
++    }
++
++    public final boolean isCancelled() {
++        return cancel;
++    }
++    public final void setCancelled(boolean cancel) {
++        this.cancel = cancel;
++    }
++
++    public final Player getPlayer() {
++        return player;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/event/PacketKeepAliveEvent.java b/src/main/java/com/github/ipecter/fusion/event/PacketKeepAliveEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..554480939c57198ae433471a44fdfa055424773f
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/event/PacketKeepAliveEvent.java
+@@ -0,0 +1,25 @@
++package com.github.ipecter.fusion.event;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++
++public final class PacketKeepAliveEvent extends PacketEvent {
++    private static final HandlerList handlers = new HandlerList();
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    private final long id;
++
++    public PacketKeepAliveEvent(Player player, long id) {
++        super(player);
++        this.id = id;
++    }
++
++    public long getId() {
++        return id;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/event/PacketMapChunkEvent.java b/src/main/java/com/github/ipecter/fusion/event/PacketMapChunkEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..90de23b0e7696d8fe03142853d176adb8548d029
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/event/PacketMapChunkEvent.java
+@@ -0,0 +1,30 @@
++package com.github.ipecter.fusion.event;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++
++public final class PacketMapChunkEvent extends PacketEvent {
++    private static final HandlerList handlers = new HandlerList();
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    private final int chunkX;
++    private final int chunkZ;
++
++    public PacketMapChunkEvent(Player player, int chunkX, int chunkZ) {
++        super(player);
++        this.chunkX = chunkX;
++        this.chunkZ = chunkZ;
++    }
++
++    public int getChunkX() {
++        return chunkX;
++    }
++    public int getChunkZ() {
++        return chunkZ;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/event/PacketUnloadChunkEvent.java b/src/main/java/com/github/ipecter/fusion/event/PacketUnloadChunkEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..1376e95a7db26c8a9b46574c6cb735b8da7277cd
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/event/PacketUnloadChunkEvent.java
+@@ -0,0 +1,30 @@
++package com.github.ipecter.fusion.event;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++
++public final class PacketUnloadChunkEvent extends PacketEvent {
++    private static final HandlerList handlers = new HandlerList();
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    private final int chunkX;
++    private final int chunkZ;
++
++    public PacketUnloadChunkEvent(Player player, int chunkX, int chunkZ) {
++        super(player);
++        this.chunkX = chunkX;
++        this.chunkZ = chunkZ;
++    }
++
++    public int getChunkX() {
++        return chunkX;
++    }
++    public int getChunkZ() {
++        return chunkZ;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/event/PacketViewDistanceEvent.java b/src/main/java/com/github/ipecter/fusion/event/PacketViewDistanceEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..dd745f81b65144cd62bca030b701d21dcb3656b7
+--- /dev/null
++++ b/src/main/java/com/github/ipecter/fusion/event/PacketViewDistanceEvent.java
+@@ -0,0 +1,26 @@
++package com.github.ipecter.fusion.event;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++
++public final class PacketViewDistanceEvent extends PacketEvent {
++    private static final HandlerList handlers = new HandlerList();
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    private final int viewDistance;
++
++    public PacketViewDistanceEvent(Player player, int viewDistance) {
++        super(player);
++        this.viewDistance = viewDistance;
++    }
++
++    public int getViewDistance() {
++        return viewDistance;
++    }
++
++}
+\ No newline at end of file
