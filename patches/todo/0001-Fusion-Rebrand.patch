@@ -1,28 +1,29 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Wed, 14 Dec 2022 18:47:06 +0900
+Date: Tue, 4 Oct 2022 20:00:09 +0900
 Subject: [PATCH] Fusion-Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 7de4b51cb4afdcbdfb8d1dc32f56252d997e23a8..db2860c5e86648fa5c067dcabcebf1a84d3e6c6e 100644
+index 8ffc0d92ea29b95e5406ed81088ecf00e7679a97..5dd605f250dd6d28b638901849ff5b59f34a047d 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -7,7 +7,7 @@ plugins {
+@@ -7,7 +7,8 @@ plugins {
  }
  
  dependencies {
 -    implementation(project(":purpur-api")) // Purpur
 +    implementation(project(":Fusion-API")) // Purpur // Fusion
-     implementation("io.papermc.paper:paper-mojangapi:1.19.3-R0.1-SNAPSHOT") {
++
+     // Pufferfish start
+     implementation("io.papermc.paper:paper-mojangapi:1.19.2-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-     }
-@@ -66,7 +66,7 @@ tasks.jar {
+@@ -84,7 +85,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
--            "Implementation-Version" to "git-Purpur-$implementationVersion", // Purpur
-+            "Implementation-Version" to "git-Fusion-$implementationVersion", // Purpur // Fusion
+-            "Implementation-Version" to "git-Purpur-$implementationVersion",// Purpur
++            "Implementation-Version" to "git-Fusion-$implementationVersion",// Purpur // Fusion
              "Implementation-Vendor" to date, // Paper
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
@@ -49,7 +50,7 @@ index acd95cf1dc7f009b63e44e4404e1736283fd458e..9d5f9f75e216b2116b816c7e5702a12d
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index fba5dbdb7bcbb55400ef18342c9b54612972a718..96daf19b1c45df78a7ad39e122ef25ee6a39808e 100644
+index fba5dbdb7bcbb55400ef18342c9b54612972a718..2dce144f6712bf0351d8719dfde1f603f9652708 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
@@ -81,7 +82,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..96daf19b1c45df78a7ad39e122ef25ee
                  org.bukkit.Bukkit.getLogger().warning("Pattern: " + VER_PATTERN.toString());
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
-@@ -58,13 +58,19 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -58,13 +58,18 @@ public class PaperVersionFetcher implements VersionFetcher {
  
      private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
          //int distance; // Purpur - use field
@@ -91,12 +92,12 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..96daf19b1c45df78a7ad39e122ef25ee
              int jenkinsBuild = Integer.parseInt(versionInfo);
              distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
          } catch (NumberFormatException ignored) {
-+        */
              versionInfo = versionInfo.replace("\"", "");
              distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
-+        /*
-         }
-+        */
+-        }
++        }*/
++        versionInfo = versionInfo.replace("\"", "");
++        distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
 +        // Fusion end
  
          switch (distance) {
@@ -115,7 +116,7 @@ index 3cb56595822799926a8141e60a42f5d1edfc6de5..4862ea300f41c2eca29bb918ac1efa12
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index b5b6657e52e4f7a630229bd3ba433438af293e22..8e0c88cea53d5c306880dae4212e8506fab090a1 100644
+index b5b6657e52e4f7a630229bd3ba433438af293e22..709444b9636738074f78030a1b72233460ff8683 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
 @@ -125,7 +125,7 @@ public class CrashReport {
@@ -123,15 +124,15 @@ index b5b6657e52e4f7a630229bd3ba433438af293e22..8e0c88cea53d5c306880dae4212e8506
          // Purpur start
          stringbuilder.append("// ");
 -        stringbuilder.append("// DO NOT REPORT THIS TO PAPER! REPORT TO PURPUR INSTEAD!");
-+        stringbuilder.append("// DO NOT REPORT THIS TO PURPUR! REPORT TO FUSION INSTEAD!"); // Fusion
++        stringbuilder.append("// DO NOT REPORT THIS TO PAPER! REPORT TO FUSION INSTEAD!"); // Fusion
          // Purpur end
          stringbuilder.append("// ");
          stringbuilder.append(CrashReport.getErrorComment());
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b915e6a13a518f05d109c707142efa3946892f0c..d97e23648f5f6a60d0dd1ea833fdc7804374e1f2 100644
+index 735e01c550d561aa21c3c8f7f34a495ec3a0ab67..245c53820327620fb145868b2760bff0895cea16 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -925,7 +925,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -926,7 +926,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          shutdownThread = Thread.currentThread();
          org.spigotmc.WatchdogThread.doStop(); // Paper
          if (!isSameThread()) {
@@ -140,11 +141,37 @@ index b915e6a13a518f05d109c707142efa3946892f0c..d97e23648f5f6a60d0dd1ea833fdc780
              while (this.getRunningThread().isAlive()) {
                  this.getRunningThread().stop();
                  try {
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 0bb14272d024af90e7aef40f2f694e184af607d3..dc0f8bf1b3b6cc13f8b9ada94ca91cc517f63a6a 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -1013,7 +1013,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+             TickingBlockEntity tickingblockentity = (TickingBlockEntity) this.blockEntityTickers.get(tileTickPosition);
+             // Spigot start
+             if (tickingblockentity == null) {
+-                this.getCraftServer().getLogger().severe("Spigot has detected a null entity and has removed it, preventing a crash");
++                this.getCraftServer().getLogger().severe("Fusion has detected a null entity and has removed it, preventing a crash"); // Fusion
+                 tilesThisCycle--;
+                 continue;
+             }
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+index 3aa9a667d988fe2b6118ce4b3a4551e7e17b7884..7bfee48c8e2220a0ec1f4b1e6cbf83da6bd9a694 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+@@ -113,7 +113,7 @@ public class RegionFileStorage implements AutoCloseable {
+ 
+     // Paper start
+     private static void printOversizedLog(String msg, Path file, int x, int z) {
+-        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PURPUR - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur
++        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO FUSION - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur // Fusion
+     }
+ 
+     private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 80d4167edd7c87240ce02ae122153976015d548a..05070222b309122beffd622c834f1c477b1c9539 100644
+index 2491785f5edd782b74189bef33eeffe13288f3da..923884713cdd5b266e26d4b8a20c97830a957c41 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -262,7 +262,7 @@ import javax.annotation.Nullable; // Paper
+@@ -249,7 +249,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -154,7 +181,7 @@ index 80d4167edd7c87240ce02ae122153976015d548a..05070222b309122beffd622c834f1c47
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index c56ea02591cae25834de4ca6045437ed59d95073..30a26222e7b693daaa43399f3d3bbc6f1c593a53 100644
+index 9e192788af0b2ae5479c2fae1239b10e1ff45351..cc4481c9474b26c3018243f2e5bee55627ea4925 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -866,7 +866,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -193,7 +220,7 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..3361f499e9a907c09cf90adcdd3795b0
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 76cbfb7e900bf2698776f54cfe498f4b42965221..f81022c095bd73b6ab1573ac8aa5a49566719c1e 100644
+index ccca392a45cb05abb55ddd5c6c36e6f9c7a5d171..1a0392afc36e015d1df784a80d9682629cafe2de 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -244,7 +244,7 @@ public class PurpurConfig {

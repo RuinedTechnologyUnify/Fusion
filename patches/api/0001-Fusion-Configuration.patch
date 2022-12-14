@@ -5,10 +5,10 @@ Subject: [PATCH] Fusion-Configuration
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index a7e2fab3e174fe2c1d79d904f7eaff88dd0c3c82..0ca7d8cef78e4ad204240f3372537935de199b91 100644
+index e0f69edf603c2ec99bc92b16b18912272cc41bd9..ee6123a277d88e2368921a83ce697bd85340020e 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1981,6 +1981,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -1983,6 +1983,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
          }
          // Purpur end
  
