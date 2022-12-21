@@ -1,24 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Wed, 5 Oct 2022 15:53:15 +0900
+Date: Wed, 21 Dec 2022 12:55:04 +0900
 Subject: [PATCH] Fusion-Configuration
 
 
-diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..56eb31d2f7b1a92c427111a594173a5e95d3ceec 100644
---- a/src/main/java/co/aikar/timings/TimingsExport.java
-+++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -242,7 +242,9 @@ public class TimingsExport extends Thread {
-             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
-             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
-             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
--            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
-+            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
-+            pair("purpur", mapAsJSON(Bukkit.spigot().getPurpurConfig(), null)), // Fusion
-+            pair("fusion", mapAsJSON(Bukkit.spigot().getFusionConfig(), null)) // Fusion
-         ));
- 
-         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..62a83e77c6539b1e5bd4c9ade3350326b9a8398d
@@ -447,11 +432,26 @@ index 0000000000000000000000000000000000000000..38066d67105cd02df2939cb46d4c579e
 +    }
 +}
 \ No newline at end of file
+diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
+index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..2a298e6d129b8464be93c44bcf51643caa55b34f 100644
+--- a/src/main/java/co/aikar/timings/TimingsExport.java
++++ b/src/main/java/co/aikar/timings/TimingsExport.java
+@@ -242,7 +242,9 @@ public class TimingsExport extends Thread {
+             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
+             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
+             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
+-            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
++            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish // Fusion
++            pair("purpur", mapAsJSON(Bukkit.spigot().getPurpurConfig(), null)), // Fusion
++            pair("fusion", mapAsJSON(Bukkit.spigot().getFusionConfig(), null)) // Fusion
+         ));
+ 
+         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index d6c563dff2e816e043e096f8286e3d975cc86290..bd6085798bfbba776fb66adecc09ba89a7fe6ce9 100644
+index 46858fb57f122033a68aeb4ad3943132a677fb46..c036dfc118da454f6ae543d393674d38c7478530 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -232,6 +232,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -227,6 +227,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          }
          org.purpurmc.purpur.PurpurConfig.registerCommands();
          // Purpur end
@@ -468,10 +468,10 @@ index d6c563dff2e816e043e096f8286e3d975cc86290..bd6085798bfbba776fb66adecc09ba89
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index dc0f8bf1b3b6cc13f8b9ada94ca91cc517f63a6a..be134bd540a50024d2e1bdc7ea633b8ac29a212b 100644
+index a9289072b048095330ea32d7c965e8dda61a36fc..76ad4079f4a6b1222b7f424ea37856efe4edadff 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -175,6 +175,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -174,6 +174,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final org.purpurmc.purpur.PurpurWorldConfig purpurConfig; // Purpur
@@ -479,7 +479,7 @@ index dc0f8bf1b3b6cc13f8b9ada94ca91cc517f63a6a..be134bd540a50024d2e1bdc7ea633b8a
  
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
      public static BlockPos lastPhysicsProblem; // Spigot
-@@ -331,6 +332,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -330,6 +331,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
          this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
@@ -488,10 +488,10 @@ index dc0f8bf1b3b6cc13f8b9ada94ca91cc517f63a6a..be134bd540a50024d2e1bdc7ea633b8a
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 5386c16e76fbe51d0a674fbf85f2385cd3b6d4d6..ee25980bb78c567a052ced15440fa294085cc896 100644
+index e7e6e2ecc80b5b488657624ec35a1ca6935e3289..15e0063864b8b37e124c71bbb160ff670a4a05be 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1013,6 +1013,7 @@ public final class CraftServer implements Server {
+@@ -1026,6 +1026,7 @@ public final class CraftServer implements Server {
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
          org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
@@ -499,7 +499,7 @@ index 5386c16e76fbe51d0a674fbf85f2385cd3b6d4d6..ee25980bb78c567a052ced15440fa294
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -1029,6 +1030,7 @@ public final class CraftServer implements Server {
+@@ -1042,6 +1043,7 @@ public final class CraftServer implements Server {
              }
              world.spigotConfig.init(); // Spigot
              world.purpurConfig.init(); // Purpur
@@ -507,7 +507,7 @@ index 5386c16e76fbe51d0a674fbf85f2385cd3b6d4d6..ee25980bb78c567a052ced15440fa294
          }
  
          Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
-@@ -2852,6 +2854,13 @@ public final class CraftServer implements Server {
+@@ -2879,6 +2881,13 @@ public final class CraftServer implements Server {
          }
          // Purpur end
  
@@ -522,7 +522,7 @@ index 5386c16e76fbe51d0a674fbf85f2385cd3b6d4d6..ee25980bb78c567a052ced15440fa294
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 8a4c8701122edf2f29edbe97e4fa199da2744e9e..51ec0ad79b8a90dacbc92b98c859a05c3189c58e 100644
+index 082d0516c80cf231dd7ceb454508bb77407c499b..b33a160d36f397188676919fb8978a1f9f057c63 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -180,6 +180,14 @@ public class Main {
