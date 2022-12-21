@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 21 Dec 2022 15:04:33 +0900
+Subject: [PATCH] Fix-ClassInstanceMultiMap-FindMethod
+
+
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..0b0fd441acee6187a98e72761b625c576336eba5 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -54,7 +54,7 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+         return this.find(object.getClass()).contains(object);
+     }
+ 
+-    public <S> Collection<S> find(Class<S> type) {
++    public <S> Collection<? extends T> find(Class<S> type) {
+         if (!this.baseClass.isAssignableFrom(type)) {
+             throw new IllegalArgumentException("Don't know how to search for " + type);
+         } else {
