@@ -4,6 +4,21 @@ Date: Wed, 21 Dec 2022 12:55:04 +0900
 Subject: [PATCH] Fusion-Configuration
 
 
+diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
+index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..2a298e6d129b8464be93c44bcf51643caa55b34f 100644
+--- a/src/main/java/co/aikar/timings/TimingsExport.java
++++ b/src/main/java/co/aikar/timings/TimingsExport.java
+@@ -242,7 +242,9 @@ public class TimingsExport extends Thread {
+             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
+             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
+             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
+-            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
++            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish // Fusion
++            pair("purpur", mapAsJSON(Bukkit.spigot().getPurpurConfig(), null)), // Fusion
++            pair("fusion", mapAsJSON(Bukkit.spigot().getFusionConfig(), null)) // Fusion
+         ));
+ 
+         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..62a83e77c6539b1e5bd4c9ade3350326b9a8398d
@@ -432,21 +447,6 @@ index 0000000000000000000000000000000000000000..38066d67105cd02df2939cb46d4c579e
 +    }
 +}
 \ No newline at end of file
-diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..2a298e6d129b8464be93c44bcf51643caa55b34f 100644
---- a/src/main/java/co/aikar/timings/TimingsExport.java
-+++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -242,7 +242,9 @@ public class TimingsExport extends Thread {
-             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
-             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
-             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
--            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
-+            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish // Fusion
-+            pair("purpur", mapAsJSON(Bukkit.spigot().getPurpurConfig(), null)), // Fusion
-+            pair("fusion", mapAsJSON(Bukkit.spigot().getFusionConfig(), null)) // Fusion
-         ));
- 
-         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 index 46858fb57f122033a68aeb4ad3943132a677fb46..c036dfc118da454f6ae543d393674d38c7478530 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
