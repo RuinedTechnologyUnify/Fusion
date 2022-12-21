@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 21 Dec 2022 14:35:07 +0900
+Subject: [PATCH] Lithium-Collections-BlockEntityTickers
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 5d7f7008c42b3976ce57f704861788f39bd329ad..7c14500f529c9d9869a74f2dbe0a01c0594ecb3e 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -131,9 +131,11 @@ public class FusionWorldConfig {
+     }
+ 
+     public boolean lithiumEnable = true;
++    public boolean lithiumCollectionsBlockEntityTickers = true;
+ 
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++        lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+     }
+ 
+     private void lithiumConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 76ad4079f4a6b1222b7f424ea37856efe4edadff..3b66cc5eb285f7de68ed1dc237ff96dff422ca67 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -116,9 +116,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     public static final int TICKS_PER_DAY = 24000;
+     public static final int MAX_ENTITY_SPAWN_Y = 20000000;
+     public static final int MIN_ENTITY_SPAWN_Y = -20000000;
+-    protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper
++    protected final List<TickingBlockEntity> blockEntityTickers; public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper // Fusion - Lithium: Collections BlockEntityTickers
+     protected final NeighborUpdater neighborUpdater;
+-    private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
++    private final List<TickingBlockEntity> pendingBlockEntityTickers; // Fusion - Lithium: Collections BlockEntityTickers
+     private boolean tickingBlockEntities;
+     public final Thread thread;
+     private final boolean isDebug;
+@@ -336,6 +336,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+ 
++        // Fusion start - Lithium: Collections BlockEntityTickers
++        this.blockEntityTickers = this.fusionConfig.lithiumCollectionsBlockEntityTickers ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList();
++        this.pendingBlockEntityTickers = this.fusionConfig.lithiumCollectionsBlockEntityTickers ? me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList.wrapper(Lists.newArrayList()) : Lists.newArrayList();
++        // Fusion end
++
+         // CraftBukkit Ticks things
+         for (SpawnCategory spawnCategory : SpawnCategory.values()) {
+             if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
