@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 28 Dec 2022 15:27:00 +0900
+Subject: [PATCH] Lithium-Collections-EntityByType
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index c716273b1b6f27a45a6557505895fbefe25b4a53..e45ef1db3544b0b80caf7066faebc51b14e443e4 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -212,6 +212,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsStoreGameRules = true;
+     public static boolean lithiumShapesPrecomputeShapeArrays = true;
+     public static boolean lithiumCollectionsEntityAttributes = true;
++    public static boolean lithiumCollectionsEntityByType = true;
+ 
+     private static void lithiumConfig() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+@@ -223,6 +224,7 @@ public class FusionConfig {
+         lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
+         lithiumShapesPrecomputeShapeArrays = getBoolean("lithium.shapes.precompute-shape-arrays", lithiumShapesPrecomputeShapeArrays) && lithiumEnable;
+         lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
++        lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
+     }
+ 
+     private static void lithiumConfigSetup() {
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..194c1a04f32963e6de81a2e873a6091c0cf52214 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -13,11 +13,12 @@ import java.util.Map;
+ import java.util.stream.Collectors;
+ 
+ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+-    private final Map<Class<?>, List<T>> byClass = Maps.newHashMap();
++    private final Map<Class<?>, List<T>> byClass; // Fusion - Lithium: Collections EntityByType
+     private final Class<T> baseClass;
+     private final List<T> allInstances = Lists.newArrayList();
+ 
+     public ClassInstanceMultiMap(Class<T> elementType) {
++        this.byClass = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsEntityByType ? Maps.newHashMap() : new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(); // Fusion - Lithium: Collections EntityByType
+         this.baseClass = elementType;
+         this.byClass.put(elementType, this.allInstances);
+     }

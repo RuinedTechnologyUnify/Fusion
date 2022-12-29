@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: user <user@userui-MacBookPro.local>
+Date: Thu, 29 Dec 2022 15:22:13 +0900
+Subject: [PATCH] Lithium-AI-Raider
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 7e85d00c9ce2c8ebd6cca9d6c8e7fcaccea6c17b..1d9d9e02587e90598e43fc1eacc108d198218728 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -136,6 +136,7 @@ public class FusionWorldConfig {
+     public boolean lithiumEntityFastHandSwing = true;
+     public boolean lithiumEntityFastPowderSnowCheck = true;
+     public boolean lithiumCollectionsEntityAttributes = true;
++    public boolean lithiumAIRaider = true;
+ 
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+diff --git a/src/main/java/net/minecraft/world/entity/raid/Raid.java b/src/main/java/net/minecraft/world/entity/raid/Raid.java
+index 08b18428e867baf14f551beb72e3875b0c420639..dfce5edc351f737753121e0c355be2decf3e606c 100644
+--- a/src/main/java/net/minecraft/world/entity/raid/Raid.java
++++ b/src/main/java/net/minecraft/world/entity/raid/Raid.java
+@@ -269,7 +269,15 @@ public class Raid {
+         this.status = Raid.RaidStatus.STOPPED;
+     }
+ 
++    private boolean isBarDirty; // Fusion - Lithium: AI Raider
++
+     public void tick() {
++        // Fusion start - Lithium: AI Raider
++        if (this.isBarDirty) {
++            this.raidEvent.setProgress(Mth.clamp(this.getHealthOfLivingRaiders() / this.totalHealth, 0.0F, 1.0F));
++            this.isBarDirty = false;
++        }
++        // Fusion end
+         if (!this.isStopped()) {
+             if (this.status == Raid.RaidStatus.ONGOING) {
+                 boolean flag = this.active;
+@@ -638,7 +646,13 @@ public class Raid {
+     }
+ 
+     public void updateBossbar() {
+-        this.raidEvent.setProgress(Mth.clamp(this.getHealthOfLivingRaiders() / this.totalHealth, 0.0F, 1.0F));
++        // Fusion start - Lithium: AI Raider
++        if (this.level.fusionConfig.lithiumAIRaider) {
++            this.isBarDirty = true;
++        } else {
++            this.raidEvent.setProgress(Mth.clamp(this.getHealthOfLivingRaiders() / this.totalHealth, 0.0F, 1.0F));
++        }
++        // Fusion end
+     }
+ 
+     public float getHealthOfLivingRaiders() {
+
+diff --git a/src/main/java/net/minecraft/world/entity/raid/Raider.java b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+index 6c77c67dc6a378b87cd73c6c55b6d41d1542f6f3..49f955ba3e14bd8c3d39d9e2cbe1702be105c4d3 100644
+--- a/src/main/java/net/minecraft/world/entity/raid/Raider.java
++++ b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+@@ -46,8 +46,9 @@ import net.minecraft.world.phys.Vec3;
+ public abstract class Raider extends PatrollingMonster {
+
+     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.defineId(Raider.class, EntityDataSerializers.BOOLEAN);
++    private static final ItemStack CACHED_OMINOUS_BANNER = Raid.getLeaderBannerInstance(); // Fusion - Lithium: AI Raider
+     static final Predicate<ItemEntity> ALLOWED_ITEMS = (entityitem) -> {
+-        return !entityitem.hasPickUpDelay() && entityitem.isAlive() && ItemStack.matches(entityitem.getItem(), Raid.getLeaderBannerInstance());
++        return !entityitem.hasPickUpDelay() && entityitem.isAlive() && ItemStack.matches(entityitem.getItem(), CACHED_OMINOUS_BANNER); // Fusion - Lithium: AI Raider
+     };
+     @Nullable
+     protected Raid raid;
+@@ -149,7 +150,7 @@ public abstract class Raider extends PatrollingMonster {
+                     }
+                 }
+
+-                if (!itemstack.isEmpty() && ItemStack.matches(itemstack, Raid.getLeaderBannerInstance()) && entityhuman != null) {
++                if (!itemstack.isEmpty() && ItemStack.matches(itemstack, CACHED_OMINOUS_BANNER) && entityhuman != null) { // Fusion - Lithium: AI Raider
+                     MobEffectInstance mobeffect = entityhuman.getEffect(MobEffects.BAD_OMEN);
+                     byte b0 = 1;
+                     int i;
+@@ -244,7 +245,7 @@ public abstract class Raider extends PatrollingMonster {
+         ItemStack itemstack = item.getItem();
+         boolean flag = this.hasActiveRaid() && this.getCurrentRaid().getLeader(this.getWave()) != null;
+
+-        if (this.hasActiveRaid() && !flag && ItemStack.matches(itemstack, Raid.getLeaderBannerInstance())) {
++        if (this.hasActiveRaid() && !flag && ItemStack.matches(itemstack, CACHED_OMINOUS_BANNER)) { // Fusion - Lithium: AI Raider
+             // Paper start
+             if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPickupItemEvent(this, item, 0, false).isCancelled()) {
+                 return;
+@@ -311,6 +312,8 @@ public abstract class Raider extends PatrollingMonster {
+     public class ObtainRaidLeaderBannerGoal<T extends Raider> extends Goal {
+
+         private final T mob;
++        private final ItemStack CACHED_OMINOUS_BANNER = Raid.getLeaderBannerInstance(); // Fusion - Lithium: AI Raider
++
+
+         public ObtainRaidLeaderBannerGoal(T entityraider) { // CraftBukkit - decompile error
+             this.mob = entityraider;
+@@ -322,7 +325,7 @@ public abstract class Raider extends PatrollingMonster {
+             if ((!this.mob.level.purpurConfig.pillagerBypassMobGriefing && !this.mob.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) || !this.mob.canPickUpLoot()) return false; // Paper - respect game and entity rules for picking up items // Purpur
+             Raid raid = this.mob.getCurrentRaid();
+
+-            if (this.mob.hasActiveRaid() && !this.mob.getCurrentRaid().isOver() && this.mob.canBeLeader() && !ItemStack.matches(this.mob.getItemBySlot(EquipmentSlot.HEAD), Raid.getLeaderBannerInstance())) {
++            if (this.mob.hasActiveRaid() && !this.mob.getCurrentRaid().isOver() && this.mob.canBeLeader() && !ItemStack.matches(this.mob.getItemBySlot(EquipmentSlot.HEAD), CACHED_OMINOUS_BANNER)) { // Fusion - Lithium: AI Raider
+                 Raider entityraider = raid.getLeader(this.mob.getWave());
+
+                 if (entityraider == null || !entityraider.isAlive()) {

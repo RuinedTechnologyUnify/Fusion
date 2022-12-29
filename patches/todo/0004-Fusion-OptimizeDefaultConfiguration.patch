@@ -30,7 +30,7 @@ index f3593297929842b52e4467ed4386ab12586b1b70..f7b689ce6dd0e066e66485ddab4322d6
                  "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
                  "If you want further away entities to tick less often, use 7.",
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index 04ca6d27a13706fbddc708df0fcca42b4098bcba..cf0fcbede59ab680b11b4b5e98f3d1d9a42ca000 100644
+index 6bf14183a3fcd2b3d166752ce33240d2ff1ffa7c..5e92d33c265132123c5b75f553a2c506aca4c151 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 @@ -114,7 +114,7 @@ public class GlobalConfiguration extends ConfigurationPart {
@@ -43,7 +43,7 @@ index 04ca6d27a13706fbddc708df0fcca42b4098bcba..cf0fcbede59ab680b11b4b5e98f3d1d9
  
      public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f337b7cc120 100644
+index 2e9590c73d867c3ebb42f695df4c796a0f477452..a1998713e3b551a3c23686167f18950c597f1e8b 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 @@ -87,10 +87,12 @@ public class WorldConfiguration extends ConfigurationPart {
@@ -72,7 +72,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
  
              @ConfigSerializable
              public record DespawnRange(@Required int soft, @Required int hard) {
-@@ -313,7 +315,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -314,7 +316,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Environment extends ConfigurationPart {
          public boolean disableThunder = false;
          public boolean disableIceAndSnow = false;
@@ -81,7 +81,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
          public boolean disableExplosionKnockback = false;
          public boolean generateFlatBedrock = false;
          public FrostedIce frostedIce;
-@@ -365,7 +367,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -366,7 +368,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public Fixes fixes;
  
      public class Fixes extends ConfigurationPart {
@@ -90,7 +90,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
          public boolean disableUnloadedChunkEnderpearlExploit = true;
          public boolean preventTntFromMovingInWater = false;
          public boolean splitOverstackedLoot = true;
-@@ -393,9 +395,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -394,9 +396,9 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Collisions extends ConfigurationPart {
          public boolean onlyPlayersCollide = false;
          public boolean allowVehicleCollisions = true;
@@ -102,7 +102,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
          public boolean allowPlayerCrammingDamage = false;
      }
  
-@@ -403,9 +405,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -404,9 +406,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Chunks extends ConfigurationPart {
          public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
@@ -114,7 +114,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
          public Duration delayChunkUnloadsBy = Duration.of("10s");
          public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(BuiltInRegistries.ENTITY_TYPE.size()), map -> {
              map.defaultReturnValue(-1);
-@@ -428,11 +430,22 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -429,11 +431,22 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
  
      public class TickRates extends ConfigurationPart {
@@ -141,7 +141,7 @@ index 7e1add0f18da3ac2d93b084979d419cf45d2bca3..03deec23e69bf4eca4ec794f72d49f33
      }
  
      @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
-@@ -454,9 +467,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -455,9 +468,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
@@ -229,7 +229,7 @@ index cba660a0506994f66cbcb890ccd464bd412a6211..04c5347e3d762dce212d52a9e8002be8
          };
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index f81022c095bd73b6ab1573ac8aa5a49566719c1e..149af78a4701f08366dd3c5e9237274ccf6375be 100644
+index f829c33c75d121dfac7e83b296ebfab63b95eea2..c9974e310537251d7cbf22ca5f0ecccbe1b8923b 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -254,7 +254,7 @@ public class PurpurConfig {
@@ -242,7 +242,7 @@ index f81022c095bd73b6ab1573ac8aa5a49566719c1e..149af78a4701f08366dd3c5e9237274c
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 619509538875f2876a53d7d1863f28d979931504..9a1ddce01db586fa220c33c4dd6d9c0238127cf0 100644
+index a3f9df384e5723d51177c78722e405a172bb385b..d8bade95dc830e514bf31708d849e147ff7c3120 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -417,7 +417,7 @@ public class PurpurWorldConfig {
