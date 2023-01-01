@@ -8,7 +8,7 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index 74c14e1035e5b9ec11fadc6c278d1e40f6a0244a..b36f3b07b0f855b2c2ec8a0fc8fea69c6e93fe42 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -210,6 +210,7 @@ public class FusionConfig {
+@@ -224,6 +224,7 @@ public class FusionConfig {
      public static boolean lithiumEntityFastRetrieval = true;
      public static boolean lithiumCollectionsEntityAIGoals = true;
      public static boolean lithiumCollectionsStoreGameRules = true;
@@ -16,7 +16,7 @@ index 74c14e1035e5b9ec11fadc6c278d1e40f6a0244a..b36f3b07b0f855b2c2ec8a0fc8fea69c
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -219,6 +220,7 @@ public class FusionConfig {
+@@ -233,6 +234,7 @@ public class FusionConfig {
          lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
          lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
          lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;

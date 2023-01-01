@@ -8,7 +8,7 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index c716273b1b6f27a45a6557505895fbefe25b4a53..e45ef1db3544b0b80caf7066faebc51b14e443e4 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -212,6 +212,7 @@ public class FusionConfig {
+@@ -226,6 +226,7 @@ public class FusionConfig {
      public static boolean lithiumCollectionsStoreGameRules = true;
      public static boolean lithiumShapesPrecomputeShapeArrays = true;
      public static boolean lithiumCollectionsEntityAttributes = true;
@@ -16,7 +16,7 @@ index c716273b1b6f27a45a6557505895fbefe25b4a53..e45ef1db3544b0b80caf7066faebc51b
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -223,6 +224,7 @@ public class FusionConfig {
+@@ -237,6 +238,7 @@ public class FusionConfig {
          lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
          lithiumShapesPrecomputeShapeArrays = getBoolean("lithium.shapes.precompute-shape-arrays", lithiumShapesPrecomputeShapeArrays) && lithiumEnable;
          lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;

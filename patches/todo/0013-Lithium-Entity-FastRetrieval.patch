@@ -8,7 +8,7 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index 95d1b8aa162805b84ea8cb8a6a50fbad546d387b..b1b26019806f45b03672e5ca55ca77e72efb031c 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -207,12 +207,14 @@ public class FusionConfig {
+@@ -221,12 +221,14 @@ public class FusionConfig {
      public static boolean lithiumEnable = true;
      public static boolean lithiumMathFastUtil = true;
      public static boolean lithiumMathBetterTrigonometry = true;

@@ -8,7 +8,7 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index 89be51d2d451c8d95d64a14992ceacfc741d8d8f..d7dec66127d0f0eec7b4ce830eb7a9558e1fab05 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -214,6 +214,7 @@ public class FusionConfig {
+@@ -228,6 +228,7 @@ public class FusionConfig {
      public static boolean lithiumCollectionsEntityAttributes = true;
      public static boolean lithiumCollectionsEntityByType = true;
      public static boolean lithiumCollectionsEntityFiltering = true;
@@ -16,7 +16,7 @@ index 89be51d2d451c8d95d64a14992ceacfc741d8d8f..d7dec66127d0f0eec7b4ce830eb7a955
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -227,6 +228,7 @@ public class FusionConfig {
+@@ -241,6 +242,7 @@ public class FusionConfig {
          lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
          lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
          lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;

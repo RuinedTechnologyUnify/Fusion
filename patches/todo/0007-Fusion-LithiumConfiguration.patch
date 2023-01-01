@@ -8,9 +8,9 @@ diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/mai
 index 62a83e77c6539b1e5bd4c9ade3350326b9a8398d..2712832c753357896210072e698fed731b359b81 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -203,4 +203,14 @@ public class FusionConfig {
-         }
-         return builder.build();
+@@ -217,4 +217,14 @@ public class FusionConfig {
+
+     private static void noChatReportsConfigSetup() {
      }
 +
 +    public static boolean lithiumEnable = true;
