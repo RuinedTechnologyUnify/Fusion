@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Mon, 2 Jan 2023 04:30:45 +0900
-Subject: [PATCH] NoChatReports-Implemtation
+Subject: [PATCH] NoChatReports-Implementation
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
