@@ -3,6 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 21 Dec 2022 16:13:55 +0900
 Subject: [PATCH] Lithium-Collections-StoreGameRules
 
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index ac611ebf04ed8d2d40a7d94fc5605ff2f672ea23..74c14e1035e5b9ec11fadc6c278d1e40f6a0244a 100644

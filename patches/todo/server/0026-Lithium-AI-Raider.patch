@@ -3,6 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Thu, 29 Dec 2022 15:22:13 +0900
 Subject: [PATCH] Lithium-AI-Raider
 
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index 7e85d00c9ce2c8ebd6cca9d6c8e7fcaccea6c17b..1d9d9e02587e90598e43fc1eacc108d198218728 100644

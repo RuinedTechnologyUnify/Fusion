@@ -3,6 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 21 Dec 2022 14:45:21 +0900
 Subject: [PATCH] Lithium-Math-BetterTrigonometry
 
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 index ff57936450ef0d3706c978ce484575452554fd13..95d1b8aa162805b84ea8cb8a6a50fbad546d387b 100644

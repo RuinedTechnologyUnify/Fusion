@@ -3,6 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 21 Dec 2022 14:35:07 +0900
 Subject: [PATCH] Lithium-Collections-BlockEntityTickers
 
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index 5d7f7008c42b3976ce57f704861788f39bd329ad..7c14500f529c9d9869a74f2dbe0a01c0594ecb3e 100644

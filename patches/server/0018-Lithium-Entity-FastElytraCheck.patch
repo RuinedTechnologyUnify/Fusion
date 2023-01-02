@@ -3,6 +3,9 @@ From: IPECTER <ipectert@gmail.com>
 Date: Wed, 28 Dec 2022 15:05:35 +0900
 Subject: [PATCH] Lithium-Entity-FastElytraCheck
 
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index 7c14500f529c9d9869a74f2dbe0a01c0594ecb3e..b7b030d3679434f02de31ec91bbeca83e5e5e332 100644

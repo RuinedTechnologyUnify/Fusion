@@ -17,7 +17,7 @@ index 62a83e77c6539b1e5bd4c9ade3350326b9a8398d..14a81977495f1cc1a4fce448974d08b2
 +
 +    private static void noChatReportsConfig() {
 +        setComment("no-chat-reports", "[ No Chat Reports ] Player Chat Reporting Control Mod");
-+        noChatReportsEnable = getBoolean("no-chat-reports.enable", noChatReportsEnable);
++        noChatReportsEnable = getBoolean("no-chat-reports.enable.", noChatReportsEnable);
 +    }
 +
 +    private static void noChatReportsConfigSetup() {
