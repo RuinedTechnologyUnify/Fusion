@@ -1,41 +1,41 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Wed, 28 Dec 2022 15:23:53 +0900
-Subject: [PATCH] Lithium-Collections-EntityAttributes
+Subject: [PATCH] Lithium-Collections-Attributes
 
 Lithium - CaffeineMC  - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index b36f3b07b0f855b2c2ec8a0fc8fea69c6e93fe42..c716273b1b6f27a45a6557505895fbefe25b4a53 100644
+index 58cf70e7a427a5a81f68b279d29d91c3c2a4397b..b06f9cf296375f760dc23a0699282366be5d3211 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -225,6 +225,7 @@ public class FusionConfig {
-     public static boolean lithiumCollectionsEntityAIGoals = true;
-     public static boolean lithiumCollectionsStoreGameRules = true;
+     public static boolean lithiumCollectionsGoals = true;
+     public static boolean lithiumCollectionsGameRules = true;
      public static boolean lithiumShapesPrecomputeShapeArrays = true;
-+    public static boolean lithiumCollectionsEntityAttributes = true;
++    public static boolean lithiumCollectionsAttributes = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -235,6 +236,7 @@ public class FusionConfig {
-         lithiumCollectionsEntityAIGoals = getBoolean("lithium.collections.entity-ai-goals", lithiumCollectionsEntityAIGoals) && lithiumEnable;
-         lithiumCollectionsStoreGameRules = getBoolean("lithium.collections.store-gamerules", lithiumCollectionsStoreGameRules) && lithiumEnable;
+         lithiumCollectionsGoals = getBoolean("lithium.collections.goals", lithiumCollectionsGoals) && lithiumEnable;
+         lithiumCollectionsGameRules = getBoolean("lithium.collections.gamerules", lithiumCollectionsGameRules) && lithiumEnable;
          lithiumShapesPrecomputeShapeArrays = getBoolean("lithium.shapes.precompute-shape-arrays", lithiumShapesPrecomputeShapeArrays) && lithiumEnable;
-+        lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
++        lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
      }
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 24140bd78be47d987ffaa55f9f118f861d5b996d..7e85d00c9ce2c8ebd6cca9d6c8e7fcaccea6c17b 100644
+index 24140bd78be47d987ffaa55f9f118f861d5b996d..d0da18734cbad828768ad2ed4fed4fc5a783e4e8 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -135,6 +135,7 @@ public class FusionWorldConfig {
      public boolean lithiumEntityFastElytraCheck = true;
      public boolean lithiumEntityFastHandSwing = true;
      public boolean lithiumEntityFastPowderSnowCheck = true;
-+    public boolean lithiumCollectionsEntityAttributes = true;
++    public boolean lithiumCollectionsAttributes = true;
  
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
@@ -43,12 +43,12 @@ index 24140bd78be47d987ffaa55f9f118f861d5b996d..7e85d00c9ce2c8ebd6cca9d6c8e7fcac
          lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
          lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
          lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
-+        lithiumCollectionsEntityAttributes = getBoolean("lithium.collections.entity-attributes", lithiumCollectionsEntityAttributes) && lithiumEnable;
++        lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
      }
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 210a0bee1227e4671909dd553ab22027cfc868fb..6b249278565a577308618483657584262ee96429 100644
+index 210a0bee1227e4671909dd553ab22027cfc868fb..d4ba9d553a137a79c2188ca5edf7a797ff387d52 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 @@ -20,8 +20,8 @@ import org.slf4j.Logger;
@@ -68,11 +68,11 @@ index 210a0bee1227e4671909dd553ab22027cfc868fb..6b249278565a57730861848365758426
          // Purpur end
 +        // Fusion start - Lithium: Collections EntityAttributes
 +        if (this.entity != null){
-+            this.attributes = this.entity.level.fusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
-+            this.dirtyAttributes = this.entity.level.fusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
++            this.attributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
++            this.dirtyAttributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
 +        } else {
-+            this.attributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
-+            this.dirtyAttributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsEntityAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
++            this.attributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
++            this.dirtyAttributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
 +        }
 +        // Fusion end
          this.supplier = defaultAttributes;

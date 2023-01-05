@@ -1,39 +1,39 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
 Date: Wed, 21 Dec 2022 14:45:21 +0900
-Subject: [PATCH] Lithium-Math-BetterTrigonometry
+Subject: [PATCH] Lithium-Math-SineLUT
 
 Lithium - CaffeineMC  - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index ff57936450ef0d3706c978ce484575452554fd13..95d1b8aa162805b84ea8cb8a6a50fbad546d387b 100644
+index b6e759df57b6ab9392765546e0443dde9e12d4bc..70d9cae563e58549a8561bbb0d7a9dc0c3da3806 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -220,11 +220,13 @@ public class FusionConfig {
  
      public static boolean lithiumEnable = true;
      public static boolean lithiumMathFastUtil = true;
-+    public static boolean lithiumMathBetterTrigonometry = true;
++    public static boolean lithiumMathSineLUT = true;
  
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
-+        lithiumMathBetterTrigonometry = getBoolean("lithium.math.better-trigonometry", lithiumMathBetterTrigonometry) && lithiumEnable;
++        lithiumMathSineLUT = getBoolean("lithium.math.sine-lut", lithiumMathSineLUT) && lithiumEnable;
      }
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 618f19d70a61062ed5989ec6cf0c036f2e047466..240a7c93b30dc3e9fa7541dec196d0ea16905a88 100644
+index 618f19d70a61062ed5989ec6cf0c036f2e047466..063d0e8b92f9b59ecc69353a758d553701520169 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -32,6 +32,7 @@ public class Mth {
  
      });
      private static final RandomSource RANDOM = RandomSource.createThreadSafe();
-+    public static float[] getSinTable() { return SIN; } // Fusion - Lithium: Math BetterTrigonometry
++    public static float[] getSinTable() { return SIN; } // Fusion - Lithium: Math SineLUT
      private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
      private static final double ONE_SIXTH = 0.16666666666666666D;
      private static final int FRAC_EXP = 8;
@@ -42,12 +42,12 @@ index 618f19d70a61062ed5989ec6cf0c036f2e047466..240a7c93b30dc3e9fa7541dec196d0ea
  
      public static float sin(float value) {
 -        return SIN[(int)(value * 10430.378F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumMathBetterTrigonometry ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: Math BetterTrigonometry
++        return com.github.ipecter.fusion.FusionConfig.lithiumMathSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.sin(value) : SIN[(int)(value * 10430.378F) & '\uffff']; // Fusion - Lithium: Math SineLUT
      }
  
      public static float cos(float value) {
 -        return SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff'];
-+        return com.github.ipecter.fusion.FusionConfig.lithiumMathBetterTrigonometry ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: Math BetterTrigonometry
++        return com.github.ipecter.fusion.FusionConfig.lithiumMathSineLUT ? me.jellysquid.mods.lithium.common.util.math.CompactSineLUT.cos(value) : SIN[(int)(value * 10430.378F + 16384.0F) & '\uffff']; // Fusion - Lithium: Math SineLUT
      }
  
      public static float sqrt(float value) {

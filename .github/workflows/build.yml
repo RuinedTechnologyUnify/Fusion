@@ -62,8 +62,8 @@ jobs:
         if: github.ref_name == env.branch
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          title: "Release #${{ env.workflow }}"
-          automatic_release_tag: release-${{ env.workflow }}
+          title: "Build #${{ env.workflow }}"
+          automatic_release_tag: build-${{ env.workflow }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: build/libs/*.jar
           prerelease: false
@@ -72,7 +72,7 @@ jobs:
         if: github.ref_name == env.branch
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          title: "Release #${{ env.workflow }}"
+          title: "Build #${{ env.workflow }}"
           automatic_release_tag: latest-${{ env.version }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: build/libs/Fusion-paperclip-1.19.3-R0.1-SNAPSHOT-reobf.jar

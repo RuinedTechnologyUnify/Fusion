@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 5 Jan 2023 14:24:24 +0900
+Subject: [PATCH] Lithium-Gen-CachedGeneratorSettings
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index ba3c3bb5e53443c1b0f8ce850020706b97101755..b2c6a4c1d8642c43c46d42575badcb03c8448d11 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -229,6 +229,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsEntityByType = true;
+     public static boolean lithiumCollectionsEntityFiltering = true;
+     public static boolean lithiumChunkSerialization = true;
++    public static boolean lithiumGenCachedGeneratorSettings = true;
+ 
+     private static void lithiumConfig() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+@@ -243,6 +244,7 @@ public class FusionConfig {
+         lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
+         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
+         lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
++        lithiumGenCachedGeneratorSettings = getBoolean("lithium.gen.cached-generator-settings", lithiumGenCachedGeneratorSettings) && lithiumEnable;
+     }
+ 
+     private static void lithiumConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+index 6b84633bf6956406d2e2c5dd32fa358f41ccc890..d6384d4d9b0474464aff949f440456c7630c9f97 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -62,10 +62,12 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+     private static final BlockState AIR = Blocks.AIR.defaultBlockState();
+     public final Holder<NoiseGeneratorSettings> settings;
+     private final Supplier<Aquifer.FluidPicker> globalFluidPicker;
++    private int cachedSeaLevel; // Fusion - Lithium: Gen CachedGeneratorSettings
+ 
+     public NoiseBasedChunkGenerator(BiomeSource biomeSource, Holder<NoiseGeneratorSettings> settings) {
+         super(biomeSource);
+         this.settings = settings;
++        this.cachedSeaLevel = ((NoiseGeneratorSettings) this.settings.value()).seaLevel(); // Fusion - Lithium: Gen CachedGeneratorSettings
+         this.globalFluidPicker = Suppliers.memoize(() -> {
+             return NoiseBasedChunkGenerator.createFluidPicker((NoiseGeneratorSettings) settings.value());
+         });
+@@ -395,10 +397,19 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+         return ((NoiseGeneratorSettings) this.settings.value()).noiseSettings().height();
+     }
+ 
++    // Fusion start - Lithium: Gen CachedGeneratorSettings
++    /**
++     * Use cached sea level instead of retrieving from the registry every time.
++     * This method is called for every block in the chunk so this will save a lot of registry lookups.
++     *
++     * @author SuperCoder79
++     * @reason avoid registry lookup
++     */
+     @Override
+     public int getSeaLevel() {
+-        return ((NoiseGeneratorSettings) this.settings.value()).seaLevel();
++        return com.github.ipecter.fusion.FusionConfig.lithiumGenCachedGeneratorSettings ? this.cachedSeaLevel : ((NoiseGeneratorSettings) this.settings.value()).seaLevel();
+     }
++    // Fusion end
+ 
+     @Override
+     public int getMinY() {
