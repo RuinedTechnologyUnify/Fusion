@@ -13,8 +13,8 @@
 
 
 ## Features
-- ❗ Work In Progress ❗
-- **High Performance** - **Stable** - **Compatible**
+- ❗ Rework / Refactoring / Wiki In Progress ❗ [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
+- **High Performance** - **Stable** - **Compatible**n
 - [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
 - Bukkit Server Based on [Bukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse) / [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) / [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
