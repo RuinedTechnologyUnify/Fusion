@@ -27,49 +27,6 @@ index 04aa079ecf35d5f27d087e94bdec4fb33b97074b..d142bce10e98f233c3cc424a63305ac2
      }
  
      private void lithiumConfigSetup() {
-diff --git a/src/main/java/com/github/ipecter/fusion/ds b/src/main/java/com/github/ipecter/fusion/ds
-new file mode 100644
-index 0000000000000000000000000000000000000000..f2fede9eb91bed3b5b81823d939494bbcb93afcf
---- /dev/null
-+++ b/src/main/java/com/github/ipecter/fusion/ds
-@@ -0,0 +1,37 @@
-++    // Fusion start - Lithium: Block Moving BlockEntity Shapes
-+    private volatile VoxelShape[] offsetAndSimplified;
-+
-+    public void setShape(float offset, Direction direction, VoxelShape offsetShape) {
-+        if (offsetShape == null) {
-+            throw new IllegalArgumentException("offsetShape must not be null!");
-+        }
-+        int index = getIndexForOffsetSimplifiedShapes(offset, direction);
-+        VoxelShape[] offsetAndSimplifiedShapes = this.offsetAndSimplified;
-+        if (offsetAndSimplifiedShapes == null) {
-+            offsetAndSimplifiedShapes = new VoxelShape[1 + 2 * 6];
-+        } else {
-+            offsetAndSimplifiedShapes = offsetAndSimplifiedShapes.clone();
-+        }
-+        offsetAndSimplifiedShapes[index] = offsetShape;
-+        this.offsetAndSimplified = offsetAndSimplifiedShapes;
-+    }
-+
-+    public VoxelShape getOffsetSimplifiedShape(float offset, Direction direction) {
-+        VoxelShape[] offsetAndSimplified = this.offsetAndSimplified;
-+        if (offsetAndSimplified == null) {
-+            return null;
-+        }
-+        int index = getIndexForOffsetSimplifiedShapes(offset, direction);
-+        return offsetAndSimplified[index];
-+    }
-+
-+    private static int getIndexForOffsetSimplifiedShapes(float offset, Direction direction) {
-+        if (offset != 0f && offset != 0.5f && offset != 1f) {
-+            throw new IllegalArgumentException("offset must be one of {0f, 0.5f, 1f}");
-+        }
-+        if (offset == 0f) {
-+            return 0; //can treat offsetting by 0 in all directions the same
-+        }
-+        return (int) (2 * offset) + 2 * direction.get3DDataValue();
-+    }
-+    // Fusion end
 diff --git a/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java b/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 index 221c5d080d55326e458c1182823d6b49224ef498..7c7865ff25763e95fbff30a2572b4879132ec921 100644
 --- a/src/main/java/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java

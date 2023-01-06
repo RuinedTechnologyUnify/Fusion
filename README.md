@@ -3,6 +3,7 @@
 ![title](https://user-images.githubusercontent.com/80433772/193827393-d3b38086-1a0e-4ca9-9313-e5272fa8c554.png)
 
 <h3>A Crazy Minecraft Server Software Fusing Amazing Bukkits</h3>
+❗ Rework / Refactoring / Wiki In Progress ❗
 
 [![License](https://img.shields.io/github/license/ipecter/Fusion?style=for-the-badge&logo=github)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ipecter/Fusion/build.yml?branch=ver%2F1.19.3&event=workflow_dispatch&logo=GoogleAnalytics&style=for-the-badge&logoColor=ffffff)](https://github.com/IPECTER/Fusion/actions)
@@ -11,16 +12,16 @@
 [![Download](https://img.shields.io/github/downloads/IPECTER/Fusion/total?&style=for-the-badge&logoColor=ffffff)](https://github.com/IPECTER/Fusion/releases/tag/latest-1.19.3)
 </div>
 
+## About Fusion...
+- Fusion began as a small personal project.
+- I'm always trying to keep it compatible and performance high.
+- <span style="color: #f54542">But Fusion may have many problems!</span>
 
 ## Features
-- ❗ Rework / Refactoring / Wiki In Progress ❗ [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
-- **High Performance** - **Stable** - **Compatible**n
-- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
-- Bukkit Server Based on [Bukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse) / [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) / [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
-- Upstream & Patched Bukkits: [Paper](https://github.com/PaperMC/Paper) / [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) / [Purpur](https://github.com/PurpurMC/Purpur) / [Mirai](https://github.com/etil2jz/Mirai) / [Prismarine](https://github.com/PrismarineTeam/Prismarine) / [Petal](https://github.com/Bloom-host/Petal) / [Patina](https://github.com/PatinaMC/Patina) / [JettPack](https://gitlab.com/Titaniumtown/JettPack) / [EmpireCraft](https://github.com/starlis/EmpireCraft) / [Akarin](https://github.com/Akarin-project/Akarin) / [Slice](https://github.com/Cryptite/Slice) / [Suki](https://github.com/SuCraft/Suki) / [Yatopia](https://github.com/YatopiaMC/Yatopia) / [SportPaper](https://github.com/Electroid/SportPaper)
-- Patched Mods: [StarLight](https://github.com/PaperMC/Starlight) / [Lithium](https://github.com/CaffeineMC/lithium-fabric) / [Alternate Current](https://github.com/SpaceWalkerRS/alternate-current) / [C2ME](https://github.com/RelativityMC/C2ME-fabric) / [VMP](https://github.com/RelativityMC/VMP-fabric) / [No Chat Reports](https://github.com/Aizistral-Studios/No-Chat-Reports)
-- Patched Extensions: [Spark](https://github.com/lucko/spark) / [FVD(WIP)](https://www.spigotmc.org/resources/fartherviewdistance.84950/) / [MCAntiMalware(WIP)](https://github.com/OpticFusion1/MCAntiMalware)
+- [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
+- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
+- **Upstream or Patched [Bukkits]() / [Mods]() / [Extensions]()**
 - Anyway It is Crazy
 
 ## License

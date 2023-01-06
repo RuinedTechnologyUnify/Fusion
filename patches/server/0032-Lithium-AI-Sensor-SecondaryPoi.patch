@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Thu, 5 Jan 2023 15:11:03 +0900
 Subject: [PATCH] Lithium-AI-Sensor-SecondaryPoi
 
+Lithium - CaffeineMC  - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index 5ee7f34c3f3f9f5d5c5184db30d075510a22560e..0961183186cc1e947de60e62c7ee977bb9af82b8 100644

@@ -3,6 +3,8 @@ From: IPECTER <ipectert@gmail.com>
 Date: Thu, 5 Jan 2023 13:04:30 +0900
 Subject: [PATCH] Lithium-Gen-ChunkRegion
 
+Lithium - CaffeineMC  - GPL 3.0
+Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index d142bce10e98f233c3cc424a63305ac280b84750..5ee7f34c3f3f9f5d5c5184db30d075510a22560e 100644
