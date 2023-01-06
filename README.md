@@ -3,7 +3,7 @@
 ![title](https://user-images.githubusercontent.com/80433772/193827393-d3b38086-1a0e-4ca9-9313-e5272fa8c554.png)
 
 <h3>A Crazy Minecraft Server Software Fusing Amazing Bukkits</h3>
-❗ Rework / Refactoring / Wiki In Progress ❗
+<h4>❗ [ Rework / Wiki ] Work In Progress ❗</h4>
 
 
 [![License](https://img.shields.io/github/license/ipecter/Fusion?style=for-the-badge&logo=github)](LICENSE)
@@ -14,20 +14,20 @@
 </div>
 
 ## About Fusion...
->- Fusion began as a small personal project.
->- I'm always trying to keep it compatible and performance high.
->- <p style="color: #f54542">But Fusion may have many problems!</p>
+- Fusion began as a small personal project.
+- I'm always trying to keep it compatible and performance high.
+- Fusion takes only compatible and effective patches from amazing bukkits.
+- **❗But Fusion may have many problems❗**
 
 ## Features
->- Fork of [Purpur](https://github.com/PurpurMC/Purpur)
->- [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
->- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
->- **Upstream or Patched [Bukkits]() / [Mods]() / [Extensions]()**
->- Anyway It is Crazy
+- Fork of [Purpur](https://github.com/PurpurMC/Purpur)
+- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
+- **Upstream & Patched [Bukkits]() / [Mods]() / [Extensions]()**
+- Anyway It is Crazy
 
 ## License
->- This project will be granted license following [GPL-3.0](LICENSE). 
->- [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
+- This project will be granted license following [GPL-3.0](LICENSE). 
+- [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
 
 ## bStats
 [![](https://bstats.org/signatures/server-implementation/Fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion/16924)
