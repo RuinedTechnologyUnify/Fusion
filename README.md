@@ -5,6 +5,7 @@
 <h3>A Crazy Minecraft Server Software Fusing Amazing Bukkits</h3>
 ❗ Rework / Refactoring / Wiki In Progress ❗
 
+
 [![License](https://img.shields.io/github/license/ipecter/Fusion?style=for-the-badge&logo=github)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ipecter/Fusion/build.yml?branch=ver%2F1.19.3&event=workflow_dispatch&logo=GoogleAnalytics&style=for-the-badge&logoColor=ffffff)](https://github.com/IPECTER/Fusion/actions)
 [![Discord](https://img.shields.io/discord/894887872765771796?color=%235865F2&label=Discord&logo=discord&style=for-the-badge&logoColor=ffffff)](https://discord.gg/WnC2wFa6Uq)
@@ -13,20 +14,20 @@
 </div>
 
 ## About Fusion...
-- Fusion began as a small personal project.
-- I'm always trying to keep it compatible and performance high.
-- <span style="color: #f54542">But Fusion may have many problems!</span>
+>- Fusion began as a small personal project.
+>- I'm always trying to keep it compatible and performance high.
+>- <p style="color: #f54542">But Fusion may have many problems!</p>
 
 ## Features
-- Fork of [Purpur](https://github.com/PurpurMC/Purpur)
-- [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
-- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
-- **Upstream or Patched [Bukkits]() / [Mods]() / [Extensions]()**
-- Anyway It is Crazy
+>- Fork of [Purpur](https://github.com/PurpurMC/Purpur)
+>- [Latest 1.19.3 Download](https://github.com/IPECTER/Fusion/releases/tag/Build-172.5)
+>- [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
+>- **Upstream or Patched [Bukkits]() / [Mods]() / [Extensions]()**
+>- Anyway It is Crazy
 
 ## License
-- This project will be granted license following [GPL-3.0](LICENSE). 
-- [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
+>- This project will be granted license following [GPL-3.0](LICENSE). 
+>- [Author and License of Patches](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Patches)
 
 ## bStats
 [![](https://bstats.org/signatures/server-implementation/Fusion.svg)](https://bstats.org/plugin/server-implementation/Fusion/16924)
