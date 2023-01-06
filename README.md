@@ -22,7 +22,7 @@
 ## Features
 - Fork of [Purpur](https://github.com/PurpurMC/Purpur)
 - [Features Details](https://github.com/IPECTER/Fusion/wiki/Features-Details)
-- **Upstream & Patched [Bukkits]() / [Mods]() / [Extensions]()**
+- **Upstream & Patched [Bukkits](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Upstream-&-Patches#bukkits) / [Mods](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Upstream-&-Patches#mods) / [Extensions](https://github.com/IPECTER/Fusion/wiki/Author-and-License-of-Upstream-&-Patches#extensions)**
 - Anyway It is Crazy
 
 ## License
