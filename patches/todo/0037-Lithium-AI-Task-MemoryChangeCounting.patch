@@ -15,7 +15,7 @@ index 1d7d5369745b1fa196d18ebf82b01b8bc57d7703..44f23b240c26600a7fe3c8b12f3e5d63
      public static boolean lithiumWorldTickScheduler = true;
      public static boolean lithiumCollectionsBrain = true;
 +    public static boolean lithiumAITaskMemoryChangeCounting = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -246,6 +247,7 @@ public class FusionConfig {
@@ -24,7 +24,7 @@ index 1d7d5369745b1fa196d18ebf82b01b8bc57d7703..44f23b240c26600a7fe3c8b12f3e5d63
          lithiumCollectionsBrain = getBoolean("lithium.collections.brain", lithiumCollectionsBrain) && lithiumEnable;
 +        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
      }
-
+ 
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 index e2cec470613d5f8558a281889859d9f03d403baf..a9e2d9beb66ba0c340aaca424a5b986a6b73011f 100644
@@ -35,12 +35,12 @@ index e2cec470613d5f8558a281889859d9f03d403baf..a9e2d9beb66ba0c340aaca424a5b986a
      public boolean lithiumAISensorSecondaryPoi = true;
      public boolean lithiumEntityCollisionsSuffocation = true;
 +    public boolean lithiumAITaskMemoryChangeCounting = true;
-
+ 
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
 @@ -157,5 +158,6 @@ public class FusionWorldConfig {
      }
-
+ 
      private void lithiumConfigSetup() {
 +        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
      }

@@ -13,11 +13,11 @@ index 44f23b240c26600a7fe3c8b12f3e5d631304ad17..f937116067483598a8b09ff4e62c7292
      public static boolean lithiumCollectionsBrain = true;
      public static boolean lithiumAITaskMemoryChangeCounting = true;
 +    public static boolean lithiumAINearbyEntityTracking = true;
-
+ 
      private static void lithiumConfig() {
          setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
 @@ -252,5 +253,6 @@ public class FusionConfig {
-
+ 
      private static void lithiumConfigSetup() {
          lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
 +        lithiumAINearbyEntityTracking = getBoolean("lithium.ai.nearby-entity-tracking.enable", lithiumAINearbyEntityTracking) && lithiumEnable;
