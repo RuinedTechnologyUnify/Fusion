@@ -60,7 +60,7 @@ index 66e5c2716684f54e15e931e33d09463c0df0fda3..50bfa72b189cab1e30f3962711ae624e
 +        int horizontalRange = Mth.ceil(adjustedRange);
 +        this.nearbyEntityTracker = new NearbyEntityTracker<>(fleeFromType, mob, new Vec3i(horizontalRange, Mth.ceil(dimensions.height + 3 + 2), horizontalRange));
 +
-+        ((NearbyEntityListenerProvider) mob).addListener(this.nearbyEntityTracker);
++        mob.addListener(this.nearbyEntityTracker);
 +        // Fusion end
      }
  
@@ -121,7 +121,7 @@ index 8b189d7587303263efa1790066e5a83edd45f9d7..a5eba7578769cfcabf983f73a06a9707
 +            int horizontalRange = Mth.ceil(adjustedRange);
 +            this.nearbyEntityTracker = new NearbyEntityTracker<>(targetType, mob, new Vec3i(horizontalRange, Mth.ceil(dimensions.height + 3 + 2), horizontalRange));
  
-+            ((NearbyEntityListenerProvider) mob).addListener(this.nearbyEntityTracker);
++            mob.addListener(this.nearbyEntityTracker);
 +        }
 +        // Fusion end
      }
