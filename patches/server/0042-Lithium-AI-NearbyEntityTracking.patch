@@ -210,7 +210,7 @@ index a77985b2dd7137d8eea03909403fc08e89376d73..933f182398b8718137082b0656a0f119
  
                  entitysection.add(this.entity);
 +                // Fusion start - Lithium: AI NearbyEntityTracking
-+                NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
++                NearbyEntityListenerMulti listener = ((Entity) this.entity).getListener();
 +                if (listener != null)
 +                {
 +                    //noinspection unchecked
@@ -229,7 +229,7 @@ index a77985b2dd7137d8eea03909403fc08e89376d73..933f182398b8718137082b0656a0f119
          public void onRemove(Entity.RemovalReason reason) {
              org.spigotmc.AsyncCatcher.catchOp("Entity remove"); // Paper
 +            // Fusion start - Lithium: AI NearbyEntityTracking
-+            NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
++            NearbyEntityListenerMulti listener = ((Entity) this.entity).getListener();
 +            if (listener != null) {
 +                //noinspection unchecked
 +                listener.forEachChunkInRangeChange(
