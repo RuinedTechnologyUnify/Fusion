@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 9 Jan 2023 11:15:06 +0900
+Subject: [PATCH] Lithium-Range6Int
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+
+diff --git a/src/main/java/me/jellysquid/mods/lithium/common/util/tuples/Range6Int.java b/src/main/java/me/jellysquid/mods/lithium/common/util/tuples/Range6Int.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..673d4b02a4baf779efa64c1d7b4fc284ec0887f9
+--- /dev/null
++++ b/src/main/java/me/jellysquid/mods/lithium/common/util/tuples/Range6Int.java
+@@ -0,0 +1,4 @@
++package me.jellysquid.mods.lithium.common.util.tuples;
++
++public record Range6Int(int negativeX, int negativeY, int negativeZ, int positiveX, int positiveY, int positiveZ) {
++}
+\ No newline at end of file
