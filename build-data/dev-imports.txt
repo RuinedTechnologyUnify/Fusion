@@ -12,6 +12,3 @@ minecraft net/minecraft/util/Mth.java
 minecraft net/minecraft/network/protocol/status/ServerStatus.java
 minecraft net/minecraft/network/protocol/game/ServerboundChatPacket.java
 minecraft net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
-minecraft net/minecraft/world/entity/ai/Brain.java
-minecraft net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-minecraft net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
