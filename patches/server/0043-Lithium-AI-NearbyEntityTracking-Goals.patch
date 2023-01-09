@@ -5,7 +5,7 @@ Subject: [PATCH] Lithium-AI-NearbyEntityTracking-Goals
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index e01d8c7a6ea43c5150f0d012dbb7f0e90c87e32b..f4fdeb108797311463a652ba663122ca9ccdc84a 100644
+index a9e2d9beb66ba0c340aaca424a5b986a6b73011f..0917f78627858130ca45ff35606eb086fe67d235 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 @@ -142,6 +142,7 @@ public class FusionWorldConfig {
@@ -13,17 +13,18 @@ index e01d8c7a6ea43c5150f0d012dbb7f0e90c87e32b..f4fdeb108797311463a652ba663122ca
      public boolean lithiumEntityCollisionsSuffocation = true;
      public boolean lithiumAITaskMemoryChangeCounting = true;
 +    public boolean lithiumAINearbyEntityTrackingGoals = true;
- 
+
      private void lithiumConfig() {
          lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -156,6 +157,7 @@ public class FusionWorldConfig {
+@@ -155,6 +156,7 @@ public class FusionWorldConfig {
+         lithiumGenChunkRegion = getBoolean("lithium.gen.chunk-region", lithiumGenChunkRegion) && lithiumEnable;
          lithiumAISensorSecondaryPoi = getBoolean("lithium.ai.sensor.secondary-poi", lithiumAISensorSecondaryPoi) && lithiumEnable;
          lithiumEntityCollisionsSuffocation = getBoolean("lithium.entity.collisions.suffocation", lithiumEntityCollisionsSuffocation) && lithiumEnable;
-         lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
 +        lithiumAINearbyEntityTrackingGoals = getBoolean("lithium.ai.nearby-entity-tracking.goals", lithiumAINearbyEntityTrackingGoals) && lithiumEnable && FusionConfig.lithiumAINearbyEntityTracking;
      }
- 
+
      private void lithiumConfigSetup() {
+
 diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 index 66e5c2716684f54e15e931e33d09463c0df0fda3..50bfa72b189cab1e30f3962711ae624e581a3e65 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
