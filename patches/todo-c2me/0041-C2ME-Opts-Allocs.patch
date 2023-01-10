@@ -1,0 +1,158 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Tue, 10 Jan 2023 13:29:24 +0900
+Subject: [PATCH] C2ME-Opts-Allocs
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index c3ba837f8d8f3a1507fd43b2622c3657201f8adf..af59aa12684225ac84d4296e92c320865c2b6916 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -60,6 +60,8 @@ dependencies {
+     testImplementation("org.hamcrest:hamcrest-library:1.3")
+ 
+     implementation("io.netty:netty-all:4.1.77.Final"); // Paper - Bump netty
++
++    implementation("com.ibm.async:asyncutil:0.1.0") // Fusion - C2ME Implementation
+ }
+ 
+ val craftbukkitPackageVersion = "1_19_R2" // Paper
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 5e30e0c73d703d84973c5da98a18f2343a791260..a34a7b5a58e697caa3526fbe55e35203bf7b53c2 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -252,6 +252,7 @@ public class FusionConfig {
+ 
+     public static boolean c2meEnable = true;
+     public static boolean c2meOptsMath = true;
++    public static boolean c2meOptsAllocs = true;
+ 
+     private static void c2meConfig() {
+         setComment("c2me", "[ C2ME ] Chunk Performance Improve Mod");
+@@ -260,5 +261,6 @@ public class FusionConfig {
+     }
+ 
+     private static void c2meConfigSetup() {
++        c2meOptsAllocs = getBoolean("c2me.opts.allocs", c2meOptsAllocs) && c2meEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index 5ef58831a857fd8aa4ac30147762dc17d773a53e..5808919ac60af973b848cbf0b420463228c4801f 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -26,7 +26,7 @@ import java.net.URL;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.nio.file.spi.FileSystemProvider;
+-import java.security.AccessController;
++//import java.security.AccessController; // Fusion - Fix Import
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.time.Duration;
+@@ -407,7 +407,15 @@ public class Util {
+         return (Hash.Strategy<K>) Util.IdentityStrategy.INSTANCE; // Paper - decompile fix
+     }
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason use another impl
++     */
+     public static <V> CompletableFuture<List<V>> sequence(List<? extends CompletableFuture<V>> futures) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            return com.ibm.asyncutil.util.Combinators.collect(futures, Collectors.toList()).toCompletableFuture();
++        }
+         if (futures.isEmpty()) {
+             return CompletableFuture.completedFuture(List.of());
+         } else if (futures.size() == 1) {
+@@ -419,6 +427,7 @@ public class Util {
+             });
+         }
+     }
++    // Fusion end
+ 
+     public static <V> CompletableFuture<List<V>> sequenceFailFast(List<? extends CompletableFuture<? extends V>> futures) {
+         CompletableFuture<List<V>> completableFuture = new CompletableFuture<>();
+diff --git a/src/main/java/net/minecraft/nbt/ListTag.java b/src/main/java/net/minecraft/nbt/ListTag.java
+index 749d3e67a877d7d1ed47b5fef511a604ee6589b6..2c6e1dc6d85c980dcc1aee2a3d3f2383ba191968 100644
+--- a/src/main/java/net/minecraft/nbt/ListTag.java
++++ b/src/main/java/net/minecraft/nbt/ListTag.java
+@@ -25,7 +25,7 @@ public class ListTag extends CollectionTag<Tag> {
+                 } else {
+                     nbtAccounter.accountBytes(4L * (long)j);
+                     TagType<?> tagType = TagTypes.getType(b);
+-                    List<Tag> list = Lists.newArrayListWithCapacity(j);
++                    List<Tag> list =  new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(j); // Fusion - C2ME: Opts Allocs
+ 
+                     for(int k = 0; k < j; ++k) {
+                         list.add(tagType.load(dataInput, i + 1, nbtAccounter));
+@@ -112,7 +112,7 @@ public class ListTag extends CollectionTag<Tag> {
+     }
+ 
+     public ListTag() {
+-        this(Lists.newArrayList(), (byte)0);
++        this(new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(), (byte)0); // Fusion - C2ME: Opts Allocs
+     }
+ 
+     @Override
+@@ -336,7 +336,10 @@ public class ListTag extends CollectionTag<Tag> {
+     @Override
+     public ListTag copy() {
+         Iterable<Tag> iterable = (Iterable<Tag>)(TagTypes.getType(this.type).isValue() ? this.list : Iterables.transform(this.list, Tag::copy));
+-        List<Tag> list = Lists.newArrayList(iterable);
++        // Fusion start - C2ME: Opts Allocs
++        List<Tag> list = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(this.list.size());
++        iterable.forEach(list::add);
++        // Fusion end
+         return new ListTag(list, this.type);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/resources/ResourceLocation.java b/src/main/java/net/minecraft/resources/ResourceLocation.java
+index 6d8ce6885f879eb2bffbe45374ba87fb4c72dd42..4f742db955ea05f43f613d135854237f542ebac9 100644
+--- a/src/main/java/net/minecraft/resources/ResourceLocation.java
++++ b/src/main/java/net/minecraft/resources/ResourceLocation.java
+@@ -28,6 +28,7 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
+     public static final String REALMS_NAMESPACE = "realms";
+     private final String namespace;
+     private final String path;
++    private String cachedString; // Fusion - C2ME: Opts Allocs
+ 
+     protected ResourceLocation(String namespace, String path, @Nullable ResourceLocation.Dummy extraData) {
+         this.namespace = namespace;
+@@ -109,10 +110,22 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
+         return this.withPath(prefix + this.path);
+     }
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason cache toString
++     */
+     @Override
+     public String toString() {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            if (this.cachedString != null) return this.cachedString;
++            final String s = this.namespace + ":" + this.path;
++            this.cachedString = s;
++            return s;
++        }
+         return this.namespace + ":" + this.path;
+     }
++    // Fusion end
+ 
+     @Override
+     public boolean equals(Object object) {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+index 3c9275a115a0988223a61eb9d7cb59ef1da00350..06a7af09b2b2d40f96dde0274c8f51aa06f133ab 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+@@ -54,7 +54,7 @@ public class OreFeature extends Feature<OreConfiguration> {
+ 
+     protected boolean doPlace(WorldGenLevel world, RandomSource randomSource, OreConfiguration config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
+         int i = 0;
+-        BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
++        BitSet bitSet = com.ishland.c2me.opts.allocs.common.ObjectCachingUtils.getCachedOrNewBitSet(horizontalSize * verticalSize * horizontalSize); // Fusion - C2ME: Opts Allocs
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+         int j = config.size;
+         double[] ds = new double[j * 4];

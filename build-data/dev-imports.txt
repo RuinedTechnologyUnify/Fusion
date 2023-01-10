@@ -14,7 +14,6 @@ minecraft net.minecraft.network.protocol.game.ServerboundChatPacket.java
 minecraft net.minecraft.network.protocol.game.ServerboundChatSessionUpdatePacket.java
 minecraft net.minecraft.world.level.levelgen.material.MaterialRuleList.java
 minecraft net.minecraft.world.level.levelgen.feature.ConfiguredFeature.java
-minecraft net.minecraft.world.level.levelgen.SurfaceRules.java
 minecraft net.minecraft.resources.ResourceLocation.java
 minecraft net.minecraft.nbt.CompoundTag.java
 minecraft net.minecraft.nbt.ListTag.java
