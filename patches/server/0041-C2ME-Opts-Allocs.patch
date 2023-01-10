@@ -1,0 +1,564 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Tue, 10 Jan 2023 13:29:24 +0900
+Subject: [PATCH] C2ME-Opts-Allocs
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index c3ba837f8d8f3a1507fd43b2622c3657201f8adf..af59aa12684225ac84d4296e92c320865c2b6916 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -60,6 +60,8 @@ dependencies {
+     testImplementation("org.hamcrest:hamcrest-library:1.3")
+ 
+     implementation("io.netty:netty-all:4.1.77.Final"); // Paper - Bump netty
++
++    implementation("com.ibm.async:asyncutil:0.1.0") // Fusion - C2ME Implementation
+ }
+ 
+ val craftbukkitPackageVersion = "1_19_R2" // Paper
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 5e30e0c73d703d84973c5da98a18f2343a791260..a34a7b5a58e697caa3526fbe55e35203bf7b53c2 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -252,6 +252,7 @@ public class FusionConfig {
+ 
+     public static boolean c2meEnable = true;
+     public static boolean c2meOptsMath = true;
++    public static boolean c2meOptsAllocs = true;
+ 
+     private static void c2meConfig() {
+         setComment("c2me", "[ C2ME ] Chunk Performance Improve Mod");
+@@ -260,5 +261,6 @@ public class FusionConfig {
+     }
+ 
+     private static void c2meConfigSetup() {
++        c2meOptsAllocs = getBoolean("c2me.opts.allocs", c2meOptsAllocs) && c2meEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index 5ef58831a857fd8aa4ac30147762dc17d773a53e..5808919ac60af973b848cbf0b420463228c4801f 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -26,7 +26,7 @@ import java.net.URL;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.nio.file.spi.FileSystemProvider;
+-import java.security.AccessController;
++//import java.security.AccessController; // Fusion - Fix Import
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.time.Duration;
+@@ -407,7 +407,15 @@ public class Util {
+         return (Hash.Strategy<K>) Util.IdentityStrategy.INSTANCE; // Paper - decompile fix
+     }
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason use another impl
++     */
+     public static <V> CompletableFuture<List<V>> sequence(List<? extends CompletableFuture<V>> futures) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            return com.ibm.asyncutil.util.Combinators.collect(futures, Collectors.toList()).toCompletableFuture();
++        }
+         if (futures.isEmpty()) {
+             return CompletableFuture.completedFuture(List.of());
+         } else if (futures.size() == 1) {
+@@ -419,6 +427,7 @@ public class Util {
+             });
+         }
+     }
++    // Fusion end
+ 
+     public static <V> CompletableFuture<List<V>> sequenceFailFast(List<? extends CompletableFuture<? extends V>> futures) {
+         CompletableFuture<List<V>> completableFuture = new CompletableFuture<>();
+diff --git a/src/main/java/net/minecraft/nbt/ListTag.java b/src/main/java/net/minecraft/nbt/ListTag.java
+index 749d3e67a877d7d1ed47b5fef511a604ee6589b6..2c6e1dc6d85c980dcc1aee2a3d3f2383ba191968 100644
+--- a/src/main/java/net/minecraft/nbt/ListTag.java
++++ b/src/main/java/net/minecraft/nbt/ListTag.java
+@@ -25,7 +25,7 @@ public class ListTag extends CollectionTag<Tag> {
+                 } else {
+                     nbtAccounter.accountBytes(4L * (long)j);
+                     TagType<?> tagType = TagTypes.getType(b);
+-                    List<Tag> list = Lists.newArrayListWithCapacity(j);
++                    List<Tag> list =  new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(j); // Fusion - C2ME: Opts Allocs
+ 
+                     for(int k = 0; k < j; ++k) {
+                         list.add(tagType.load(dataInput, i + 1, nbtAccounter));
+@@ -112,7 +112,7 @@ public class ListTag extends CollectionTag<Tag> {
+     }
+ 
+     public ListTag() {
+-        this(Lists.newArrayList(), (byte)0);
++        this(new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(), (byte)0); // Fusion - C2ME: Opts Allocs
+     }
+ 
+     @Override
+@@ -336,7 +336,10 @@ public class ListTag extends CollectionTag<Tag> {
+     @Override
+     public ListTag copy() {
+         Iterable<Tag> iterable = (Iterable<Tag>)(TagTypes.getType(this.type).isValue() ? this.list : Iterables.transform(this.list, Tag::copy));
+-        List<Tag> list = Lists.newArrayList(iterable);
++        // Fusion start - C2ME: Opts Allocs
++        List<Tag> list = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(this.list.size());
++        iterable.forEach(list::add);
++        // Fusion end
+         return new ListTag(list, this.type);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/resources/ResourceLocation.java b/src/main/java/net/minecraft/resources/ResourceLocation.java
+index 6d8ce6885f879eb2bffbe45374ba87fb4c72dd42..4f742db955ea05f43f613d135854237f542ebac9 100644
+--- a/src/main/java/net/minecraft/resources/ResourceLocation.java
++++ b/src/main/java/net/minecraft/resources/ResourceLocation.java
+@@ -28,6 +28,7 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
+     public static final String REALMS_NAMESPACE = "realms";
+     private final String namespace;
+     private final String path;
++    private String cachedString; // Fusion - C2ME: Opts Allocs
+ 
+     protected ResourceLocation(String namespace, String path, @Nullable ResourceLocation.Dummy extraData) {
+         this.namespace = namespace;
+@@ -109,10 +110,22 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
+         return this.withPath(prefix + this.path);
+     }
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason cache toString
++     */
+     @Override
+     public String toString() {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            if (this.cachedString != null) return this.cachedString;
++            final String s = this.namespace + ":" + this.path;
++            this.cachedString = s;
++            return s;
++        }
+         return this.namespace + ":" + this.path;
+     }
++    // Fusion end
+ 
+     @Override
+     public boolean equals(Object object) {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java b/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
+index daee1072171769d89783a7d7ef9e5692cb9fbc20..12021dae6fe2c7849d80a145d2696ca60c5dae05 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
+@@ -178,7 +178,7 @@ public class SurfaceRules {
+         @Override
+         public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
+             class BiomeCondition extends SurfaceRules.LazyYCondition {
+-                BiomeCondition() {
++                BiomeCondition(SurfaceRules.Context context) { // Fusion - Fix Constructor
+                     super(context);
+                 }
+ 
+@@ -188,7 +188,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new BiomeCondition();
++            return new BiomeCondition(context); // Fusion - Fix Constructor
+         }
+ 
+         @Override
+@@ -290,6 +290,13 @@ public class SurfaceRules {
+         int waterHeight;
+         int stoneDepthBelow;
+         int stoneDepthAbove;
++        // Fusion start - C2ME: Opts Allocs
++        private int lazyPosX;
++        private int lazyPosY;
++        private int lazyPosZ;
++        private Holder<Biome> lastBiome = null;
++        private ResourceKey<Biome> lastBiomeKey = null;
++        // Fusion end
+ 
+         protected Context(SurfaceSystem surfaceBuilder, RandomState noiseConfig, ChunkAccess chunk, NoiseChunk chunkNoiseSampler, Function<BlockPos, Holder<Biome>> posToBiome, Registry<Biome> registry, WorldGenerationContext heightContext) {
+             this.system = surfaceBuilder;
+@@ -298,6 +305,15 @@ public class SurfaceRules {
+             this.noiseChunk = chunkNoiseSampler;
+             this.biomeGetter = posToBiome;
+             this.context = heightContext;
++            // Fusion start - C2ME: Opts Allocs
++            if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++                this.biome = () -> {
++                    if (this.lastBiome == null)
++                        return this.lastBiome = this.biomeGetter.apply(this.pos.set(this.lazyPosX, this.lazyPosY, this.lazyPosZ));
++                    return this.lastBiome;
++                };
++            }
++            // Fusion end
+         }
+ 
+         protected void updateXZ(int blockX, int blockZ) {
+@@ -308,16 +324,38 @@ public class SurfaceRules {
+             this.surfaceDepth = this.system.getSurfaceDepth(blockX, blockZ);
+         }
+ 
++        // Fusion start - C2ME: Opts Allocs
++        /**
++         * @author ishland
++         * @reason reduce allocs
++         */
+         protected void updateY(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int blockX, int blockY, int blockZ) {
+-            ++this.lastUpdateY;
+-            this.biome = Suppliers.memoize(() -> {
+-                return this.biomeGetter.apply(this.pos.set(blockX, blockY, blockZ));
+-            });
+-            this.blockY = blockY;
+-            this.waterHeight = fluidHeight;
+-            this.stoneDepthBelow = stoneDepthBelow;
+-            this.stoneDepthAbove = stoneDepthAbove;
++            if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++                ++this.lastUpdateY;
++                this.blockY = blockY;
++                this.waterHeight = fluidHeight;
++                this.stoneDepthBelow = stoneDepthBelow;
++                this.stoneDepthAbove = stoneDepthAbove;
++
++                // set lazy values
++                this.lazyPosX = blockX;
++                this.lazyPosY = blockY;
++                this.lazyPosZ = blockZ;
++                // clear cache
++                this.lastBiome = null;
++                this.lastBiomeKey = null;
++            } else {
++                ++this.lastUpdateY;
++                this.biome = Suppliers.memoize(() -> {
++                    return this.biomeGetter.apply(this.pos.set(blockX, blockY, blockZ));
++                });
++                this.blockY = blockY;
++                this.waterHeight = fluidHeight;
++                this.stoneDepthBelow = stoneDepthBelow;
++                this.stoneDepthAbove = stoneDepthAbove;
++            }
+         }
++        // Fusion end
+ 
+         protected double getSurfaceSecondary() {
+             if (this.lastSurfaceDepth2Update != this.lastUpdateXZ) {
+@@ -498,7 +536,7 @@ public class SurfaceRules {
+             final NormalNoise normalNoise = context.randomState.getOrCreateNoise(this.noise);
+ 
+             class NoiseThresholdCondition extends SurfaceRules.LazyXZCondition {
+-                NoiseThresholdCondition() {
++                NoiseThresholdCondition(SurfaceRules.Context context) { // Fusion - Fix Constructor
+                     super(context);
+                 }
+ 
+@@ -509,7 +547,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new NoiseThresholdCondition();
++            return new NoiseThresholdCondition(context); // Fusion - Fix Constructor
+         }
+     }
+ 
+@@ -549,44 +587,104 @@ public class SurfaceRules {
+         KeyDispatchDataCodec<? extends SurfaceRules.RuleSource> codec();
+     }
+ 
+-    static record SequenceRule(List<SurfaceRules.SurfaceRule> rules) implements SurfaceRules.SurfaceRule {
++    // Fusion start - C2ME: Opts Allocs
++    static class SequenceRule implements SurfaceRules.SurfaceRule {
++
++        private List<SurfaceRules.SurfaceRule> rules;
++        private SurfaceRules.SurfaceRule[] rulesArray;
++
++        public SequenceRule(List<SurfaceRules.SurfaceRule> rules) {
++            this.rules = rules;
++            this.rulesArray = this.rules.toArray(SurfaceRules.SurfaceRule[]::new);
++        }
++
++        /**
++         * @author ishland
++         * @reason use array for iteration
++         */
+         @Nullable
+         @Override
+         public BlockState tryApply(int x, int y, int z) {
+-            for(SurfaceRules.SurfaceRule surfaceRule : this.rules) {
+-                BlockState blockState = surfaceRule.tryApply(x, y, z);
+-                if (blockState != null) {
+-                    return blockState;
++            if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++                for(SurfaceRules.SurfaceRule surfaceRule : this.rulesArray) {
++                    BlockState blockState = surfaceRule.tryApply(x, y, z);
++                    if (blockState != null) {
++                        return blockState;
++                    }
++                }
++            } else {
++                for(SurfaceRules.SurfaceRule surfaceRule : this.rules) {
++                    BlockState blockState = surfaceRule.tryApply(x, y, z);
++                    if (blockState != null) {
++                        return blockState;
++                    }
+                 }
+             }
+-
+             return null;
+         }
+     }
++    // Fusion end
++
++    // Fusion start - C2ME: Opts Allocs
++    static class SequenceRuleSource implements SurfaceRules.RuleSource {
++        static final KeyDispatchDataCodec<SurfaceRules.SequenceRuleSource> CODEC = KeyDispatchDataCodec.of(SurfaceRules.RuleSource.CODEC.listOf().xmap(SurfaceRules.SequenceRuleSource::new, SurfaceRules.SequenceRuleSource::getSequence).fieldOf("sequence"));
+ 
+-    static record SequenceRuleSource(List<SurfaceRules.RuleSource> sequence) implements SurfaceRules.RuleSource {
+-        static final KeyDispatchDataCodec<SurfaceRules.SequenceRuleSource> CODEC = KeyDispatchDataCodec.of(SurfaceRules.RuleSource.CODEC.listOf().xmap(SurfaceRules.SequenceRuleSource::new, SurfaceRules.SequenceRuleSource::sequence).fieldOf("sequence"));
++        private List<SurfaceRules.RuleSource> sequence;
++        private SurfaceRules.RuleSource[] sequenceArray;
++        private boolean isSingleOrNoElement;
++        private SurfaceRules.RuleSource firstElement;
++
++        public SequenceRuleSource(List<SurfaceRules.RuleSource> sequence) {
++            this.sequence = sequence;
++            this.sequenceArray = this.sequence.toArray(SurfaceRules.RuleSource[]::new);
++            this.isSingleOrNoElement = this.sequenceArray.length <= 1;
++            this.firstElement = this.sequenceArray.length == 0 ? null : this.sequenceArray[0];
++        }
++
++        public List<SurfaceRules.RuleSource> getSequence(){
++            return this.sequence;
++        }
+ 
+         @Override
+         public KeyDispatchDataCodec<? extends SurfaceRules.RuleSource> codec() {
+             return CODEC;
+         }
+ 
++        /**
++         * @author ishland
++         * @reason optimize lookup
++         */
+         @Override
+         public SurfaceRules.SurfaceRule apply(SurfaceRules.Context context) {
+-            if (this.sequence.size() == 1) {
+-                return this.sequence.get(0).apply(context);
+-            } else {
+-                ImmutableList.Builder<SurfaceRules.SurfaceRule> builder = ImmutableList.builder();
++            if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++                if (this.isSingleOrNoElement) {
++                    return this.firstElement != null ? this.firstElement.apply(context) : new SurfaceRules.SequenceRule(List.of());
++                } else {
++                    @SuppressWarnings("UnstableApiUsage")
++                    ImmutableList.Builder<SurfaceRules.SurfaceRule> builder = ImmutableList.builderWithExpectedSize(this.sequenceArray.length);
++
++                    for (SurfaceRules.RuleSource materialRule : this.sequenceArray) {
++                        builder.add(materialRule.apply(context));
++                    }
+ 
+-                for(SurfaceRules.RuleSource ruleSource : this.sequence) {
+-                    builder.add(ruleSource.apply(context));
++                    return new SurfaceRules.SequenceRule(builder.build());
+                 }
++            } else {
++                if (this.sequence.size() == 1) {
++                    return this.sequence.get(0).apply(context);
++                } else {
++                    ImmutableList.Builder<SurfaceRules.SurfaceRule> builder = ImmutableList.builder();
+ 
+-                return new SurfaceRules.SequenceRule(builder.build());
++                    for(SurfaceRules.RuleSource ruleSource : this.sequence) {
++                        builder.add(ruleSource.apply(context));
++                    }
++
++                    return new SurfaceRules.SequenceRule(builder.build());
++                }
+             }
+         }
+     }
++    // Fusion end
+ 
+     static record StateRule(BlockState state) implements SurfaceRules.SurfaceRule {
+         @Override
+@@ -626,7 +724,7 @@ public class SurfaceRules {
+             final boolean bl = this.surfaceType == CaveSurface.CEILING;
+ 
+             class StoneDepthCondition extends SurfaceRules.LazyYCondition {
+-                StoneDepthCondition() {
++                StoneDepthCondition(SurfaceRules.Context context) { // Fusion - Fix Constructor
+                     super(context);
+                 }
+ 
+@@ -639,7 +737,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new StoneDepthCondition();
++            return new StoneDepthCondition(context); // Fusion - Fix Constructor
+         }
+     }
+ 
+@@ -705,8 +803,8 @@ public class SurfaceRules {
+             final PositionalRandomFactory positionalRandomFactory = context.randomState.getOrCreateRandomFactory(this.randomName());
+ 
+             class VerticalGradientCondition extends SurfaceRules.LazyYCondition {
+-                VerticalGradientCondition() {
+-                    super(context);
++                VerticalGradientCondition(SurfaceRules.Context context) {
++                    super(context); // Fusion - Fix Constructor
+                 }
+ 
+                 @Override
+@@ -724,7 +822,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new VerticalGradientCondition();
++            return new VerticalGradientCondition(context); // Fusion - Fix Constructor
+         }
+     }
+ 
+@@ -741,7 +839,7 @@ public class SurfaceRules {
+         @Override
+         public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
+             class WaterCondition extends SurfaceRules.LazyYCondition {
+-                WaterCondition() {
++                WaterCondition(SurfaceRules.Context context) { // Fusion - Fix Constructor
+                     super(context);
+                 }
+ 
+@@ -751,7 +849,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new WaterCondition();
++            return new WaterCondition(context); // Fusion - Fix Constructor
+         }
+     }
+ 
+@@ -768,7 +866,7 @@ public class SurfaceRules {
+         @Override
+         public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
+             class YCondition extends SurfaceRules.LazyYCondition {
+-                YCondition() {
++                YCondition(SurfaceRules.Context context) { // Fusion - Fix Constructor
+                     super(context);
+                 }
+ 
+@@ -778,7 +876,7 @@ public class SurfaceRules {
+                 }
+             }
+ 
+-            return new YCondition();
++            return new YCondition(context); // Fusion - Fix Constructor
+         }
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+index f9ee7e23e69a36730c5585a2989cebdc6b2f3342..17095d6fbb9c043dc622303cc3fe1c6387bb70c8 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+@@ -13,6 +13,11 @@ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.WorldGenLevel;
+ import net.minecraft.world.level.chunk.ChunkGenerator;
+ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
++// Fusion start
++import com.ishland.c2me.opts.allocs.common.PooledFeatureContext;
++import com.ishland.c2me.opts.allocs.common.SimpleObjectPool;
++import java.util.Optional;
++// Fusion end
+ 
+ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Feature<FC>>(F feature, FC config) {
+     public static final Codec<ConfiguredFeature<?, ?>> DIRECT_CODEC = BuiltInRegistries.FEATURE.byNameCodec().dispatch((configuredFeature) -> {
+@@ -21,9 +26,27 @@ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Featu
+     public static final Codec<Holder<ConfiguredFeature<?, ?>>> CODEC = RegistryFileCodec.create(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
+     public static final Codec<HolderSet<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.homogeneousList(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason pool FeatureContext
++     */
+     public boolean place(WorldGenLevel world, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            if (!world.ensureCanWrite(origin)) return false;
++            final SimpleObjectPool<PooledFeatureContext<?>> pool = PooledFeatureContext.POOL.get();
++            final PooledFeatureContext<FC> context = (PooledFeatureContext<FC>) pool.alloc();
++            try {
++                context.reInit(Optional.empty(), world, chunkGenerator, random, origin, this.config);
++                return this.feature.place(context);
++            } finally {
++                context.reInit();
++                pool.release(context);
++            }
++        }
+         return this.feature.place(this.config, world, chunkGenerator, random, origin);
+     }
++    // Fusion end
+ 
+     public Stream<ConfiguredFeature<?, ?>> getFeatures() {
+         return Stream.concat(Stream.of(this), this.config.getFeatures());
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+index 3c9275a115a0988223a61eb9d7cb59ef1da00350..06a7af09b2b2d40f96dde0274c8f51aa06f133ab 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
+@@ -54,7 +54,7 @@ public class OreFeature extends Feature<OreConfiguration> {
+ 
+     protected boolean doPlace(WorldGenLevel world, RandomSource randomSource, OreConfiguration config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
+         int i = 0;
+-        BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
++        BitSet bitSet = com.ishland.c2me.opts.allocs.common.ObjectCachingUtils.getCachedOrNewBitSet(horizontalSize * verticalSize * horizontalSize); // Fusion - C2ME: Opts Allocs
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+         int j = config.size;
+         double[] ds = new double[j * 4];
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java b/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
+index ec7e9c6c2fc5b4700763073ff8be5f3721313fe5..e1266ca05d7443fa80dacd91344d8608ceed32b0 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
+@@ -6,17 +6,40 @@ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.levelgen.DensityFunction;
+ import net.minecraft.world.level.levelgen.NoiseChunk;
+ 
+-public record MaterialRuleList(List<NoiseChunk.BlockStateFiller> materialRuleList) implements NoiseChunk.BlockStateFiller {
++// Fusion start - C2ME: Opts Allocs
++public class MaterialRuleList implements NoiseChunk.BlockStateFiller {
++
++    private List<NoiseChunk.BlockStateFiller> materialRuleList;
++    private NoiseChunk.BlockStateFiller[] samplersArray;
++
++    public MaterialRuleList(List<NoiseChunk.BlockStateFiller> materialRuleList) {
++        this.materialRuleList = materialRuleList;
++        this.samplersArray = materialRuleList.toArray(NoiseChunk.BlockStateFiller[]::new);
++    }
++
++    /**
++     * @author ishland
++     * @reason reduce allocs using array
++     */
+     @Nullable
+     @Override
+     public BlockState calculate(DensityFunction.FunctionContext pos) {
+-        for(NoiseChunk.BlockStateFiller blockStateFiller : this.materialRuleList) {
+-            BlockState blockState = blockStateFiller.calculate(pos);
+-            if (blockState != null) {
+-                return blockState;
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            for(NoiseChunk.BlockStateFiller blockStateFiller : this.samplersArray) {
++                BlockState blockState = blockStateFiller.calculate(pos);
++                if (blockState != null) {
++                    return blockState;
++                }
++            }
++        } else {
++            for(NoiseChunk.BlockStateFiller blockStateFiller : this.materialRuleList) {
++                BlockState blockState = blockStateFiller.calculate(pos);
++                if (blockState != null) {
++                    return blockState;
++                }
+             }
+         }
+-
+         return null;
+     }
+ }
++// Fusion end

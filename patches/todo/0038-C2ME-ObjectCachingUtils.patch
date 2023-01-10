@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Tue, 10 Jan 2023 10:05:46 +0900
+Subject: [PATCH] C2ME-ObjectCachingUtils
+
+
+diff --git a/src/main/java/com/ishland/c2me/opts/allocs/common/ObjectCachingUtils.java b/src/main/java/com/ishland/c2me/opts/allocs/common/ObjectCachingUtils.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..35af9788a2cfc9203a9987a1a241870658feece7
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/opts/allocs/common/ObjectCachingUtils.java
+@@ -0,0 +1,23 @@
++package com.ishland.c2me.opts.allocs.common;
++
++import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
++
++import java.util.BitSet;
++import java.util.function.IntFunction;
++
++public class ObjectCachingUtils {
++
++    private static final IntFunction<BitSet> bitSetConstructor = BitSet::new;
++
++    public static ThreadLocal<Int2ObjectOpenHashMap<BitSet>> BITSETS = ThreadLocal.withInitial(Int2ObjectOpenHashMap::new);
++
++    private ObjectCachingUtils() {
++    }
++
++    public static BitSet getCachedOrNewBitSet(int bits) {
++        final BitSet bitSet = BITSETS.get().computeIfAbsent(bits, bitSetConstructor);
++        bitSet.clear();
++        return bitSet;
++    }
++
++}
+\ No newline at end of file
