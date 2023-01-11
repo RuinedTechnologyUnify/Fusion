@@ -124,7 +124,7 @@ index 4675524988ea2ef346726677f9767382f1e154ab..1a706fbd5b58049d31d7350a2eb500f9
  
      protected boolean convertOldUsers() {
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index be44d43ee9b5fec44f1b3cb27e7180ba370f6de7..9b38f9d0544280cb2a29bb234e644341ab0c5c26 100644
+index a8e205af936efe0909c94575e3b7f8ca50cead2f..118a1acdd79e21a4337376da3bba6d0b255177ee 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2229,12 +2229,35 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -172,10 +172,10 @@ index be44d43ee9b5fec44f1b3cb27e7180ba370f6de7..9b38f9d0544280cb2a29bb234e644341
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 974f6b0f1ee2d2ff8ad589d1f91e3b3a9cc4de3b..c458ba78945331c532d36cda64bab26ee29bf385 100644
+index b0fa557e756d1e30097ad5a72e679d8844b34cd9..092e39d6b96d2773ca6c7a238d08c07d79ad2581 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1432,9 +1432,15 @@ public abstract class PlayerList {
+@@ -1438,9 +1438,15 @@ public abstract class PlayerList {
  
      }
  

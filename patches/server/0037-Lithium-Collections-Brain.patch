@@ -27,7 +27,7 @@ index 6529508d8b7c6559382af763f2f78e283e3d55ec..1d7d5369745b1fa196d18ebf82b01b8b
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
-index 7f642c033497ef007db66675168a5a1069d18375..989e9b20ddabc95909d533b4c80096318dd8cb16 100644
+index 663e278df704ef15f6195339d76642914e7e15e1..e400a306f7250dede5cf87f8b413605d7a51f985 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/Brain.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/Brain.java
 @@ -43,8 +43,8 @@ public class Brain<E extends LivingEntity> {

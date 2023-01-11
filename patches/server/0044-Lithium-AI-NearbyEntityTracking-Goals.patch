@@ -25,7 +25,7 @@ index a9e2d9beb66ba0c340aaca424a5b986a6b73011f..0917f78627858130ca45ff35606eb086
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
-index 66e5c2716684f54e15e931e33d09463c0df0fda3..50bfa72b189cab1e30f3962711ae624e581a3e65 100644
+index 66e5c2716684f54e15e931e33d09463c0df0fda3..9a953f47883b525fd54574925e94460f0d5989fe 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 @@ -11,6 +11,13 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -85,7 +85,7 @@ index 66e5c2716684f54e15e931e33d09463c0df0fda3..50bfa72b189cab1e30f3962711ae624e
              return false;
          } else {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-index 8b189d7587303263efa1790066e5a83edd45f9d7..a5eba7578769cfcabf983f73a06a97076bc4c761 100644
+index 8b189d7587303263efa1790066e5a83edd45f9d7..9456a97003d000654d8638ea4985c3e1eaafb6c5 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
 @@ -8,6 +8,13 @@ import net.minecraft.world.entity.LivingEntity;

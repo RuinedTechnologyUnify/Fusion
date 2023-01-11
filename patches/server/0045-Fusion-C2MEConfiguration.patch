@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Mon, 9 Jan 2023 19:31:19 +0900
+Date: Wed, 11 Jan 2023 10:03:06 +0900
 Subject: [PATCH] Fusion-C2MEConfiguration
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 6529508d8b7c6559382af763f2f78e283e3d55ec..0c77915177533f30bd95b53dcac03937dd162578 100644
+index 7a52b7edc7b959c893dfd4c61f1915237d9213c6..152af075e76245f5fd452b5beac3c727ea2ee72c 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -249,4 +249,14 @@ public class FusionConfig {
-     private static void lithiumConfigSetup() {
+@@ -255,4 +255,14 @@ public class FusionConfig {
          lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
+         lithiumAINearbyEntityTracking = getBoolean("lithium.ai.nearby-entity-tracking.enable", lithiumAINearbyEntityTracking) && lithiumEnable;
      }
 +
 +    public static boolean c2meEnable = true;
@@ -25,12 +25,12 @@ index 6529508d8b7c6559382af763f2f78e283e3d55ec..0c77915177533f30bd95b53dcac03937
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index e2cec470613d5f8558a281889859d9f03d403baf..4425bf963d7d3fc20ad32f369bb04e31d2d1aad1 100644
+index 0917f78627858130ca45ff35606eb086fe67d235..a5220447a0227e3c6a59ff59861c321e328325c9 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -158,4 +158,13 @@ public class FusionWorldConfig {
- 
+@@ -162,4 +162,13 @@ public class FusionWorldConfig {
      private void lithiumConfigSetup() {
+         lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
      }
 +
 +    public boolean c2meEnable = true;

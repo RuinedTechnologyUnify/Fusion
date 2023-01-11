@@ -47,7 +47,7 @@ index e2cec470613d5f8558a281889859d9f03d403baf..a9e2d9beb66ba0c340aaca424a5b986a
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
-index 989e9b20ddabc95909d533b4c80096318dd8cb16..88860e4b0e898f1e4a01cabcd2aaeb297e05be4e 100644
+index e400a306f7250dede5cf87f8b413605d7a51f985..a8e7929a64e353af97020e1bf756963d05f8b12a 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/Brain.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/Brain.java
 @@ -132,6 +132,14 @@ public class Brain<E extends LivingEntity> {
