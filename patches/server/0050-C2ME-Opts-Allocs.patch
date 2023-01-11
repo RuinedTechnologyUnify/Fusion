@@ -38,18 +38,9 @@ index 6c770071b915ba605248ed551b2cacfd4e11d502..9b86b2d1d8e7cd336c7c051969be563d
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
-index 5ef58831a857fd8aa4ac30147762dc17d773a53e..5808919ac60af973b848cbf0b420463228c4801f 100644
+index e1e71725fd44204fbd34dc6601da93aab427bbd3..4adb248e0b5df12e285ef24945dfec231f32b06d 100644
 --- a/src/main/java/net/minecraft/Util.java
 +++ b/src/main/java/net/minecraft/Util.java
-@@ -26,7 +26,7 @@ import java.net.URL;
- import java.nio.file.Files;
- import java.nio.file.Path;
- import java.nio.file.spi.FileSystemProvider;
--import java.security.AccessController;
-+//import java.security.AccessController; // Fusion - Fix Import
- import java.security.PrivilegedActionException;
- import java.security.PrivilegedExceptionAction;
- import java.time.Duration;
 @@ -407,7 +407,15 @@ public class Util {
          return (Hash.Strategy<K>) Util.IdentityStrategy.INSTANCE; // Paper - decompile fix
      }
@@ -66,14 +57,52 @@ index 5ef58831a857fd8aa4ac30147762dc17d773a53e..5808919ac60af973b848cbf0b4204632
          if (futures.isEmpty()) {
              return CompletableFuture.completedFuture(List.of());
          } else if (futures.size() == 1) {
-@@ -419,6 +427,7 @@ public class Util {
-             });
+@@ -420,12 +428,37 @@ public class Util {
          }
+     }
+ 
++    /**
++     * @author ishland
++     * @reason use another impl
++     */
+     public static <V> CompletableFuture<List<V>> sequenceFailFast(List<? extends CompletableFuture<? extends V>> futures) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            final CompletableFuture<List<V>> future = com.ibm.asyncutil.util.Combinators.collect((List<CompletableFuture<V>>)futures, Collectors.toList()).toCompletableFuture();
++            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).exceptionally(e -> {
++                future.completeExceptionally(e);
++                return null;
++            });
++            return future;
++        }
+         CompletableFuture<List<V>> completableFuture = new CompletableFuture<>();
+         return fallibleSequence(futures, completableFuture::completeExceptionally).applyToEither(completableFuture, Function.identity());
+     }
+ 
++    /**
++     * @author ishland
++     * @reason use another impl
++     */
+     public static <V> CompletableFuture<List<V>> sequenceFailFastAndCancel(List<? extends CompletableFuture<? extends V>> futures) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            final CompletableFuture<List<V>> future = com.ibm.asyncutil.util.Combinators.collect((List<CompletableFuture<V>>)futures, Collectors.toList()).toCompletableFuture();
++            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).exceptionally(e -> {
++                future.completeExceptionally(e);
++                futures.forEach(f -> f.cancel(false));
++                return null;
++            });
++            return future;
++        }
+         CompletableFuture<List<V>> completableFuture = new CompletableFuture<>();
+         return fallibleSequence(futures, (throwable) -> {
+             for(CompletableFuture<? extends V> completableFuture2 : futures) {
+@@ -435,6 +468,7 @@ public class Util {
+             completableFuture.completeExceptionally(throwable);
+         }).applyToEither(completableFuture, Function.identity());
      }
 +    // Fusion end
  
-     public static <V> CompletableFuture<List<V>> sequenceFailFast(List<? extends CompletableFuture<? extends V>> futures) {
-         CompletableFuture<List<V>> completableFuture = new CompletableFuture<>();
+     private static <V> CompletableFuture<List<V>> fallibleSequence(List<? extends CompletableFuture<? extends V>> futures, Consumer<Throwable> exceptionHandler) {
+         List<V> list = Lists.newArrayListWithCapacity(futures.size());
 diff --git a/src/main/java/net/minecraft/nbt/ListTag.java b/src/main/java/net/minecraft/nbt/ListTag.java
 index 749d3e67a877d7d1ed47b5fef511a604ee6589b6..b9b9c6bbdef2a7fcb723b82f04f897fb1643fe2c 100644
 --- a/src/main/java/net/minecraft/nbt/ListTag.java
@@ -344,6 +373,52 @@ index e20960e6b87df9426193039cdd4d14a2e6def139..21e743a996a3690fb1de4220e2df346b
  
      static record StateRule(BlockState state) implements SurfaceRules.SurfaceRule {
          @Override
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+index f9ee7e23e69a36730c5585a2989cebdc6b2f3342..5e729967ac85236a3a1e86610693396dfac89f65 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
+@@ -13,6 +13,11 @@ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.WorldGenLevel;
+ import net.minecraft.world.level.chunk.ChunkGenerator;
+ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
++// Fusion start
++import com.ishland.c2me.opts.allocs.common.PooledFeatureContext;
++import com.ishland.c2me.opts.allocs.common.SimpleObjectPool;
++import java.util.Optional;
++// Fusion end
+ 
+ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Feature<FC>>(F feature, FC config) {
+     public static final Codec<ConfiguredFeature<?, ?>> DIRECT_CODEC = BuiltInRegistries.FEATURE.byNameCodec().dispatch((configuredFeature) -> {
+@@ -21,9 +26,28 @@ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Featu
+     public static final Codec<Holder<ConfiguredFeature<?, ?>>> CODEC = RegistryFileCodec.create(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
+     public static final Codec<HolderSet<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.homogeneousList(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
+ 
++    // Fusion start - C2ME: Opts Allocs
++    /**
++     * @author ishland
++     * @reason pool FeatureContext
++     */
+     public boolean place(WorldGenLevel world, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+-        return this.feature.place(this.config, world, chunkGenerator, random, origin);
++        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
++            if (!world.ensureCanWrite(origin)) return false;
++            final SimpleObjectPool<PooledFeatureContext<?>> pool = PooledFeatureContext.POOL.get();
++            final PooledFeatureContext<FC> context = (PooledFeatureContext<FC>) pool.alloc();
++            try {
++                context.reInit(Optional.empty(), world, chunkGenerator, random, origin, this.config);
++                return this.feature.place(context);
++            } finally {
++                context.reInit();
++                pool.release(context);
++            }
++        } else {
++            return this.feature.place(this.config, world, chunkGenerator, random, origin);
++        }
+     }
++    // Fusion end
+ 
+     public Stream<ConfiguredFeature<?, ?>> getFeatures() {
+         return Stream.concat(Stream.of(this), this.config.getFeatures());
 diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
 index 3c9275a115a0988223a61eb9d7cb59ef1da00350..06a7af09b2b2d40f96dde0274c8f51aa06f133ab 100644
 --- a/src/main/java/net/minecraft/world/level/levelgen/feature/OreFeature.java
@@ -408,50 +483,3 @@ index ec7e9c6c2fc5b4700763073ff8be5f3721313fe5..e1266ca05d7443fa80dacd91344d8608
      }
  }
 +// Fusion end
-
-diff --git a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
-index f9ee7e23e69a36730c5585a2989cebdc6b2f3342..5e729967ac85236a3a1e86610693396dfac89f65 100644
---- a/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
-+++ b/src/main/java/net/minecraft/world/level/levelgen/feature/ConfiguredFeature.java
-@@ -13,6 +13,11 @@ import net.minecraft.util.RandomSource;
- import net.minecraft.world.level.WorldGenLevel;
- import net.minecraft.world.level.chunk.ChunkGenerator;
- import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
-+// Fusion start
-+import com.ishland.c2me.opts.allocs.common.PooledFeatureContext;
-+import com.ishland.c2me.opts.allocs.common.SimpleObjectPool;
-+import java.util.Optional;
-+// Fusion end
-
- public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Feature<FC>>(F feature, FC config) {
-     public static final Codec<ConfiguredFeature<?, ?>> DIRECT_CODEC = BuiltInRegistries.FEATURE.byNameCodec().dispatch((configuredFeature) -> {
-@@ -21,9 +26,28 @@ public record ConfiguredFeature<FC extends FeatureConfiguration, F extends Featu
-     public static final Codec<Holder<ConfiguredFeature<?, ?>>> CODEC = RegistryFileCodec.create(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
-     public static final Codec<HolderSet<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.homogeneousList(Registries.CONFIGURED_FEATURE, DIRECT_CODEC);
-
-+    // Fusion start - C2ME: Opts Allocs
-+    /**
-+     * @author ishland
-+     * @reason pool FeatureContext
-+     */
-     public boolean place(WorldGenLevel world, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
--        return this.feature.place(this.config, world, chunkGenerator, random, origin);
-+        if (com.github.ipecter.fusion.FusionConfig.c2meOptsAllocs) {
-+            if (!world.ensureCanWrite(origin)) return false;
-+            final SimpleObjectPool<PooledFeatureContext<?>> pool = PooledFeatureContext.POOL.get();
-+            final PooledFeatureContext<FC> context = (PooledFeatureContext<FC>) pool.alloc();
-+            try {
-+                context.reInit(Optional.empty(), world, chunkGenerator, random, origin, this.config);
-+                return this.feature.place(context);
-+            } finally {
-+                context.reInit();
-+                pool.release(context);
-+            }
-+        } else {
-+            return this.feature.place(this.config, world, chunkGenerator, random, origin);
-+        }
-     }
-+    // Fusion end
-
-     public Stream<ConfiguredFeature<?, ?>> getFeatures() {
-         return Stream.concat(Stream.of(this), this.config.getFeatures());

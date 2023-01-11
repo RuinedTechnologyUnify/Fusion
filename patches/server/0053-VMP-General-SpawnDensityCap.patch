@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 11 Jan 2023 21:43:27 +0900
+Subject: [PATCH] VMP-General-SpawnDensityCap
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index ebd0f8b5fdf0d3b71ca1182e126cfed99307a37e..f572f0abd6fb0fde64a1ec62dfb6055c0d35aa00 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -271,6 +271,7 @@ public class FusionConfig {
+     }
+ 
+     public static boolean vmpEnable = true;
++    public static boolean vmpGeneralSpawnDensityCap = true;
+ 
+     private static void vmpConfig() {
+         setComment("vmp", "[ VMP ] Many Players Server Performance Improvement Mod");
+@@ -278,5 +279,6 @@ public class FusionConfig {
+     }
+ 
+     private static void vmpConfigSetup() {
++        vmpGeneralSpawnDensityCap = getBoolean("vmp.general.spawn-density-cap", vmpGeneralSpawnDensityCap) && vmpEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/LocalMobCapCalculator.java b/src/main/java/net/minecraft/world/level/LocalMobCapCalculator.java
+index 84c766e09898cfc07d6e07e80f4b9aa318050a62..918d973e670600620d093f29e4128ca3bfc93afd 100644
+--- a/src/main/java/net/minecraft/world/level/LocalMobCapCalculator.java
++++ b/src/main/java/net/minecraft/world/level/LocalMobCapCalculator.java
+@@ -48,15 +48,34 @@ public class LocalMobCapCalculator {
+ 
+     static class MobCounts {
+         private final Object2IntMap<MobCategory> counts = new Object2IntOpenHashMap<>(MobCategory.values().length);
++        private final int[] spawnGroupDensities = new int[MobCategory.values().length]; // Fusion - VMP: General SpawnDensityCap
+ 
++        // Fusion start - VMP: General SpawnDensityCap
++        /**
++         * @author ishland
++         * @reason opt: replace with array access
++         */
+         public void add(MobCategory spawnGroup) {
+-            this.counts.computeInt(spawnGroup, (group, density) -> {
+-                return density == null ? 1 : density + 1;
+-            });
++            if (com.github.ipecter.fusion.FusionConfig.vmpGeneralSpawnDensityCap) {
++                this.spawnGroupDensities[spawnGroup.ordinal()] ++;
++            } else {
++                this.counts.computeInt(spawnGroup, (group, density) -> {
++                    return density == null ? 1 : density + 1;
++                });
++            }
+         }
+ 
++        /**
++         * @author ishland
++         * @reason opt: replace with array access
++         */
+         public boolean canSpawn(MobCategory spawnGroup) {
+-            return this.counts.getOrDefault(spawnGroup, 0) < spawnGroup.getMaxInstancesPerChunk();
++            if (com.github.ipecter.fusion.FusionConfig.vmpGeneralSpawnDensityCap) {
++                return this.spawnGroupDensities[spawnGroup.ordinal()] < spawnGroup.getMaxInstancesPerChunk();
++            } else {
++                return this.counts.getOrDefault(spawnGroup, 0) < spawnGroup.getMaxInstancesPerChunk();
++            }
+         }
++        // Fusion end
+     }
+ }

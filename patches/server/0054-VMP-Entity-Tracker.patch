@@ -1,0 +1,108 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 11 Jan 2023 22:42:22 +0900
+Subject: [PATCH] VMP-Entity-Tracker
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index eb90338ae04770a371b3bc371d23808d303f24f4..46b4732a6929eb9bb3dc809ce210d95de8909f1e 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -174,6 +174,7 @@ public class FusionWorldConfig {
+ 
+     public boolean vmpEnable = true;
+     public boolean vmpEntityMoveZeroVelocity = true;
++    public boolean vmpEntityTracker = true;
+ 
+     private void vmpConfig() {
+         vmpEnable = getBoolean("vmp.enable", vmpEnable);
+@@ -181,5 +182,6 @@ public class FusionWorldConfig {
+ 
+     private void vmpConfigSetup() {
+         vmpEntityMoveZeroVelocity = getBoolean("vmp.entity.move-zero-velocity", vmpEntityMoveZeroVelocity) && vmpEnable;
++        vmpEntityTracker = getBoolean("vmp.entity.tracker", vmpEntityTracker) && vmpEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 75965afd7b4bed23a5ecf618c7f91ff5e7ffd92f..57ab982bfdb9d8893ec8a3cf5ebe49317a952651 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -108,12 +108,14 @@ import net.minecraft.world.level.storage.LevelStorageSource;
+ import net.minecraft.world.phys.Vec3;
+ import org.apache.commons.lang3.mutable.MutableBoolean;
+ import org.apache.commons.lang3.mutable.MutableObject;
++import org.checkerframework.common.aliasing.qual.Unique;
+ import org.slf4j.Logger;
+ import org.bukkit.craftbukkit.generator.CustomChunkGenerator;
+ import org.bukkit.entity.Player;
+ // CraftBukkit end
+ 
+ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet; // Paper
++import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap; // Fusion
+ 
+ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider {
+ 
+@@ -295,7 +297,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         // Paper - rewrite chunk system
+         this.tickingGenerated = new AtomicInteger();
+         this.playerMap = new PlayerMap();
+-        this.entityMap = new Int2ObjectOpenHashMap();
++        this.entityMap = world.fusionConfig.vmpEntityTracker ? new Int2ObjectLinkedOpenHashMap<>() : new Int2ObjectOpenHashMap(); // Fusion - VMP: Entity Tracker
+         this.chunkTypeCache = new Long2ByteOpenHashMap();
+         this.chunkSaveCooldowns = new Long2LongOpenHashMap();
+         this.unloadQueue = Queues.newConcurrentLinkedQueue();
+@@ -1501,6 +1503,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         private final int range;
+         SectionPos lastSectionPos;
+         public final Set<ServerPlayerConnection> seenBy = new ReferenceOpenHashSet<>(); // Paper - optimise map impl
++        // Fusion start - VMP: Entity Tracker
++        private int lastDistanceUpdate = 0;
++        private int cachedMaxDistance = 0;
++        // Fusion end
+ 
+         public TrackedEntity(Entity entity, int i, int j, boolean flag) {
+             this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, j, flag, this::broadcast, this.seenBy); // CraftBukkit
+@@ -1599,7 +1605,23 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 double vec3d_dx = player.getX() - this.entity.getX();
+                 double vec3d_dz = player.getZ() - this.entity.getZ();
+                 // Paper end - remove allocation of Vec3D here
+-                double d0 = (double) Math.min(this.getEffectiveRange(), io.papermc.paper.chunk.PlayerChunkLoader.getSendViewDistance(player) * 16); // Paper - per player view distance
++                // Fusion start - VMP: Entity Tracker
++                int effectiveRange;
++                if (player.level.fusionConfig.vmpEntityTracker) {
++                    final int ticks = level.getServer().getTickCount();
++                    if (lastDistanceUpdate != ticks || cachedMaxDistance == 0) {
++                        final int maxTrackDistance = this.getEffectiveRange();
++                        this.cachedMaxDistance = maxTrackDistance;
++                        this.lastDistanceUpdate = ticks;
++                        effectiveRange = maxTrackDistance;
++                    } else {
++                        effectiveRange = this.cachedMaxDistance;
++                    }
++                } else {
++                    effectiveRange = this.getEffectiveRange();
++                }
++                double d0 = (double) Math.min(effectiveRange, io.papermc.paper.chunk.PlayerChunkLoader.getSendViewDistance(player) * 16); // Paper - per player view distance
++                // Fusion end
+                 double d1 = vec3d_dx * vec3d_dx + vec3d_dz * vec3d_dz; // Paper
+                 double d2 = d0 * d0;
+                 boolean flag = d1 <= d2 && this.entity.broadcastToPlayer(player);
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index 0f9a3a6c05fee59c29764f0c0d7a6cb8a2a861b1..cce6ea4586f8f066f06f0beaad376b3cc5b4e47e 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -263,6 +263,13 @@ public class ServerEntity {
+         Objects.requireNonNull(player.connection);
+         this.sendPairingData(playerconnection::send, player); // CraftBukkit - add player
+         this.entity.startSeenByPlayer(player);
++
++        // Fusion start - VMP: Entity Tracker
++        if (this.entity.level.fusionConfig.vmpEntityTracker) {
++            this.teleportDelay = Integer.MAX_VALUE - 1;
++            this.entity.hasImpulse = true;
++        }
++        // Fusion end
+     }
+ 
+     public void sendPairingData(Consumer<Packet<?>> consumer, ServerPlayer entityplayer) { // CraftBukkit - add player

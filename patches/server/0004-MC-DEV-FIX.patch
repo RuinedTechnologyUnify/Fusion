@@ -4,6 +4,19 @@ Date: Wed, 11 Jan 2023 00:22:03 +0900
 Subject: [PATCH] MC-DEV-FIX
 
 
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index 5ef58831a857fd8aa4ac30147762dc17d773a53e..e1e71725fd44204fbd34dc6601da93aab427bbd3 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -26,7 +26,7 @@ import java.net.URL;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.nio.file.spi.FileSystemProvider;
+-import java.security.AccessController;
++//import java.security.AccessController; // Fusion - Decompile Fix
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.time.Duration;
 diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
 index 7f642c033497ef007db66675168a5a1069d18375..663e278df704ef15f6195339d76642914e7e15e1 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/Brain.java

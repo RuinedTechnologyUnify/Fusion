@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 11 Jan 2023 19:52:29 +0900
+Subject: [PATCH] Fusion-VMPConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 9b86b2d1d8e7cd336c7c051969be563d7ff6fe89..ebd0f8b5fdf0d3b71ca1182e126cfed99307a37e 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -269,4 +269,14 @@ public class FusionConfig {
+     private static void c2meConfigSetup() {
+         c2meOptsAllocs = getBoolean("c2me.opts.allocs", c2meOptsAllocs) && c2meEnable;
+     }
++
++    public static boolean vmpEnable = true;
++
++    private static void vmpConfig() {
++        setComment("vmp", "[ VMP ] Many Players Server Performance Improvement Mod");
++        vmpEnable = getBoolean("vmp.enable", vmpEnable);
++    }
++
++    private static void vmpConfigSetup() {
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index a5220447a0227e3c6a59ff59861c321e328325c9..d61c57a8f4c8fc1d155cecdb59d759fecd8257fc 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -171,4 +171,13 @@ public class FusionWorldConfig {
+ 
+     private void c2meConfigSetup() {
+     }
++
++    public boolean vmpEnable = true;
++
++    private void vmpConfig() {
++        vmpEnable = getBoolean("vmp.enable", vmpEnable);
++    }
++
++    private void vmpConfigSetup() {
++    }
+ }
+\ No newline at end of file

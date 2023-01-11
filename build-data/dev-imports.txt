@@ -20,3 +20,4 @@ minecraft net.minecraft.resources.ResourceLocation.java
 minecraft net.minecraft.nbt.CompoundTag.java
 minecraft net.minecraft.nbt.ListTag.java
 minecraft net.minecraft.Util.java
+minecraft net.minecraft.world.level.LocalMobCapCalculator.java

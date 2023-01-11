@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 11 Jan 2023 21:27:50 +0900
+Subject: [PATCH] VMP-Entity-MoveZeroVelocity
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index d61c57a8f4c8fc1d155cecdb59d759fecd8257fc..eb90338ae04770a371b3bc371d23808d303f24f4 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -173,11 +173,13 @@ public class FusionWorldConfig {
+     }
+ 
+     public boolean vmpEnable = true;
++    public boolean vmpEntityMoveZeroVelocity = true;
+ 
+     private void vmpConfig() {
+         vmpEnable = getBoolean("vmp.enable", vmpEnable);
+     }
+ 
+     private void vmpConfigSetup() {
++        vmpEntityMoveZeroVelocity = getBoolean("vmp.entity.move-zero-velocity", vmpEntityMoveZeroVelocity) && vmpEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 4ca617ca373e211e10e29f49f6c5d7fed59f823e..bf24d6608554329f2338c49a022ffa73eb02b059 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1051,7 +1051,15 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     }
+     // Paper end - detailed watchdog information
+ 
++    private boolean boundingBoxChanged = false; // Fusion - VMP: Entity MoveZeroVelocity
++
+     public void move(MoverType movementType, Vec3 movement) {
++        // Fusion start - VMP: Entity MoveZeroVelocity
++        if (this.level.fusionConfig.vmpEntityMoveZeroVelocity && !boundingBoxChanged && movement.equals(Vec3.ZERO)) {
++            boundingBoxChanged = false;
++            return;
++        }
++        // Fusion end
+         // Paper start - detailed watchdog information
+         io.papermc.paper.util.TickThread.ensureTickThread("Cannot move an entity off-main");
+         synchronized (this.posLock) {
+@@ -3899,6 +3907,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     }
+ 
+     public final void setBoundingBox(AABB boundingBox) {
++        if (!this.bb.equals(boundingBox)) boundingBoxChanged = true; // Fusion - VMP: Entity MoveZeroVelocity
+         // CraftBukkit start - block invalid bounding boxes
+         double minX = boundingBox.minX,
+                 minY = boundingBox.minY,
