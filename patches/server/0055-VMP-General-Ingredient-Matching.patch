@@ -1,0 +1,135 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 12 Jan 2023 01:47:18 +0900
+Subject: [PATCH] VMP-General-Ingredient-Matching
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index f572f0abd6fb0fde64a1ec62dfb6055c0d35aa00..6f9cf69d508b0b6acb3bdab5fbf8e0a676533f81 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -272,10 +272,12 @@ public class FusionConfig {
+ 
+     public static boolean vmpEnable = true;
+     public static boolean vmpGeneralSpawnDensityCap = true;
++    public static boolean vmpGeneralIngredientMatching = true;
+ 
+     private static void vmpConfig() {
+         setComment("vmp", "[ VMP ] Many Players Server Performance Improvement Mod");
+         vmpEnable = getBoolean("vmp.enable", vmpEnable);
++        vmpGeneralIngredientMatching = getBoolean("vmp.general.ingredient-matching", vmpGeneralIngredientMatching) && vmpEnable;
+     }
+ 
+     private static void vmpConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/item/crafting/Ingredient.java b/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
+index e24034d1ce4bb529de084aab69a531227e0c2f79..2fcbde5a3031841d2ebfcabb08723f335056f52a 100644
+--- a/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
++++ b/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
+@@ -29,6 +29,11 @@ import net.minecraft.world.entity.player.StackedContents;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.ItemLike;
++// Fusion start
++import java.util.HashSet;
++import java.util.stream.Collectors;
++import java.util.Set;
++// Fusion end
+ 
+ public final class Ingredient implements Predicate<ItemStack> {
+ 
+@@ -40,6 +45,10 @@ public final class Ingredient implements Predicate<ItemStack> {
+     private IntList stackingIds;
+     public boolean exact; // CraftBukkit
+     public Predicate<org.bukkit.inventory.ItemStack> predicate;
++    // Fusion start - VMP: General Ingredient Matching
++    private Set<Item> matchingItems = null;
++    private boolean isEmptyMatch = false;
++    // Fusion end
+ 
+     public Ingredient(Stream<? extends Ingredient.Value> entries) {
+         this.values = (Ingredient.Value[]) entries.toArray((i) -> {
+@@ -63,41 +72,62 @@ public final class Ingredient implements Predicate<ItemStack> {
+         return this.itemStacks;
+     }
+ 
++    // Fusion start - VMP: General Ingredient Matching
++    /**
++     * @author ishland
++     * @reason optimize test()
++     */
+     public boolean test(@Nullable ItemStack itemstack) {
+         if (itemstack == null) {
+             return false;
+-        } else if (this.isEmpty()) {
+-            return itemstack.isEmpty();
+         } else {
+-            // Purpur start
+-            if (predicate != null) {
+-                return predicate.test(itemstack.asBukkitCopy());
+-            }
+-            // Purpur end
++            if (com.github.ipecter.fusion.FusionConfig.vmpGeneralIngredientMatching) {
++                Set<Item> matchingItems = this.matchingItems;
++                boolean isEmptyMatch = this.isEmptyMatch;
++                if (matchingItems == null) {
++                    matchingItems = this.matchingItems = Arrays.stream(this.values)
++                            .flatMap(entry -> entry.getItems().stream())
++                            .filter(itemStack1 -> !itemStack1.isEmpty())
++                            .map(ItemStack::getItem)
++                            .collect(Collectors.toCollection(HashSet::new));
++                    isEmptyMatch = this.isEmptyMatch = this.matchingItems.isEmpty();
++                }
++                if (itemstack.isEmpty()) {
++                    return isEmptyMatch;
++                }
++                return matchingItems.contains(itemstack.getItem());
++            } else {
++                if (this.isEmpty()) return itemstack.isEmpty();
++                // Purpur start
++                if (predicate != null) {
++                    return predicate.test(itemstack.asBukkitCopy());
++                }
++                // Purpur end
++                ItemStack[] aitemstack = this.getItems();
++                int i = aitemstack.length;
+ 
+-            ItemStack[] aitemstack = this.getItems();
+-            int i = aitemstack.length;
++                for (int j = 0; j < i; ++j) {
++                    ItemStack itemstack1 = aitemstack[j];
+ 
+-            for (int j = 0; j < i; ++j) {
+-                ItemStack itemstack1 = aitemstack[j];
++                    // CraftBukkit start
++                    if (this.exact) {
++                        if (itemstack1.getItem() == itemstack.getItem() && ItemStack.tagMatches(itemstack, itemstack1)) {
++                            return true;
++                        }
+ 
+-                // CraftBukkit start
+-                if (this.exact) {
+-                    if (itemstack1.getItem() == itemstack.getItem() && ItemStack.tagMatches(itemstack, itemstack1)) {
++                        continue;
++                    }
++                    // CraftBukkit end
++                    if (itemstack1.is(itemstack.getItem())) {
+                         return true;
+                     }
+-
+-                    continue;
+-                }
+-                // CraftBukkit end
+-                if (itemstack1.is(itemstack.getItem())) {
+-                    return true;
+                 }
+-            }
+ 
+-            return false;
++                return false;
++            }
+         }
+     }
++    // Fusion end
+ 
+     public IntList getStackingIds() {
+         if (this.stackingIds == null) {

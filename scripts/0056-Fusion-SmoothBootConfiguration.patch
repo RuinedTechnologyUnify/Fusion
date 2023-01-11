@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 12 Jan 2023 02:50:31 +0900
+Subject: [PATCH] Fusion-SmoothBootConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 6f9cf69d508b0b6acb3bdab5fbf8e0a676533f81..2fff427280b41a23be379e55702c367ca0ef28fc 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -283,4 +283,14 @@ public class FusionConfig {
+     private static void vmpConfigSetup() {
+         vmpGeneralSpawnDensityCap = getBoolean("vmp.general.spawn-density-cap", vmpGeneralSpawnDensityCap) && vmpEnable;
+     }
++
++    public static boolean smoothBootEnable = true;
++
++    private static void smoothBootConfig() {
++        setComment("smooth-boot", "[ Smooth Boot ] Thread Scheduling Improvement and Tweak Mod");
++        smoothBootEnable = getBoolean("smooth-boot", smoothBootEnable);
++    }
++
++    private static void smoothBootConfigSetup() {
++    }
+ }
+\ No newline at end of file
