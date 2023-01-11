@@ -26,9 +26,9 @@ index 0000000000000000000000000000000000000000..ab3f0515b0fab016f73a0a46f80a10dd
 +
 +    public static final ThreadLocal<SimpleObjectPool<PooledFeatureContext<?>>> POOL = ThreadLocal.withInitial(() -> new SimpleObjectPool<>(unused -> new PooledFeatureContext<>(), unused -> {}, 2048));
 +
-+    private Optional<ConfiguredFeature<?, ?>> feature;
-+    private WorldGenLevel world;
-+    private ChunkGenerator generator;
++    private Optional<ConfiguredFeature<?, ?>> topFeature;
++    private WorldGenLevel level;
++    private ChunkGenerator chunkGenerator;
 +    private RandomSource random;
 +    private BlockPos origin;
 +    private FC config;
@@ -38,45 +38,45 @@ index 0000000000000000000000000000000000000000..ab3f0515b0fab016f73a0a46f80a10dd
 +    }
 +
 +    public void reInit(Optional<ConfiguredFeature<?, ?>> feature, WorldGenLevel world, ChunkGenerator generator, RandomSource random, BlockPos origin, FC config) {
-+        this.feature = feature;
-+        this.world = world;
-+        this.generator = generator;
++        this.topFeature = feature;
++        this.level = world;
++        this.chunkGenerator = generator;
 +        this.random = random;
 +        this.origin = origin;
 +        this.config = config;
 +    }
 +
 +    public void reInit() {
-+        this.feature = null;
-+        this.world = null;
-+        this.generator = null;
++        this.topFeature = null;
++        this.level = null;
++        this.chunkGenerator = null;
 +        this.random = null;
 +        this.origin = null;
 +        this.config = null;
 +    }
 +
-+    public WorldGenLevel getWorld() {
-+        return this.world;
++    public Optional<ConfiguredFeature<?, ?>> topFeature() {
++        return this.topFeature;
 +    }
 +
-+    public ChunkGenerator getGenerator() {
-+        return this.generator;
++    public WorldGenLevel level() {
++        return this.level;
 +    }
 +
-+    public RandomSource getRandom() {
++    public ChunkGenerator chunkGenerator() {
++        return this.chunkGenerator;
++    }
++
++    public RandomSource random() {
 +        return this.random;
 +    }
 +
-+    public BlockPos getOrigin() {
++    public BlockPos origin() {
 +        return this.origin;
 +    }
 +
-+    public FC getConfig() {
++    public FC config() {
 +        return this.config;
-+    }
-+
-+    public Optional<ConfiguredFeature<?, ?>> getFeature() {
-+        return this.feature;
 +    }
 +}
 \ No newline at end of file
