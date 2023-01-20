@@ -275,7 +275,16 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..40b5cafeb99481f7c6cf47497157825d
          this.log( "Experience Merge Radius: " + this.expMerge );
      }
  
-@@ -203,14 +203,16 @@ public class SpigotWorldConfig
+@@ -195,22 +195,24 @@ public class SpigotWorldConfig
+-    this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 8 ); // Paper - Vanilla
++    this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 3 ); // Paper - Vanilla // Fusion - Optimize Default Configuration
+         this.log( "Mob Spawn Range: " + this.mobSpawnRange );
+     }
+
+     public int itemDespawnRate;
+     private void itemDespawnRate()
+     {
+        this.itemDespawnRate = this.getInt( "item-despawn-rate", 6000 );
          this.log( "Item Despawn Rate: " + this.itemDespawnRate );
      }
  
