@@ -12,7 +12,7 @@ index f572f0abd6fb0fde64a1ec62dfb6055c0d35aa00..6f9cf69d508b0b6acb3bdab5fbf8e0a6
  
      public static boolean vmpEnable = true;
      public static boolean vmpGeneralSpawnDensityCap = true;
-+    public static boolean vmpGeneralIngredientMatching = true;
++    public static boolean vmpGeneralIngredientMatching = false;
  
      private static void vmpConfig() {
          setComment("vmp", "[ VMP ] Many Players Server Performance Improvement Mod");
