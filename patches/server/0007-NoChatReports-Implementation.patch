@@ -172,10 +172,10 @@ index a8e205af936efe0909c94575e3b7f8ca50cead2f..118a1acdd79e21a4337376da3bba6d0b
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index b0fa557e756d1e30097ad5a72e679d8844b34cd9..092e39d6b96d2773ca6c7a238d08c07d79ad2581 100644
+index c34c5368e336ba4b181a95932a9b40cb4f50ae1d..ccc34617a5aba443426d383f07249b09dd188639 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1438,9 +1438,15 @@ public abstract class PlayerList {
+@@ -1447,9 +1447,15 @@ public abstract class PlayerList {
  
      }
  

@@ -488,10 +488,10 @@ index a9289072b048095330ea32d7c965e8dda61a36fc..76ad4079f4a6b1222b7f424ea37856ef
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e7e6e2ecc80b5b488657624ec35a1ca6935e3289..15e0063864b8b37e124c71bbb160ff670a4a05be 100644
+index ad6813736d2d269fac54dc3193bfe1286dbf5391..c456da92ac826145472b77d2ad244c10ade481fc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1026,6 +1026,7 @@ public final class CraftServer implements Server {
+@@ -1032,6 +1032,7 @@ public final class CraftServer implements Server {
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
          org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
@@ -499,7 +499,7 @@ index e7e6e2ecc80b5b488657624ec35a1ca6935e3289..15e0063864b8b37e124c71bbb160ff67
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -1042,6 +1043,7 @@ public final class CraftServer implements Server {
+@@ -1048,6 +1049,7 @@ public final class CraftServer implements Server {
              }
              world.spigotConfig.init(); // Spigot
              world.purpurConfig.init(); // Purpur
@@ -507,7 +507,7 @@ index e7e6e2ecc80b5b488657624ec35a1ca6935e3289..15e0063864b8b37e124c71bbb160ff67
          }
  
          Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
-@@ -2879,6 +2881,13 @@ public final class CraftServer implements Server {
+@@ -2885,6 +2887,13 @@ public final class CraftServer implements Server {
          }
          // Purpur end
  
@@ -522,7 +522,7 @@ index e7e6e2ecc80b5b488657624ec35a1ca6935e3289..15e0063864b8b37e124c71bbb160ff67
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 082d0516c80cf231dd7ceb454508bb77407c499b..b33a160d36f397188676919fb8978a1f9f057c63 100644
+index 576cd8e20982bb20d10213b6c7a229428eec1c2f..c62b949607dbf276b71fa05df1538a4ed02a9ce3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -180,6 +180,14 @@ public class Main {
