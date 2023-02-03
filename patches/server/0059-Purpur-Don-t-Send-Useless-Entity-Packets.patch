@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kugge <sofiane.djerbi38@gmail.com>
+Date: Fri, 3 Feb 2023 21:27:33 +0100
+Subject: [PATCH] Purpur Don't Send Useless Entity Packets
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 42c4777a15bd326dff220c79772768ac04b9e5ee..587f57a36a5d77f592e73fd938e69e1025730fc2 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -313,8 +313,11 @@ public class FusionConfig {
+     private static void smoothBootConfigSetup() {
+     }
+ 
++    public static boolean purpurDontSendUselessEntityPackets = true;
++
+     private static void purpurConfig() {
+         setComment("purpur", "[ Purpur ] Purpur deleted patches and Purpur behavior");
++        purpurDontSendUselessEntityPackets =  getBoolean("purpur.dont-send-useless-entity-packets", purpurDontSendUselessEntityPackets);
+     }
+ 
+     private static void purpurConfigSetup() {
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index cce6ea4586f8f066f06f0beaad376b3cc5b4e47e..b1e68913250b61a4f5c4df97d7f3f8d3a386eb79 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -186,6 +186,11 @@ public class ServerEntity {
+                         this.teleportDelay = 0;
+                         packet1 = new ClientboundTeleportEntityPacket(this.entity);
+                     }
++                    // Fusion start - Don't send useless entity packets
++                    if (com.github.ipecter.fusion.FusionConfig.purpurDontSendUselessEntityPackets && isUselessPacket(packet1)) {
++                        packet1 = null;
++                    }
++                    // Fusion end - Don't send useless entity packets
+                 }
+ 
+                 if ((this.trackDelta || this.entity.hasImpulse || this.entity instanceof LivingEntity && ((LivingEntity) this.entity).isFallFlying()) && this.tickCount > 0) {
+@@ -252,6 +257,21 @@ public class ServerEntity {
+ 
+     }
+ 
++    // Fusion start - Don't send useless entity packets
++    private boolean isUselessPacket(Packet<?> possibleUselessPacket) {
++        if (possibleUselessPacket instanceof ClientboundMoveEntityPacket packet) {
++            if (possibleUselessPacket instanceof ClientboundMoveEntityPacket.Pos) {
++                return packet.getXa() == 0 && packet.getYa() == 0 && packet.getZa() == 0;
++            } else if (possibleUselessPacket instanceof ClientboundMoveEntityPacket.PosRot) {
++                return packet.getXa() == 0 && packet.getYa() == 0 && packet.getZa() == 0 && packet.getyRot() == 0 && packet.getxRot() == 0;
++            } else if (possibleUselessPacket instanceof ClientboundMoveEntityPacket.Rot) {
++                return packet.getyRot() == 0 && packet.getxRot() == 0;
++            }
++        }
++        return false;
++    }
++    // Fusion end - Don't send useless entity packets
++
+     public void removePairing(ServerPlayer player) {
+         this.entity.stopSeenByPlayer(player);
+         player.connection.send(new ClientboundRemoveEntitiesPacket(new int[]{this.entity.getId()}));

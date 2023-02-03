@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kugge <sofiane.djerbi38@gmail.com>
+Date: Fri, 3 Feb 2023 21:12:14 +0100
+Subject: [PATCH] Fusion PurpurConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index cd84613a2d0fa389a9d93749dd4d9bc46b9c9b0d..42c4777a15bd326dff220c79772768ac04b9e5ee 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -312,4 +312,11 @@ public class FusionConfig {
+ 
+     private static void smoothBootConfigSetup() {
+     }
+-}
+\ No newline at end of file
++
++    private static void purpurConfig() {
++        setComment("purpur", "[ Purpur ] Purpur deleted patches and Purpur behavior");
++    }
++
++    private static void purpurConfigSetup() {
++    }
++}
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 46b4732a6929eb9bb3dc809ce210d95de8909f1e..2727893c3cbc2a2479b759111fc5efaffd89968a 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -184,4 +184,10 @@ public class FusionWorldConfig {
+         vmpEntityMoveZeroVelocity = getBoolean("vmp.entity.move-zero-velocity", vmpEntityMoveZeroVelocity) && vmpEnable;
+         vmpEntityTracker = getBoolean("vmp.entity.tracker", vmpEntityTracker) && vmpEnable;
+     }
+-}
+\ No newline at end of file
++
++    private static void purpurConfig() {
++    }
++
++    private static void purpurConfigSetup() {
++    }
++}
