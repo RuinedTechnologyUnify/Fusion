@@ -22,3 +22,4 @@ minecraft net.minecraft.nbt.ListTag.java
 minecraft net.minecraft.Util.java
 minecraft net.minecraft.world.level.LocalMobCapCalculator.java
 minecraft net.minecraft.server.commands.SeedCommand.java
+minecraft net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement.java

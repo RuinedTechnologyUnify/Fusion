@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Sat, 4 Feb 2023 19:07:58 +0900
+Date: Wed, 21 Dec 2022 13:41:04 +0900
 Subject: [PATCH] Fusion-OptimizeDefaultConfiguration
 
 Prismarine - PrismarineTeam - MIT
 JettPack - Titaniumtown - GPL 3.0
-Reference: YouHaveTrouble/minecraft-optimization, Pemigrade/botflop
+Reference: YouHaveTrouble/minecraft-optimization
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index f3593297929842b52e4467ed4386ab12586b1b70..b3621d856a8b404c556bfce5dce902a77394eda8 100644
+index f3593297929842b52e4467ed4386ab12586b1b70..f7b689ce6dd0e066e66485ddab4322d6964c1220 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -210,7 +210,7 @@ public class PufferfishConfig {
@@ -16,7 +16,7 @@ index f3593297929842b52e4467ed4386ab12586b1b70..b3621d856a8b404c556bfce5dce902a7
      private static void projectileLoading() {
          maxProjectileLoadsPerTick = getInt("projectile.max-loads-per-tick", 10, "Controls how many chunks are allowed", "to be sync loaded by projectiles in a tick.");
 -        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 10, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed.");
-+		 maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 8, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed."); // Fusion - Optimize Default Configuration
++        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 8, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed."); // Fusion - Optimize Default Configuration
  
          setComment("projectile", "Optimizes projectile settings");
      }
@@ -25,7 +25,7 @@ index f3593297929842b52e4467ed4386ab12586b1b70..b3621d856a8b404c556bfce5dce902a7
                  "This value defines how often in ticks, the furthest entity",
                  "will get their pathfinders and behaviors ticked. 20 = 1s");
 -        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 8,
-+		 activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 7, // Fusion - Optimize Default Configuration
++        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 7, // Fusion - Optimize Default Configuration
                  "This value defines how much distance modifies an entity's",
                  "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
                  "If you want further away entities to tick less often, use 7.",
@@ -43,10 +43,10 @@ index 6bf14183a3fcd2b3d166752ce33240d2ff1ffa7c..5e92d33c265132123c5b75f553a2c506
  
      public SpamLimiter spamLimiter;
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b56311428545014cf8 100644
+index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..2a0b1fb09362f30378ff204c2c4b828a838a565d 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -89,10 +89,10 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -89,10 +89,12 @@ public class WorldConfiguration extends ConfigurationPart {
              public int updateRadius = 2;
              public boolean lavaObscures = false;
              public boolean usePermission = false;
@@ -55,13 +55,24 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
 -                "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"); // TODO update type to List<Block>
 -            public List<String> replacementBlocks = List.of("stone", "oak_planks", "deepslate"); // TODO update type to List<Block>
 +            // Fusion start - Optimize Default Configuration
-+            public List<String> hiddenBlocks = List.of("air", "copper_ore", "deepslate_copper_ore", "raw_copper_block", "diamond_ore", "deepslate_diamond_ore", "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "raw_iron_block", "lapis_ore", "deepslate_lapis_ore", "redstone_ore", "deepslate_redstone_ore"); // TODO update type to List<Block>
-+            public List<String> replacementBlocks = List.of("chest", "amethyst_block", "andesite", "budding_amethyst", "calcite", "coal_ore", "deepslate_coal_ore", "deepslate", "diorite", "dirt", "emerald_ore", "deepslate_emerald_ore", "granite", "gravel", "oak_planks", "smooth_basalt", "stone", "tuff"); // TODO update type to List<Block>
++            public List<String> hiddenBlocks = List.of("air", "copper_ore", "deepslate_copper_ore", "raw_copper_block", "diamond_ore", "deepslate_diamond_ore",
++                    "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "raw_iron_block", "lapis_ore", "deepslate_lapis_ore", "redstone_ore", "deepslate_redstone_ore"); // TODO update type to List<Block>
++            public List<String> replacementBlocks = List.of("chest", "amethyst_block", "andesite", "budding_amethyst", "calcite", "coal_ore", "deepslate_coal_ore", "deepslate",
++                    "diorite", "dirt", "emerald_ore", "deepslate_emerald_ore", "granite", "gravel", "oak_planks", "smooth_basalt", "stone", "tuff"); // TODO update type to List<Block>
 +            // Fusion end
          }
      }
  
-@@ -317,7 +317,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -133,7 +135,7 @@ public class WorldConfiguration extends ConfigurationPart {
+             @MergeMap
+             public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
+             @MergeMap
+-            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
++            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), 56))); // Fusion - Optimize Default Configuration
+ 
+             @ConfigSerializable
+             public record DespawnRange(@Required int soft, @Required int hard) {
+@@ -317,7 +319,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Environment extends ConfigurationPart {
          public boolean disableThunder = false;
          public boolean disableIceAndSnow = false;
@@ -70,7 +81,7 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
          public boolean disableExplosionKnockback = false;
          public boolean generateFlatBedrock = false;
          public FrostedIce frostedIce;
-@@ -369,7 +369,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -369,7 +371,7 @@ public class WorldConfiguration extends ConfigurationPart {
      public Fixes fixes;
  
      public class Fixes extends ConfigurationPart {
@@ -79,7 +90,7 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
          public boolean disableUnloadedChunkEnderpearlExploit = true;
          public boolean preventTntFromMovingInWater = false;
          public boolean splitOverstackedLoot = true;
-@@ -397,9 +397,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -397,9 +399,9 @@ public class WorldConfiguration extends ConfigurationPart {
      public class Collisions extends ConfigurationPart {
          public boolean onlyPlayersCollide = false;
          public boolean allowVehicleCollisions = true;
@@ -91,7 +102,7 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
          public boolean allowPlayerCrammingDamage = false;
      }
  
-@@ -407,9 +407,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -407,9 +409,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Chunks extends ConfigurationPart {
          public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
@@ -103,7 +114,7 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
          public Duration delayChunkUnloadsBy = Duration.of("10s");
          public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(BuiltInRegistries.ENTITY_TYPE.size()), map -> {
              map.defaultReturnValue(-1);
-@@ -432,11 +432,11 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -432,11 +434,22 @@ public class WorldConfiguration extends ConfigurationPart {
      public TickRates tickRates;
  
      public class TickRates extends ConfigurationPart {
@@ -114,12 +125,23 @@ index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..e5f1ed554748a86608def9b563114285
 -        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "secondarypoisensor", 40));
 -        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "validatenearbypoi", -1));
 +        public int mobSpawner = 2; // Fusion - Optimize Default Configuration
-+        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> { table.put(EntityType.VILLAGER, "secondarypoisensor", 80); table.put(EntityType.VILLAGER, "nearestbedsensor", 80); table.put(EntityType.VILLAGER, "villagerbabiessensor", 40); table.put(EntityType.VILLAGER, "playersensor", 40); table.put(EntityType.VILLAGER, "nearestlivingentitysensor", 40); }); // Fusion - Optimize Default Configuration
-+        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> { table.put(EntityType.VILLAGER, "validatenearbypoi", 60); table.put(EntityType.VILLAGER, "acquirepoi", 120); }); // Fusion - Optimize Default Configuration
++        // Fusion start - Optimize Default Configuration
++        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "secondarypoisensor", 80);
++            table.put(EntityType.VILLAGER, "nearestbedsensor", 80);
++            table.put(EntityType.VILLAGER, "villagerbabiessensor", 40);
++            table.put(EntityType.VILLAGER, "playersensor", 40);
++            table.put(EntityType.VILLAGER, "nearestlivingentitysensor", 40);
++        });
++        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "validatenearbypoi", 60);
++            table.put(EntityType.VILLAGER, "acquirepoi", 120);
++        });
++        // Fusion end
      }
  
      @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
-@@ -458,9 +458,9 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -458,9 +471,9 @@ public class WorldConfiguration extends ConfigurationPart {
  
      public class Misc extends ConfigurationPart {
          public int lightQueueSize = 20;
@@ -190,17 +212,19 @@ index 5134fed0cd0eedbe0c2177bce91b978b20061517..13539843d37a3f7010922c9cb080d206
          this.enableStatus = this.get("enable-status", true);
          this.hideOnlinePlayers = this.get("hide-online-players", false);
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java b/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
-index cba660a0506994f66cbcb890ccd464bd412a6211..ccf3c0a704d218f9338854b34fcbb84c0f829da2 100644
+index cba660a0506994f66cbcb890ccd464bd412a6211..04c5347e3d762dce212d52a9e8002be89bd1c5af 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftSpawnCategory.java
-@@ -37,8 +37,8 @@ public class CraftSpawnCategory {
+@@ -37,8 +37,10 @@ public class CraftSpawnCategory {
  
      public static long getDefaultTicksPerSpawn(SpawnCategory spawnCategory) {
          return switch (spawnCategory) {
 -            case MONSTER, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 1;
 -            case ANIMAL -> 400; // This value come from commit 2995a08324f
-+            case ANIMAL, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 400; // Fusion - Optimize Default Configuration
-+            case MONSTER -> 10; // Fusion - Optimize Default Configuration
++            // Fusion start - Optimize Default Configuration
++            case ANIMAL, AXOLOTL, AMBIENT, WATER_UNDERGROUND_CREATURE, WATER_AMBIENT, WATER_ANIMAL -> 400;
++            case MONSTER -> 10;
++            // Fusion end
              default -> throw new UnsupportedOperationException("Unknown Config value " + spawnCategory + " for ticks-per");
          };
      }
@@ -218,7 +242,7 @@ index 1e5fb707b034da7afa74ba64e53de81e7e7bdf79..98ff8cdace73d4fb8c575adf06b43a5e
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 4cd080a0db99a5c36394bcf54526b96fe22a206a..330fd9021b907728a726645857a913181d02ca73 100644
+index 4cd080a0db99a5c36394bcf54526b96fe22a206a..4daab7c08d66001b3ec42e161b5cf53bb4d582e7 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -422,7 +422,7 @@ public class PurpurWorldConfig {
@@ -230,17 +254,8 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..330fd9021b907728a726645857a91318
      public boolean teleportOnNetherCeilingDamage = false;
      public boolean totemOfUndyingWorksInInventory = false;
      public boolean playerFixStuckPortal = false;
-@@ -2770,7 +2770,7 @@ public class PurpurWorldConfig {
-     public boolean villagerLobotomizeEnabled = false;
-     public int villagerLobotomizeCheckInterval = 100;
-     public boolean villagerDisplayTradeItem = true;
--    public int villagerSpawnIronGolemRadius = 0;
-+    public int villagerSpawnIronGolemRadius = 5; // Fusion - Optimize Default Configuration
-     public int villagerSpawnIronGolemLimit = 0;
-     private void villagerSettings() {
-         villagerRidable = getBoolean("mobs.villager.ridable", villagerRidable);
 diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
-index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..c5ef7392bf0d31161b6a3360f40aa86c5c345e54 100644
+index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..d315b8aadedbc6e4aea84288e2a9639cbd8e2b02 100644
 --- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
 @@ -146,14 +146,14 @@ public class SpigotWorldConfig
@@ -265,52 +280,34 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..c5ef7392bf0d31161b6a3360f40aa86c
      private void mobSpawnRange()
      {
 -        this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 8 ); // Paper - Vanilla
-+        this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 3 ); // Fusion - Optimize Default Configuration
++    this.mobSpawnRange = (byte) getInt( "mob-spawn-range", 3 ); // Paper - Vanilla // Fusion - Optimize Default Configuration
          this.log( "Mob Spawn Range: " + this.mobSpawnRange );
      }
  
-@@ -203,26 +203,26 @@ public class SpigotWorldConfig
+@@ -203,14 +203,16 @@ public class SpigotWorldConfig
          this.log( "Item Despawn Rate: " + this.itemDespawnRate );
      }
  
 -    public int animalActivationRange = 32;
 -    public int monsterActivationRange = 32;
-+    public int animalActivationRange = 16; // Fusion - Optimize Default Configuration
-+    public int monsterActivationRange = 24; // Fusion - Optimize Default Configuration
++    // Fusion start - Optimize Default Configuration
++    public int animalActivationRange = 16;
++    public int monsterActivationRange = 24;
      public int raiderActivationRange = 48;
 -    public int miscActivationRange = 16;
-+    public int miscActivationRange = 8; // Fusion - Optimize Default Configuration
++    public int miscActivationRange = 8;
      // Paper start
 -    public int flyingMonsterActivationRange = 32;
 -    public int waterActivationRange = 16;
 -    public int villagerActivationRange = 32;
--    public int wakeUpInactiveAnimals = 4;
-+    public int flyingMonsterActivationRange = 48; // Fusion - Optimize Default Configuration
-+    public int waterActivationRange = 8; // Fusion - Optimize Default Configuration
-+    public int villagerActivationRange = 16; // Fusion - Optimize Default Configuration
-+    public int wakeUpInactiveAnimals = 2; // Fusion - Optimize Default Configuration
++    public int flyingMonsterActivationRange = 48;
++    public int waterActivationRange = 8;
++    public int villagerActivationRange = 16;
++    // Fusion end
+     public int wakeUpInactiveAnimals = 4;
      public int wakeUpInactiveAnimalsEvery = 60*20;
--    public int wakeUpInactiveAnimalsFor = 5*20;
--    public int wakeUpInactiveMonsters = 8;
-+    public int wakeUpInactiveAnimalsFor = 40; // Fusion - Optimize Default Configuration
-+    public int wakeUpInactiveMonsters = 4; // Fusion - Optimize Default Configuration
-     public int wakeUpInactiveMonstersEvery = 20*20;
--    public int wakeUpInactiveMonstersFor = 5*20;
--    public int wakeUpInactiveVillagers = 4;
-+    public int wakeUpInactiveMonstersFor = 60; // Fusion - Optimize Default Configuration
-+    public int wakeUpInactiveVillagers = 1; // Fusion - Optimize Default Configuration
-     public int wakeUpInactiveVillagersEvery = 30*20;
--    public int wakeUpInactiveVillagersFor = 5*20;
--    public int wakeUpInactiveFlying = 8;
-+    public int wakeUpInactiveVillagersFor = 20; // Fusion - Optimize Default Configuration
-+    public int wakeUpInactiveFlying = 1; // Fusion - Optimize Default Configuration
-     public int wakeUpInactiveFlyingEvery = 10*20;
--    public int wakeUpInactiveFlyingFor = 5*20;
-+    public int wakeUpInactiveFlyingFor = 60; // Fusion - Optimize Default Configuration
-     public int villagersWorkImmunityAfter = 5*20;
-     public int villagersWorkImmunityFor = 20;
-     public boolean villagersActiveForPanic = true;
-@@ -291,9 +291,9 @@ public class SpigotWorldConfig
+     public int wakeUpInactiveAnimalsFor = 5*20;
+@@ -291,9 +293,9 @@ public class SpigotWorldConfig
          this.hopperTransfer = this.getInt( "ticks-per.hopper-transfer", 8 );
          if ( SpigotConfig.version < 11 )
          {
@@ -322,17 +319,8 @@ index 5503ad6a93d331771a0e92c0da6adedf2ac81aff..c5ef7392bf0d31161b6a3360f40aa86c
          this.hopperAmount = this.getInt( "hopper-amount", 1 );
          this.hopperCanLoadChunks = this.getBoolean( "hopper-can-load-chunks", false );
          this.log( "Hopper Transfer: " + this.hopperTransfer + " Hopper Check: " + this.hopperCheck + " Hopper Amount: " + this.hopperAmount + " Hopper Can Load Chunks: " + this.hopperCanLoadChunks );
-@@ -303,7 +303,7 @@ public class SpigotWorldConfig
-     public int tridentDespawnRate;
-     private void arrowDespawnRate()
-     {
--        this.arrowDespawnRate = this.getInt( "arrow-despawn-rate", 1200 );
-+        this.arrowDespawnRate = this.getInt( "arrow-despawn-rate", 300 ); // Fusion - Optimize Default Configuration
-         this.tridentDespawnRate = this.getInt( "trident-despawn-rate", this.arrowDespawnRate );
-         this.log( "Arrow Despawn Rate: " + this.arrowDespawnRate + " Trident Respawn Rate:" + this.tridentDespawnRate );
-     }
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index eef7c125b2689f29cae5464659eacdf33f5695b2..eb33b0a19d6060f78d7ead7a2ad63b1b2581293d 100644
+index eef7c125b2689f29cae5464659eacdf33f5695b2..91e4f942000d1a3cd99fc9862136ac32a5ded628 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
 @@ -24,22 +24,22 @@ settings:
@@ -354,8 +342,7 @@ index eef7c125b2689f29cae5464659eacdf33f5695b2..eb33b0a19d6060f78d7ead7a2ad63b1b
 +    axolotls: 3
 +    ambient: 1
  chunk-gc:
--    period-in-ticks: 600
-+    period-in-ticks: 400
+     period-in-ticks: 600
  ticks-per:
      animal-spawns: 400
 -    monster-spawns: 1

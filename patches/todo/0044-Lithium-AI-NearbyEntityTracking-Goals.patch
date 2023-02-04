@@ -1,0 +1,158 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 9 Jan 2023 14:04:31 +0900
+Subject: [PATCH] Lithium-AI-NearbyEntityTracking-Goals
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index a9e2d9beb66ba0c340aaca424a5b986a6b73011f..0917f78627858130ca45ff35606eb086fe67d235 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -142,6 +142,7 @@ public class FusionWorldConfig {
+     public boolean lithiumAISensorSecondaryPoi = true;
+     public boolean lithiumEntityCollisionsSuffocation = true;
+     public boolean lithiumAITaskMemoryChangeCounting = true;
++    public boolean lithiumAINearbyEntityTrackingGoals = true;
+ 
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+@@ -155,6 +156,7 @@ public class FusionWorldConfig {
+         lithiumGenChunkRegion = getBoolean("lithium.gen.chunk-region", lithiumGenChunkRegion) && lithiumEnable;
+         lithiumAISensorSecondaryPoi = getBoolean("lithium.ai.sensor.secondary-poi", lithiumAISensorSecondaryPoi) && lithiumEnable;
+         lithiumEntityCollisionsSuffocation = getBoolean("lithium.entity.collisions.suffocation", lithiumEntityCollisionsSuffocation) && lithiumEnable;
++        lithiumAINearbyEntityTrackingGoals = getBoolean("lithium.ai.nearby-entity-tracking.goals", lithiumAINearbyEntityTrackingGoals) && lithiumEnable && FusionConfig.lithiumAINearbyEntityTracking;
+     }
+ 
+     private void lithiumConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
+index 66e5c2716684f54e15e931e33d09463c0df0fda3..9a953f47883b525fd54574925e94460f0d5989fe 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
+@@ -11,6 +11,13 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+ import net.minecraft.world.level.pathfinder.Path;
+ import net.minecraft.world.phys.Vec3;
++// Fusion start
++import me.jellysquid.mods.lithium.common.entity.nearby_tracker.NearbyEntityListenerProvider;
++import me.jellysquid.mods.lithium.common.entity.nearby_tracker.NearbyEntityTracker;
++import net.minecraft.core.Vec3i;
++import net.minecraft.util.Mth;
++import net.minecraft.world.entity.EntityDimensions;
++// Fusion end
+ 
+ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+     protected final PathfinderMob mob;
+@@ -26,6 +33,7 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+     protected final Predicate<LivingEntity> avoidPredicate;
+     protected final Predicate<LivingEntity> predicateOnAvoidEntity;
+     private final TargetingConditions avoidEntityTargeting;
++    private NearbyEntityTracker<? extends LivingEntity> nearbyEntityTracker; // Fusion - Lithium: AI NearbyEntityTracking Goals
+ 
+     public AvoidEntityGoal(PathfinderMob mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+         this(mob, fleeFromType, (livingEntity) -> {
+@@ -44,6 +52,14 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+         this.pathNav = mob.getNavigation();
+         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+         this.avoidEntityTargeting = TargetingConditions.forCombat().range((double)distance).selector(inclusionSelector.and(extraInclusionSelector));
++        // Fusion start - Lithium: AI NearbyEntityTracking Goals
++        EntityDimensions dimensions = this.mob.getType().getDimensions();
++        double adjustedRange = dimensions.width * 0.5D + this.maxDist + 2D;
++        int horizontalRange = Mth.ceil(adjustedRange);
++        this.nearbyEntityTracker = new NearbyEntityTracker<>(fleeFromType, mob, new Vec3i(horizontalRange, Mth.ceil(dimensions.height + 3 + 2), horizontalRange));
++
++        mob.addListener(this.nearbyEntityTracker);
++        // Fusion end
+     }
+ 
+     public AvoidEntityGoal(PathfinderMob fleeingEntity, Class<T> classToFleeFrom, float fleeDistance, double fleeSlowSpeed, double fleeFastSpeed, Predicate<LivingEntity> inclusionSelector) {
+@@ -54,9 +70,15 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+ 
+     @Override
+     public boolean canUse() {
+-        this.toAvoid = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate((double)this.maxDist, 3.0D, (double)this.maxDist), (livingEntity) -> {
+-            return true;
+-        }), this.avoidEntityTargeting, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ());
++        // Fusion start - Lithium: AI NearbyEntityTracking Goals
++        if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++            this.nearbyEntityTracker.getClosestEntity(this.mob.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), this.avoidEntityTargeting, this.mob.getX(), this.mob.getY(), this.mob.getZ());
++        } else {
++            this.toAvoid = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate((double) this.maxDist, 3.0D, (double) this.maxDist), (livingEntity) -> {
++                return true;
++            }), this.avoidEntityTargeting, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ());
++        }
++        // Fusion end
+         if (this.toAvoid == null) {
+             return false;
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
+index 8b189d7587303263efa1790066e5a83edd45f9d7..9456a97003d000654d8638ea4985c3e1eaafb6c5 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
+@@ -8,6 +8,13 @@ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.Mob;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ import net.minecraft.world.entity.player.Player;
++// Fusion start
++import me.jellysquid.mods.lithium.common.entity.nearby_tracker.NearbyEntityListenerProvider;
++import me.jellysquid.mods.lithium.common.entity.nearby_tracker.NearbyEntityTracker;
++import net.minecraft.core.Vec3i;
++import net.minecraft.util.Mth;
++import net.minecraft.world.entity.EntityDimensions;
++// Fusion end
+ 
+ public class LookAtPlayerGoal extends Goal {
+     public static final float DEFAULT_PROBABILITY = 0.02F;
+@@ -20,6 +27,7 @@ public class LookAtPlayerGoal extends Goal {
+     private final boolean onlyHorizontal;
+     protected final Class<? extends LivingEntity> lookAtType;
+     protected final TargetingConditions lookAtContext;
++    private NearbyEntityTracker<? extends LivingEntity> nearbyEntityTracker; // Fusion - Lithium: AI NearbyEntityTracking Goals
+ 
+     public LookAtPlayerGoal(Mob mob, Class<? extends LivingEntity> targetType, float range) {
+         this(mob, targetType, range, 0.02F);
+@@ -43,7 +51,16 @@ public class LookAtPlayerGoal extends Goal {
+         } else {
+             this.lookAtContext = TargetingConditions.forNonCombat().range((double)range);
+         }
++        // Fusion start - Lithium: AI NearbyEntityTracking Goals
++        if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++            EntityDimensions dimensions = this.mob.getType().getDimensions();
++            double adjustedRange = dimensions.width * 0.5D + this.lookDistance + 2D;
++            int horizontalRange = Mth.ceil(adjustedRange);
++            this.nearbyEntityTracker = new NearbyEntityTracker<>(targetType, mob, new Vec3i(horizontalRange, Mth.ceil(dimensions.height + 3 + 2), horizontalRange));
+ 
++            mob.addListener(this.nearbyEntityTracker);
++        }
++        // Fusion end
+     }
+ 
+     @Override
+@@ -54,14 +71,23 @@ public class LookAtPlayerGoal extends Goal {
+             if (this.mob.getTarget() != null) {
+                 this.lookAt = this.mob.getTarget();
+             }
+-
++            // Fusion start - Lithium: AI NearbyEntityTracking Goals
+             if (this.lookAtType == Player.class) {
+-                this.lookAt = this.mob.level.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++                    this.lookAt = (Player)this.nearbyEntityTracker.getClosestEntity(null, this.lookAtContext, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                } else {
++                    this.lookAt = this.mob.level.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                }
+             } else {
+-                this.lookAt = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.lookAtType, this.mob.getBoundingBox().inflate((double)this.lookDistance, 3.0D, (double)this.lookDistance), (livingEntity) -> {
+-                    return true;
+-                }), this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++                    this.lookAt = this.nearbyEntityTracker.getClosestEntity(this.mob.getBoundingBox().inflate((double) this.lookDistance, 3.0D, (double) this.lookDistance), this.lookAtContext, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                } else {
++                    this.lookAt = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.lookAtType, this.mob.getBoundingBox().inflate((double) this.lookDistance, 3.0D, (double) this.lookDistance), (livingEntity) -> {
++                        return true;
++                    }), this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                }
+             }
++            // Fusion end
+ 
+             return this.lookAt != null;
+         }

@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 28 Dec 2022 15:13:21 +0900
+Subject: [PATCH] Lithium-Entity-FastHandSwing
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index b7b030d3679434f02de31ec91bbeca83e5e5e332..753c02d6caff6cef4248f4260134e2f35cc838f8 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -133,11 +133,13 @@ public class FusionWorldConfig {
+     public boolean lithiumEnable = true;
+     public boolean lithiumCollectionsBlockEntityTickers = true;
+     public boolean lithiumEntityFastElytraCheck = true;
++    public boolean lithiumEntityFastHandSwing = true;
+ 
+     private void lithiumConfig() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+         lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
++        lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
+     }
+ 
+     private void lithiumConfigSetup() {
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index c0b5e74b79cfb0fd5028235cd2f7a59b3c7f0747..7cccbb1ec810452d84e140093a028faf69ffa411 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -2583,6 +2583,8 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     protected void updateSwingTime() {
++        if (this.level.fusionConfig.lithiumEntityFastHandSwing && !this.swinging && this.swingTime == 0) return; // Fusion - Lithium: Entity FastHandSwing
++
+         int i = this.getCurrentSwingDuration();
+ 
+         if (this.swinging) {

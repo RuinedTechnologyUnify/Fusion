@@ -1,0 +1,68 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sat, 4 Feb 2023 20:34:16 +0900
+Subject: [PATCH] C2ME-SynchronizedCodec
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/chunkio/threading_issues/common/SynchronizedCodec.java b/src/main/java/com/ishland/c2me/fixes/chunkio/threading_issues/common/SynchronizedCodec.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f1ad40d7b9e1acb5287348d921f2df07d3f58dd0
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/chunkio/threading_issues/common/SynchronizedCodec.java
+@@ -0,0 +1,55 @@
++package com.ishland.c2me.fixes.chunkio.threading_issues.common;
++
++import com.mojang.datafixers.util.Pair;
++import com.mojang.serialization.Codec;
++import com.mojang.serialization.DataResult;
++import com.mojang.serialization.DynamicOps;
++
++import java.util.concurrent.ForkJoinPool;
++import java.util.concurrent.locks.ReentrantLock;
++
++public class SynchronizedCodec<A> implements Codec<A> {
++
++    private final ReentrantLock lock = new ReentrantLock(false);
++    private final Codec<A> delegate;
++
++    public SynchronizedCodec(Codec<A> delegate) {
++        this.delegate = delegate;
++    }
++
++    @Override
++    public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
++        try {
++            lock.lockInterruptibly();
++            return this.delegate.decode(ops, input);
++        } catch (InterruptedException e) {
++            throw new RuntimeException(e);
++        } finally {
++            if (lock.isHeldByCurrentThread()) lock.unlock();
++        }
++    }
++
++    @Override
++    public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
++        try {
++            lock.lockInterruptibly();
++            return this.delegate.encode(input, ops, prefix);
++        } catch (InterruptedException e) {
++            throw new RuntimeException(e);
++        } finally {
++            if (lock.isHeldByCurrentThread()) lock.unlock();
++        }
++    }
++
++    class ManagedLocker implements ForkJoinPool.ManagedBlocker {
++        boolean hasLock = false;
++        public boolean block() {
++            if (!hasLock)
++                lock.lock();
++            return true;
++        }
++        public boolean isReleasable() {
++            return hasLock || (hasLock = lock.tryLock());
++        }
++    }
++}
+\ No newline at end of file
