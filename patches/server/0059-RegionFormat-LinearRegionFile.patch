@@ -1,8 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kugge <sofiane.djerbi38@gmail.com>
 Date: Sun, 5 Feb 2023 02:30:01 +0100
-Subject: [PATCH] Xymb Linear RegionFile Format
+Subject: [PATCH] RegionFormat LinearRegionFile
 
+Implements Linear Region File Format by xymb-endcrystalme
+Documentation: https://github.com/xymb-endcrystalme/LinearRegionFileFormatTools
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 index 392a30619460f2b0e6dc14394ef564d5d9ca4769..f15cfa0f2bdf33178ff2a7c075ab2758b169c898 100644
@@ -20,30 +22,17 @@ index 392a30619460f2b0e6dc14394ef564d5d9ca4769..f15cfa0f2bdf33178ff2a7c075ab2758
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
 diff --git a/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java b/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java
-index f2c27e0ac65be4b75c1d86ef6fd45fdb538d96ac..1dabeaeede933e370fbb450ff8ea5907d410a574 100644
+index f2c27e0ac65be4b75c1d86ef6fd45fdb538d96ac..3404d10f3dea5db0183a9bf35500de680bdbcfd4 100644
 --- a/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java
 +++ b/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java
-@@ -1,10 +1,11 @@
- package com.destroystokyo.paper.io;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
- import com.mojang.logging.LogUtils;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.level.ChunkPos;
--import net.minecraft.world.level.chunk.storage.RegionFile;
-+//import net.minecraft.world.level.chunk.storage.RegionFile; // Fusion
- import org.slf4j.Logger;
- 
- import java.io.IOException;
-@@ -314,8 +315,8 @@ public final class PaperFileIOThread extends QueueExecutorThread {
+@@ -314,8 +314,8 @@ public final class PaperFileIOThread extends QueueExecutorThread {
          public abstract void writeData(final int x, final int z, final CompoundTag compound) throws IOException;
          public abstract CompoundTag readData(final int x, final int z) throws IOException;
  
 -        public abstract <T> T computeForRegionFile(final int chunkX, final int chunkZ, final Function<RegionFile, T> function);
 -        public abstract <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<RegionFile, T> function);
-+        public abstract <T> T computeForRegionFile(final int chunkX, final int chunkZ, final Function<AbstractRegionFile, T> function); // Fusion
-+        public abstract <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<AbstractRegionFile, T> function); // Fusion
++        public abstract <T> T computeForRegionFile(final int chunkX, final int chunkZ, final Function<com.github.ipecter.fusion.region.AbstractRegionFile, T> function); // Fusion
++        public abstract <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<com.github.ipecter.fusion.region.AbstractRegionFile, T> function); // Fusion
  
          public static final class InProgressWrite {
              public long writeCounter;
@@ -543,47 +532,40 @@ index 0000000000000000000000000000000000000000..0853d9815b25e2b0ba3da711220ec13a
 +    }
 +}
 diff --git a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
-index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f66362e37 100644
+index a08cde4eefe879adcee7c4118bc38f98c5097ed0..124fe1f7bb2b4f1fd05aed1f62dd7fa4f840d144 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
-@@ -1,5 +1,6 @@
- package io.papermc.paper.chunk.system.io;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
- import ca.spottedleaf.concurrentutil.collection.MultiThreadedQueue;
- import ca.spottedleaf.concurrentutil.executor.Cancellable;
- import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
-@@ -811,7 +812,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -811,7 +811,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                                                 final ChunkDataController taskController) {
          final ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
          if (intendingToBlock) {
 -            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final RegionFile file) -> {
-+            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final AbstractRegionFile file) -> { // Fusion
++            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final com.github.ipecter.fusion.region.AbstractRegionFile file) -> { // Fusion
                  if (file == null) { // null if no regionfile exists
                      return Boolean.FALSE;
                  }
-@@ -819,7 +820,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -819,7 +819,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                  return file.hasChunk(chunkPos) ? Boolean.TRUE : Boolean.FALSE;
              });
          } else {
 -            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final RegionFile file) -> {
-+            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final AbstractRegionFile file) -> { // Fusion
++            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final com.github.ipecter.fusion.region.AbstractRegionFile file) -> { // Fusion
                  if (file == null) { // null if not loaded
                      return Boolean.TRUE;
                  }
-@@ -1116,9 +1117,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1116,9 +1116,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
              return !this.tasks.isEmpty();
          }
  
 -        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<AbstractRegionFile, T> function) { // Fusion
++        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<com.github.ipecter.fusion.region.AbstractRegionFile, T> function) { // Fusion
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final AbstractRegionFile regionFile; // Fusion
++            final com.github.ipecter.fusion.region.AbstractRegionFile regionFile; // Fusion
              synchronized (cache) {
                  try {
                      regionFile = cache.getRegionFile(new ChunkPos(chunkX, chunkZ), existingOnly, true);
-@@ -1131,19 +1132,19 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1131,19 +1131,19 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                  return function.apply(regionFile);
              } finally {
                  if (regionFile != null) {
@@ -594,10 +576,10 @@ index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f
          }
  
 -        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<AbstractRegionFile, T> function) { // Fusion
++        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<com.github.ipecter.fusion.region.AbstractRegionFile, T> function) { // Fusion
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final AbstractRegionFile regionFile; // Fusion
++            final com.github.ipecter.fusion.region.AbstractRegionFile regionFile; // Fusion
  
              synchronized (cache) {
                  regionFile = cache.getRegionFileIfLoaded(new ChunkPos(chunkX, chunkZ));
@@ -607,7 +589,7 @@ index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f
                  }
              }
  
-@@ -1151,7 +1152,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1151,7 +1151,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                  return function.apply(regionFile);
              } finally {
                  if (regionFile != null) {
@@ -616,7 +598,7 @@ index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f
                  }
              }
          }
-@@ -1287,6 +1288,12 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1287,6 +1287,12 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                  } catch (final ThreadDeath thr) {
                      throw thr;
                  } catch (final Throwable thr) {
@@ -629,7 +611,7 @@ index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f
                      if (thr instanceof RegionFileStorage.RegionFileSizeException) {
                          final int maxSize = RegionFile.MAX_CHUNK_SIZE / (1024 * 1024);
                          LOGGER.error("Chunk at (" + this.chunkX + "," + this.chunkZ + ") in '" + this.world.getWorld().getName() + "' exceeds max size of " + maxSize + "MiB, it has been deleted from disk.");
-@@ -1294,6 +1301,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1294,6 +1300,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
                          failedWrite = thr instanceof IOException;
                          LOGGER.error("Failed to write chunk data for task: " + this.toString(), thr);
                      }
@@ -638,55 +620,39 @@ index a08cde4eefe879adcee7c4118bc38f98c5097ed0..fce1e562949a7aebc3b6cea433f4af9f
  
                  final boolean finalFailWrite = failedWrite;
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 57ab982bfdb9d8893ec8a3cf5ebe49317a952651..aaba8a14c40f879a1047582d1e2dc3d416d51946 100644
+index 57ab982bfdb9d8893ec8a3cf5ebe49317a952651..f61442f3e9f1daed98f463fb12bad37d49f21a38 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1,6 +1,7 @@
- package net.minecraft.server.level;
- 
- import co.aikar.timings.Timing; // Paper
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
- import com.google.common.collect.ImmutableList;
- import com.google.common.collect.ImmutableList.Builder;
- import com.google.common.collect.Iterables;
-@@ -952,13 +953,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -952,13 +952,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      // Paper start - chunk status cache "api"
      public ChunkStatus getChunkStatusOnDiskIfCached(ChunkPos chunkPos) {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos);
-+        AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos); // Fusion
  
          return regionFile == null ? null : regionFile.getStatusIfCached(chunkPos.x, chunkPos.z);
      }
  
      public ChunkStatus getChunkStatusOnDisk(ChunkPos chunkPos) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true);
-+        AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true); // Fusion
  
          if (regionFile == null || !regionFileCache.chunkExists(chunkPos)) {
              return null;
-@@ -976,7 +977,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -976,7 +976,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      public void updateChunkStatusOnDisk(ChunkPos chunkPos, @Nullable CompoundTag compound) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false);
-+        AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false); // Fusion
  
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 759b125cc1251b9b4f1f443c9f70c482ef5b32f8..912a2b2118156cb3aeddfdd7f7a4cd27a4147550 100644
+index 759b125cc1251b9b4f1f443c9f70c482ef5b32f8..4c56110b2bc9cb43c8452fe08ec50f02055900e9 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-@@ -1,5 +1,7 @@
- package net.minecraft.util.worldupdate;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
-+import com.github.ipecter.fusion.region.AbstractRegionFileFactory; // Fusion
- import com.google.common.collect.ImmutableList;
- import com.google.common.collect.ImmutableMap;
- import com.google.common.collect.ImmutableMap.Builder;
-@@ -61,10 +63,17 @@ public class WorldUpgrader {
+@@ -61,10 +61,17 @@ public class WorldUpgrader {
      private volatile int skipped;
      private final Object2FloatMap<ResourceKey<LevelStem>> progressMap = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.identityStrategy())); // CraftBukkit
      private volatile Component status = Component.translatable("optimizeWorld.stage.counting");
@@ -705,7 +671,7 @@ index 759b125cc1251b9b4f1f443c9f70c482ef5b32f8..912a2b2118156cb3aeddfdd7f7a4cd27
          this.dimensions = dimensionOptionsRegistry;
          this.levels = (Set) dimensionOptionsRegistry.registryKeySet().stream().collect(Collectors.toUnmodifiableSet()); // CraftBukkit
          this.eraseCache = eraseCache;
-@@ -235,6 +244,11 @@ public class WorldUpgrader {
+@@ -235,6 +242,11 @@ public class WorldUpgrader {
          File file = this.levelStorage.getDimensionPath((ResourceKey) null).toFile(); // CraftBukkit
          File file1 = new File(file, "region");
          File[] afile = file1.listFiles((file2, s) -> {
@@ -717,37 +683,29 @@ index 759b125cc1251b9b4f1f443c9f70c482ef5b32f8..912a2b2118156cb3aeddfdd7f7a4cd27
              return s.endsWith(".mca");
          });
  
-@@ -254,7 +268,7 @@ public class WorldUpgrader {
+@@ -254,7 +266,7 @@ public class WorldUpgrader {
                      int l = Integer.parseInt(matcher.group(2)) << 5;
  
                      try {
 -                        RegionFile regionfile = new RegionFile(file2.toPath(), file1.toPath(), true);
-+                        AbstractRegionFile regionfile = AbstractRegionFileFactory.getAbstractRegionFile(file2.toPath(), file1.toPath(), true); // Fusion
++                        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = com.github.ipecter.fusion.region.AbstractRegionFileFactory.getAbstractRegionFile(file2.toPath(), file1.toPath(), true); // Fusion
  
                          try {
                              for (int i1 = 0; i1 < 32; ++i1) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..89e03c4510deab622eee2b17aedb5a30b0b0a99b 100644
+index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..3a89b31b6f45eab68c814bc3f7f976a385e27b63 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-@@ -1,6 +1,7 @@
- // mc-dev import
- package net.minecraft.world.level.chunk.storage;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
- import com.google.common.annotations.VisibleForTesting;
- import com.mojang.logging.LogUtils;
- import java.io.ByteArrayInputStream;
-@@ -27,7 +28,7 @@ import net.minecraft.nbt.NbtIo;
+@@ -27,7 +27,7 @@ import net.minecraft.nbt.NbtIo;
  import net.minecraft.world.level.ChunkPos;
  import org.slf4j.Logger;
  
 -public class RegionFile implements AutoCloseable {
-+public class RegionFile implements AutoCloseable, AbstractRegionFile { // Fusion
++public class RegionFile implements AutoCloseable, com.github.ipecter.fusion.region.AbstractRegionFile { // Fusion
  
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int SECTOR_BYTES = 4096;
-@@ -51,6 +52,16 @@ public class RegionFile implements AutoCloseable {
+@@ -51,6 +51,16 @@ public class RegionFile implements AutoCloseable {
      public final java.util.concurrent.locks.ReentrantLock fileLock = new java.util.concurrent.locks.ReentrantLock(true); // Paper
      public final Path regionFile; // Paper
  
@@ -764,7 +722,7 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..89e03c4510deab622eee2b17aedb5a30
      // Paper start - try to recover from RegionFile header corruption
      private static long roundToSectors(long bytes) {
          long sectors = bytes >>> 12; // 4096 = 2^12
-@@ -129,7 +140,7 @@ public class RegionFile implements AutoCloseable {
+@@ -129,7 +139,7 @@ public class RegionFile implements AutoCloseable {
      }
  
      // note: only call for CHUNK regionfiles
@@ -773,7 +731,7 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..89e03c4510deab622eee2b17aedb5a30
          if (!this.canRecalcHeader) {
              return false;
          }
-@@ -955,10 +966,10 @@ public class RegionFile implements AutoCloseable {
+@@ -955,10 +965,10 @@ public class RegionFile implements AutoCloseable {
      private static int getChunkIndex(int x, int z) {
          return (x & 31) + (z & 31) * 32;
      }
@@ -786,7 +744,7 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..89e03c4510deab622eee2b17aedb5a30
          final int offset = getChunkIndex(x, z);
          boolean previous = this.oversized[offset] == 1;
          this.oversized[offset] = (byte) (oversized ? 1 : 0);
-@@ -997,7 +1008,7 @@ public class RegionFile implements AutoCloseable {
+@@ -997,7 +1007,7 @@ public class RegionFile implements AutoCloseable {
          return this.regionFile.getParent().resolve(this.regionFile.getFileName().toString().replaceAll("\\.mca$", "") + "_oversized_" + x + "_" + z + ".nbt");
      }
  
@@ -796,29 +754,21 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..89e03c4510deab622eee2b17aedb5a30
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new InflaterInputStream(Files.newInputStream(file))))) {
              return NbtIo.read((java.io.DataInput) out);
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74a6106efb 100644
+index bd502ca721de0cab438d995efa00ad0554c0d2fe..14574b999eaaf3b24ace8f73e590974e95f2ba97 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -1,5 +1,7 @@
- package net.minecraft.world.level.chunk.storage;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
-+import com.github.ipecter.fusion.region.AbstractRegionFileFactory; // Fusion
- import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
- import it.unimi.dsi.fastutil.objects.ObjectIterator;
- import java.io.DataInput;
-@@ -21,8 +23,9 @@ import net.minecraft.world.level.ChunkPos;
+@@ -21,8 +21,9 @@ import net.minecraft.world.level.ChunkPos;
  public class RegionFileStorage implements AutoCloseable {
  
      public static final String ANVIL_EXTENSION = ".mca";
 +    public static final String LINEAR_EXTENSION = ".linear"; // Fusion
      private static final int MAX_CACHE_SIZE = 256;
 -    public final Long2ObjectLinkedOpenHashMap<RegionFile> regionCache = new Long2ObjectLinkedOpenHashMap();
-+    public final Long2ObjectLinkedOpenHashMap<AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // Fusion
++    public final Long2ObjectLinkedOpenHashMap<com.github.ipecter.fusion.region.AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // Fusion
      private final Path folder;
      private final boolean sync;
  
-@@ -42,9 +45,17 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -42,9 +43,17 @@ public class RegionFileStorage implements AutoCloseable {
      // Paper start
      public static @Nullable ChunkPos getRegionFileCoordinates(Path file) {
          String fileName = file.getFileName().toString();
@@ -836,32 +786,32 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
  
          String[] split = fileName.split("\\.");
  
-@@ -62,49 +73,56 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -62,49 +71,56 @@ public class RegionFileStorage implements AutoCloseable {
          }
      }
  
 -    public synchronized RegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) {
-+    public synchronized AbstractRegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) { // Fusion
++    public synchronized com.github.ipecter.fusion.region.AbstractRegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) { // Fusion
          return this.regionCache.getAndMoveToFirst(ChunkPos.asLong(chunkcoordintpair.getRegionX(), chunkcoordintpair.getRegionZ()));
      }
  
      public synchronized boolean chunkExists(ChunkPos pos) throws IOException {
 -        RegionFile regionfile = getRegionFile(pos, true);
-+        AbstractRegionFile regionfile = getRegionFile(pos, true); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = getRegionFile(pos, true); // Fusion
  
          return regionfile != null ? regionfile.hasChunk(pos) : false;
      }
  
 -    public synchronized RegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit
-+    public synchronized AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // Fusion
++    public synchronized com.github.ipecter.fusion.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // Fusion
          return this.getRegionFile(chunkcoordintpair, existingOnly, false);
      }
 -    public synchronized RegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException {
-+    public synchronized AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException { // Fusion
++    public synchronized com.github.ipecter.fusion.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException { // Fusion
          // Paper end
          long i = ChunkPos.asLong(chunkcoordintpair.getRegionX(), chunkcoordintpair.getRegionZ());
 -        RegionFile regionfile = (RegionFile) this.regionCache.getAndMoveToFirst(i);
-+        AbstractRegionFile regionfile = (AbstractRegionFile) this.regionCache.getAndMoveToFirst(i); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = (com.github.ipecter.fusion.region.AbstractRegionFile) this.regionCache.getAndMoveToFirst(i); // Fusion
  
          if (regionfile != null) {
              // Paper start
@@ -875,7 +825,7 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
          } else {
              if (this.regionCache.size() >= io.papermc.paper.configuration.GlobalConfiguration.get().misc.regionFileCacheSize) { // Paper - configurable
 -                ((RegionFile) this.regionCache.removeLast()).close();
-+                ((AbstractRegionFile) this.regionCache.removeLast()).close(); // Fusion
++                ((com.github.ipecter.fusion.region.AbstractRegionFile) this.regionCache.removeLast()).close(); // Fusion
              }
  
              FileUtil.createDirectoriesSafe(this.folder);
@@ -892,7 +842,7 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
 +            // Fusion end
              if (existingOnly && !java.nio.file.Files.exists(path1)) return null; // CraftBukkit
 -            RegionFile regionfile1 = new RegionFile(path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header
-+            AbstractRegionFile regionfile1 = AbstractRegionFileFactory.getAbstractRegionFile(path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // Fusion
++            com.github.ipecter.fusion.region.AbstractRegionFile regionfile1 = com.github.ipecter.fusion.region.AbstractRegionFileFactory.getAbstractRegionFile(path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // Fusion
  
              this.regionCache.putAndMoveToFirst(i, regionfile1);
              // Paper start
@@ -903,21 +853,21 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
              }
              // Paper end
              return regionfile1;
-@@ -132,7 +150,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -132,7 +148,7 @@ public class RegionFileStorage implements AutoCloseable {
      }
  
  
 -    private static CompoundTag readOversizedChunk(RegionFile regionfile, ChunkPos chunkCoordinate) throws IOException {
-+    private static CompoundTag readOversizedChunk(AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // Fusion
++    private static CompoundTag readOversizedChunk(com.github.ipecter.fusion.region.AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // Fusion
          synchronized (regionfile) {
              try (DataInputStream datainputstream = regionfile.getChunkDataInputStream(chunkCoordinate)) {
                  CompoundTag oversizedData = regionfile.getOversizedData(chunkCoordinate.x, chunkCoordinate.z);
-@@ -179,14 +197,14 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -179,14 +195,14 @@ public class RegionFileStorage implements AutoCloseable {
      @Nullable
      public CompoundTag read(ChunkPos pos) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(pos, true, true); // Paper
-+        AbstractRegionFile regionfile = this.getRegionFile(pos, true, true); // Paper // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = this.getRegionFile(pos, true, true); // Paper // Fusion
          if (regionfile == null) {
              return null;
          }
@@ -925,11 +875,11 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
          return this.read(pos, regionfile);
      }
 -    public CompoundTag read(ChunkPos pos, RegionFile regionfile) throws IOException {
-+    public CompoundTag read(ChunkPos pos, AbstractRegionFile regionfile) throws IOException { // Fusion
++    public CompoundTag read(ChunkPos pos, com.github.ipecter.fusion.region.AbstractRegionFile regionfile) throws IOException { // Fusion
          // We add the regionfile parameter to avoid the potential deadlock (on fileLock) if we went back to obtain a regionfile
          // if we decide to re-read
          // Paper end
-@@ -196,7 +214,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -196,7 +212,7 @@ public class RegionFileStorage implements AutoCloseable {
  
          // Paper start
          if (regionfile.isOversized(pos.x, pos.z)) {
@@ -938,7 +888,7 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
              return readOversizedChunk(regionfile, pos);
          }
          // Paper end
-@@ -210,12 +228,12 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -210,12 +226,12 @@ public class RegionFileStorage implements AutoCloseable {
                      if (this.isChunkData) {
                          ChunkPos chunkPos = ChunkSerializer.getChunkCoordinate(nbttagcompound);
                          if (!chunkPos.equals(pos)) {
@@ -954,7 +904,7 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
                              return null;
                          }
                      }
-@@ -249,13 +267,13 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -249,13 +265,13 @@ public class RegionFileStorage implements AutoCloseable {
  
          return nbttagcompound;
          } finally { // Paper start
@@ -966,20 +916,20 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
      public void scanChunk(ChunkPos chunkPos, StreamTagVisitor scanner) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(chunkPos, true);
-+        AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // Fusion
          if (regionfile == null) {
              return;
          }
-@@ -285,7 +303,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -285,7 +301,7 @@ public class RegionFileStorage implements AutoCloseable {
      }
  
      protected void write(ChunkPos pos, @Nullable CompoundTag nbt) throws IOException {
 -        RegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit // Paper // Paper start - rewrite chunk system
-+        AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit // Paper // Paper start - rewrite chunk system // Fusion
++        com.github.ipecter.fusion.region.AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit // Paper // Paper start - rewrite chunk system // Fusion
          if (nbt == null && regionfile == null) {
              return;
          }
-@@ -335,7 +353,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -335,7 +351,7 @@ public class RegionFileStorage implements AutoCloseable {
          }
          // Paper end
          } finally { // Paper start
@@ -988,41 +938,34 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..a42bf8bde53b089a70af7ddbb76f4f74
          } // Paper end
      }
  
-@@ -344,7 +362,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -344,7 +360,7 @@ public class RegionFileStorage implements AutoCloseable {
          ObjectIterator objectiterator = this.regionCache.values().iterator();
  
          while (objectiterator.hasNext()) {
 -            RegionFile regionfile = (RegionFile) objectiterator.next();
-+            AbstractRegionFile regionfile = (AbstractRegionFile) objectiterator.next(); // Fusion
++            com.github.ipecter.fusion.region.AbstractRegionFile regionfile = (com.github.ipecter.fusion.region.AbstractRegionFile) objectiterator.next(); // Fusion
  
              try {
                  regionfile.close();
-@@ -360,7 +378,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -360,7 +376,7 @@ public class RegionFileStorage implements AutoCloseable {
          ObjectIterator objectiterator = this.regionCache.values().iterator();
  
          while (objectiterator.hasNext()) {
 -            RegionFile regionfile = (RegionFile) objectiterator.next();
-+            AbstractRegionFile regionfile = (AbstractRegionFile) objectiterator.next(); // Fusion
++            com.github.ipecter.fusion.region.AbstractRegionFile regionfile = (com.github.ipecter.fusion.region.AbstractRegionFile) objectiterator.next(); // Fusion
  
              regionfile.flush();
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index b17bc6482d2bd97d2e48d3967dea72605cf13164..31d5de3d24de3120003eb2b8e57b96f3f3e01be0 100644
+index b17bc6482d2bd97d2e48d3967dea72605cf13164..b504c731028c5b19f9a9987c0cebf994fa4dcde3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1,5 +1,6 @@
- package org.bukkit.craftbukkit;
- 
-+import com.github.ipecter.fusion.region.AbstractRegionFile; // Fusion
- import com.google.common.base.Preconditions;
- import com.google.common.base.Predicates;
- import com.google.common.collect.ImmutableList;
-@@ -552,7 +553,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -552,7 +552,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
                  return true;
              }
  
 -            net.minecraft.world.level.chunk.storage.RegionFile file;
-+            AbstractRegionFile file; // Fusion
++            com.github.ipecter.fusion.region.AbstractRegionFile file; // Fusion
              try {
                  file = world.getChunkSource().chunkMap.regionFileCache.getRegionFile(chunkPos, false);
              } catch (java.io.IOException ex) {
