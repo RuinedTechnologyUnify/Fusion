@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kugge <sofiane.djerbi38@gmail.com>
+Date: Sun, 5 Feb 2023 01:43:09 +0100
+Subject: [PATCH] Fusion RegionFormatConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index cd84613a2d0fa389a9d93749dd4d9bc46b9c9b0d..453e23d8e52fac73d2dcc0473e7123ce562da96c 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+ import java.lang.reflect.Modifier;
+ import java.util.HashMap;
++import java.util.Arrays;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.logging.Level;
+@@ -312,4 +313,19 @@ public class FusionConfig {
+ 
+     private static void smoothBootConfigSetup() {
+     }
+-}
+\ No newline at end of file
++
++    public static List<String> regionFormatList = Arrays.asList("ANVIL");
++    public static String regionFormatName = "ANVIL";
++
++    private static void regionFormatConfig() {
++        setComment("region-format", "[ Region Format ] Tweak Region File Format and Compression");
++        regionFormatName = getString("region-format.format", regionFormatName).toUpperCase();
++        if (!regionFormatList.contains(regionFormatName)) {
++            Bukkit.getLogger().log(Level.SEVERE, "Unknown region format in fusion.yml: " + regionFormatName);
++            Bukkit.getLogger().log(Level.SEVERE, "Falling back to ANVIL region file format.");
++        }
++    }
++
++    private static void regionFormatConfigSetup() {
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index d09184b8be320048c66aeab5ad94f3ee9f1f993e..4859e8c01a501c48474017a75af72686c682e8fc 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -855,7 +855,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             // Paper start - rewrite chunk system
+             worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
+             if (flush) {
+-                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName());
++                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName()); // Fusion - Remove Anvil info
+             }
+             // Paper end - rewrite chunk system
+         }
+@@ -879,7 +879,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
+             }
+ 
+-            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
++            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // Fusion - Remove Anvil info
+         }
+ 
+         return flag3;
