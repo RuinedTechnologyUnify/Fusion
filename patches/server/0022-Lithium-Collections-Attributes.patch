@@ -67,7 +67,7 @@ index 210a0bee1227e4671909dd553ab22027cfc868fb..d4ba9d553a137a79c2188ca5edf7a797
          this.entity = entity;
          // Purpur end
 +        // Fusion start - Lithium: Collections EntityAttributes
-+        if (this.entity != null){
++        if (this.entity != null && this.entity.level.fusionConfig != null){
 +            this.attributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
 +            this.dirtyAttributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
 +        } else {
