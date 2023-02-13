@@ -73,7 +73,7 @@ index 66e5c2716684f54e15e931e33d09463c0df0fda3..9a953f47883b525fd54574925e94460f
 -            return true;
 -        }), this.avoidEntityTargeting, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ());
 +        // Fusion start - Lithium: AI NearbyEntityTracking Goals
-+        if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++        if (false) { // Fusion: TODO=Hoxfix - this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals->com.github.ipecter.fusion.fusionConfig.lithiumAINearbyEntityTrackingGoals
 +            this.nearbyEntityTracker.getClosestEntity(this.mob.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), this.avoidEntityTargeting, this.mob.getX(), this.mob.getY(), this.mob.getZ());
 +        } else {
 +            this.toAvoid = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate((double) this.maxDist, 3.0D, (double) this.maxDist), (livingEntity) -> {
@@ -115,7 +115,7 @@ index 8b189d7587303263efa1790066e5a83edd45f9d7..9456a97003d000654d8638ea4985c3e1
              this.lookAtContext = TargetingConditions.forNonCombat().range((double)range);
          }
 +        // Fusion start - Lithium: AI NearbyEntityTracking Goals
-+        if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++        if (false) { // Fusion: TODO=Hoxfix - this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals->com.github.ipecter.fusion.fusionConfig.lithiumAINearbyEntityTrackingGoals
 +            EntityDimensions dimensions = this.mob.getType().getDimensions();
 +            double adjustedRange = dimensions.width * 0.5D + this.lookDistance + 2D;
 +            int horizontalRange = Mth.ceil(adjustedRange);
@@ -135,7 +135,7 @@ index 8b189d7587303263efa1790066e5a83edd45f9d7..9456a97003d000654d8638ea4985c3e1
 +            // Fusion start - Lithium: AI NearbyEntityTracking Goals
              if (this.lookAtType == Player.class) {
 -                this.lookAt = this.mob.level.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-+                if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++                if (false) { // Fusion: TODO=Hoxfix - this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals->com.github.ipecter.fusion.fusionConfig.lithiumAINearbyEntityTrackingGoals
 +                    this.lookAt = (Player)this.nearbyEntityTracker.getClosestEntity(null, this.lookAtContext, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 +                } else {
 +                    this.lookAt = this.mob.level.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
@@ -144,7 +144,7 @@ index 8b189d7587303263efa1790066e5a83edd45f9d7..9456a97003d000654d8638ea4985c3e1
 -                this.lookAt = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.lookAtType, this.mob.getBoundingBox().inflate((double)this.lookDistance, 3.0D, (double)this.lookDistance), (livingEntity) -> {
 -                    return true;
 -                }), this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-+                if (this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals) {
++                if (false) { // Fusion: TODO=Hoxfix - this.mob.level.fusionConfig.lithiumAINearbyEntityTrackingGoals->com.github.ipecter.fusion.fusionConfig.lithiumAINearbyEntityTrackingGoals
 +                    this.lookAt = this.nearbyEntityTracker.getClosestEntity(this.mob.getBoundingBox().inflate((double) this.lookDistance, 3.0D, (double) this.lookDistance), this.lookAtContext, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 +                } else {
 +                    this.lookAt = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.lookAtType, this.mob.getBoundingBox().inflate((double) this.lookDistance, 3.0D, (double) this.lookDistance), (livingEntity) -> {
