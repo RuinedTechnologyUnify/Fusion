@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets
 plugins {
     java
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
-    id("io.papermc.paperweight.patcher") version "1.4.1-SNAPSHOT"
+    id("io.papermc.paperweight.patcher") version 1.5.1"
 }
 
 repositories {
@@ -21,6 +21,12 @@ dependencies {
 }
 
 subprojects {
+    
+    tasks.withType<Test> {
+        minHeapSize = "2g"
+        maxHeapSize = "2g"
+    }
+
     apply(plugin = "java")
 
     java {
@@ -34,6 +40,15 @@ subprojects {
         options.release.set(17)
     }
 
+     
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
+    
     repositories {
         mavenLocal()
         mavenCentral()
