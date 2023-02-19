@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:56:48 +0900
+Subject: [PATCH] C2ME-IStrongholdGenerator
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IStrongholdGenerator.java b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IStrongholdGenerator.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..adc4aa6dc42b57693ffd167759b003d10253a0f2
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IStrongholdGenerator.java
+@@ -0,0 +1,14 @@
++package com.ishland.c2me.fixes.worldgen.threading_issues.common;
++
++import net.minecraft.world.level.levelgen.structure.structures.StrongholdPieces;
++
++public interface IStrongholdGenerator {
++
++    ThreadLocal<Class<? extends StrongholdPieces.StrongholdPiece>> getActivePieceTypeThreadLocal();
++
++    class Holder {
++        @SuppressWarnings({"InstantiationOfUtilityClass", "ConstantConditions"})
++        public static final IStrongholdGenerator INSTANCE = (IStrongholdGenerator) new StrongholdPieces();
++    }
++
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java b/src/main/java/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java
+index 223f265d9ccacbea63fa6daab69e6f52a8bee46f..3afdb11c4899ffa691551dda655f9a04e0054daa 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java
+@@ -1186,7 +1186,7 @@ public class StrongholdPieces {
+         }
+     }
+ 
+-    abstract static class StrongholdPiece extends StructurePiece {
++    public abstract static class StrongholdPiece extends StructurePiece { // Fusion - C2ME: IStrongholdGenerator
+         protected StrongholdPieces.StrongholdPiece.SmallDoorType entryDoor = StrongholdPieces.StrongholdPiece.SmallDoorType.OPENING;
+ 
+         protected StrongholdPiece(StructurePieceType type, int length, BoundingBox boundingBox) {

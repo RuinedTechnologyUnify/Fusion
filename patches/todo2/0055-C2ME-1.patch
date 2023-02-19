@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 16:14:56 +0900
+Subject: [PATCH] C2ME-1
+
+
+diff --git a/src/main/java/com/mojang/datafixers/types/Type.java b/src/main/java/com/mojang/datafixers/types/Type.java
+index 4592da3c75e639164d10cc05518c27d8f488a103..061e5c91391609dcf82208e0b0acbe56033574ba 100644
+--- a/src/main/java/com/mojang/datafixers/types/Type.java
++++ b/src/main/java/com/mojang/datafixers/types/Type.java
+@@ -193,7 +193,7 @@ public abstract class Type<A> implements App<Type.Mu, A> {
+             PENDING_REWRITE_CACHE.remove(key);
+             return result;
+         }
+-        return (Optional<RewriteResult<A, ?>>) pending.join();
++        return (Optional<RewriteResult<A, ?>>) (com.github.ipecter.fusion.FusionConfig.c2meEnable ? com.ishland.c2me.base.common.util.CFUtil.join(pending) : pending.join()); // Fusion - C2ME: Fixes Worldgen ThreadingIssues
+     }
+ 
+     public <FT, FR> Type<?> getSetType(final OpticFinder<FT> optic, final Type<FR> newType) {
+
+diff --git a/src/main/java/com/mojang/math/Transformation.java b/src/main/java/com/mojang/math/Transformation.java
+index 296ba120a7e9cd67081c4aa073e21ad9e5676c12..27036427b767826c45c675d02fc013ddca394982 100644
+--- a/src/main/java/com/mojang/math/Transformation.java
++++ b/src/main/java/com/mojang/math/Transformation.java
+@@ -35,7 +35,7 @@ public final class Transformation {
+         } else {
+             this.matrix = matrix;
+         }
+-
++        this.ensureDecomposed(); // Fusion - C2ME: Fixes Worldgen ThreadingIssues
+     }
+
+     public Transformation(@Nullable Vector3f translation, @Nullable Quaternionf rotation2, @Nullable Vector3f scale, @Nullable Quaternionf rotation1) {
+@@ -45,6 +45,7 @@ public final class Transformation {
+         this.scale = scale != null ? scale : new Vector3f(1.0F, 1.0F, 1.0F);
+         this.rightRotation = rotation1 != null ? rotation1 : new Quaternionf();
+         this.decomposed = true;
++        this.ensureDecomposed(); // Fusion - C2ME: Fixes Worldgen ThreadingIssues
+     }
+
+     public static Transformation identity() {
+
+diff --git a/src/main/java/com/mojang/math/OctahedralGroup.java b/src/main/java/com/mojang/math/OctahedralGroup.java
+index a5a889d40228a0d6c7259caf8cb2554588d9aaf9..dc9e3c79b60b92fb19d4e3c673432196231d6cd7 100644
+--- a/src/main/java/com/mojang/math/OctahedralGroup.java
++++ b/src/main/java/com/mojang/math/OctahedralGroup.java
+@@ -111,6 +111,7 @@ public enum OctahedralGroup implements StringRepresentable {
+         this.permutation = axisTransformation;
+         this.transformation = (new Matrix3f()).scaling(flipX ? -1.0F : 1.0F, flipY ? -1.0F : 1.0F, flipZ ? -1.0F : 1.0F);
+         this.transformation.mul(axisTransformation.transformation());
++        this.rotate(Direction.UP); // Fusion - C2ME: Fixes Worldgen ThreadingIssues
+     }
+
+     private BooleanList packInversions() {

@@ -8,24 +8,23 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 7c14500f529c9d9869a74f2dbe0a01c0594ecb3e..b7b030d3679434f02de31ec91bbeca83e5e5e332 100644
+index dc602bdc299633eea03383b31eb802b2b2280433..076e1611933e4e91adef85169a3c0dda129471ec 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -132,10 +132,12 @@ public class FusionWorldConfig {
+@@ -132,9 +132,11 @@ public class FusionWorldConfig {
  
      public boolean lithiumEnable = true;
      public boolean lithiumCollectionsBlockEntityTickers = true;
 +    public boolean lithiumEntityFastElytraCheck = true;
  
      private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
 +        lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
      }
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 094afd5636590608c8ec31c9fec97614dfef60db..c0b5e74b79cfb0fd5028235cd2f7a59b3c7f0747 100644
+index b2e4b5c463ceb19356da18e7fc52d20801b674cd..fe442d79cdb5c1ca75297b9ab0cb473202522455 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3581,6 +3581,8 @@ public abstract class LivingEntity extends Entity {

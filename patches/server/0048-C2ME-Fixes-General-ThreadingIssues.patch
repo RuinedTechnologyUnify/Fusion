@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:28:13 +0900
+Subject: [PATCH] C2ME-Fixes-General-ThreadingIssues
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index 0ae45cf5a084fd412305e8b2f5dabe608b4eb1c1..ec5c7eb35823ec2b781a63c7435f4d7eaf2a7687 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -640,6 +640,7 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     @Override
+     public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
++        if (com.github.ipecter.fusion.FusionConfig.c2meEnable && Thread.currentThread() != this.mainThread) throw new IllegalStateException("Async ticking server chunk manager"); // Fusion - C2ME: Fixes General ThreadingIssues
+         //this.level.getProfiler().push("purge"); // Purpur
+         //this.level.timings.doChunkMap.startTiming(); // Spigot // Purpur
+         this.distanceManager.purgeStaleTickets();

@@ -1,0 +1,405 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sat, 7 Jan 2023 10:04:59 +0900
+Subject: [PATCH] Lithium-World-TickScheduler
+
+Lithium - CaffeineMC  - GPL 3.0
+Mirai - etil2jz - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index ba3c3bb5e53443c1b0f8ce850020706b97101755..6529508d8b7c6559382af763f2f78e283e3d55ec 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -229,6 +229,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsEntityByType = true;
+     public static boolean lithiumCollectionsEntityFiltering = true;
+     public static boolean lithiumChunkSerialization = true;
++    public static boolean lithiumWorldTickScheduler = true;
+ 
+     private static void lithiumConfig() {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -246,5 +247,6 @@ public class FusionConfig {
+     private static void lithiumConfigSetup() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++        lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java b/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
+index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd7a0932e8 100644
+--- a/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
++++ b/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
+@@ -16,21 +16,43 @@ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.nbt.ListTag;
+ import net.minecraft.world.level.ChunkPos;
++// Fusion start
++import java.util.Collection;
++import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
++import it.unimi.dsi.fastutil.longs.Long2ReferenceAVLTreeMap;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
++import me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue;
++// Fusion end
+ 
+ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickContainerAccess<T> {
+-    private final Queue<ScheduledTick<T>> tickQueue = new PriorityQueue<>(ScheduledTick.DRAIN_ORDER);
++    private Queue<ScheduledTick<T>> tickQueue = new PriorityQueue<>(ScheduledTick.DRAIN_ORDER);
+     @Nullable
++    // Fusion start - Lithium: World TickScheduler
+     private List<SavedTick<T>> pendingTicks;
+-    private final Set<ScheduledTick<?>> ticksPerPosition = new ObjectOpenCustomHashSet<>(ScheduledTick.UNIQUE_TICK_HASH);
++    private Set<ScheduledTick<?>> ticksPerPosition = new ObjectOpenCustomHashSet<>(ScheduledTick.UNIQUE_TICK_HASH);
++    // Fusion end
+     @Nullable
+     private BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>> onTickAdded;
++    // Fusion start - Lithium: World TickScheduler
++    private static volatile Reference2IntOpenHashMap<Object> TYPE_2_INDEX;
++
++    static {
++        TYPE_2_INDEX = new Reference2IntOpenHashMap<>();
++        TYPE_2_INDEX.defaultReturnValue(-1);
++     }
++
++    private final Long2ReferenceAVLTreeMap<OrderedTickQueue<T>> tickQueuesByTimeAndPriority = new Long2ReferenceAVLTreeMap<>();
++    private me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> nextTickQueue;
++    private final IntOpenHashSet allpendingTicks = new IntOpenHashSet();
++    // Fusion end
+ 
+     // Paper start - add dirty flag
+     private boolean dirty;
+     private long lastSaved = Long.MIN_VALUE;
+ 
+     public boolean isDirty(final long tick) {
+-        return this.dirty || (!this.tickQueue.isEmpty() && tick != this.lastSaved);
++        return this.dirty || (com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? (this.nextTickQueue != null && !this.nextTickQueue.isEmpty()) && tick != this.lastSaved : !this.tickQueue.isEmpty() && tick != this.lastSaved); // Fusion - Lithium: World TickScheduler
+     }
+ 
+     public void clearDirty() {
+@@ -43,42 +65,161 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+ 
+     public LevelChunkTicks(List<SavedTick<T>> ticks) {
+         this.pendingTicks = ticks;
+-
+-        for(SavedTick<T> savedTick : ticks) {
+-            this.ticksPerPosition.add(ScheduledTick.probe(savedTick.type(), savedTick.pos()));
++        // Fusion start - Lithium: World TickScheduler
++        if (com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            //Remove replaced collections
++            if (this.pendingTicks != null) {
++                for (SavedTick<?> orderedTick : this.pendingTicks) {
++                    this.allpendingTicks.add(tickToInt(orderedTick.pos(), orderedTick.type()));
++                }
++            }
++            this.ticksPerPosition = null;
++            this.tickQueue = null;
++        } else {
++            for(SavedTick<T> savedTick : ticks) {
++                this.ticksPerPosition.add(ScheduledTick.probe(savedTick.type(), savedTick.pos()));
++            }
+         }
+-
++        // Fusion end
+     }
+ 
+     public void setOnTickAdded(@Nullable BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>> tickConsumer) {
+         this.onTickAdded = tickConsumer;
+     }
+ 
++    // Fusion start - Lithium: World TickScheduler
++    private static int tickToInt(BlockPos pos, Object type) {
++        //Y coordinate is 12 bits (BlockPos.toLong)
++        //X and Z coordinate is 4 bits each (This scheduler is for a single chunk)
++        //20 bits are in use for pos
++        //12 bits remaining for the type, so up to 4096 different tickable blocks/fluids (not block states) -> can upgrade to long if needed
++        int typeIndex = TYPE_2_INDEX.getInt(type);
++        if (typeIndex == -1) {
++            typeIndex = fixMissingType2Index(type);
++        }
++
++        int ret = ((pos.getX() & 0xF) << 16) | ((pos.getY() & (0xfff)) << 4) | (pos.getZ() & 0xF);
++        ret |= typeIndex << 20;
++        return ret;
++    }
++
++    //This method must be synchronized, otherwise type->int assignments can be overwritten and therefore change
++    //Uses clone and volatile store to ensure only fully initialized maps are used, all threads share the same mapping
++    private static synchronized int fixMissingType2Index(Object type) {
++        //check again, other thread might have replaced the collection
++        int typeIndex = TYPE_2_INDEX.getInt(type);
++        if (typeIndex == -1) {
++            Reference2IntOpenHashMap<Object> clonedType2Index = TYPE_2_INDEX.clone();
++            clonedType2Index.put(type, typeIndex = clonedType2Index.size());
++            TYPE_2_INDEX = clonedType2Index;
++            if (typeIndex >= 4096) {
++                throw new IllegalStateException("Lithium Tick Scheduler assumes at most 4096 different block types that receive scheduled pendingTicks exist! Open an issue on GitHub if you see this error!");
++            }
++        }
++        return typeIndex;
++    }
++    // Fusion end
++
++    // Fusion start - Lithium: World TickScheduler
++    /**
++     * @author 2No2Name
++     * @reason use faster collections
++     */
+     @Nullable
+     public ScheduledTick<T> peek() {
+-        return this.tickQueue.peek();
++        if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            return this.tickQueue.peek();
++        }
++        if (this.nextTickQueue == null) {
++            return null;
++        }
++        return this.nextTickQueue.peek();
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason use faster collections
++     */
+     @Nullable
+     public ScheduledTick<T> poll() {
+-        ScheduledTick<T> scheduledTick = this.tickQueue.poll();
+-        if (scheduledTick != null) {
+-            this.dirty = true; // Paper - add dirty flag
+-            this.ticksPerPosition.remove(scheduledTick);
++        if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            ScheduledTick<T> scheduledTick = this.tickQueue.poll();
++            if (scheduledTick != null) {
++                this.dirty = true; // Paper - add dirty flag
++                this.ticksPerPosition.remove(scheduledTick);
++            }
++
++            return scheduledTick;
+         }
++        ScheduledTick<T> orderedTick = this.nextTickQueue.poll();
++        if (orderedTick != null) {
++            if (this.nextTickQueue.isEmpty()) {
++                this.updateNextTickQueue(true);
++            }
+ 
+-        return scheduledTick;
++            this.allpendingTicks.remove(tickToInt(orderedTick.pos(), orderedTick.type()));
++            return orderedTick;
++        }
++        return null;
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason use faster collections
++     */
+     @Override
+     public void schedule(ScheduledTick<T> orderedTick) {
+-        if (this.ticksPerPosition.add(orderedTick)) {
+-            this.dirty = true; // Paper - add dirty flag
+-            this.scheduleUnchecked(orderedTick);
++        if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            if (this.ticksPerPosition.add(orderedTick)) {
++                this.dirty = true; // Paper - add dirty flag
++                this.scheduleUnchecked(orderedTick);
++            }
++        } else {
++            int intTick = tickToInt(orderedTick.pos(), orderedTick.type());
++            if (this.allpendingTicks.add(intTick)) {
++                this.dirty = true; // Paper - add dirty flag
++                this.queueTick(orderedTick);
++            }
+         }
++    }
+ 
++    // Computes a timestamped key including the tick's priority
++    // Keys can be sorted in descending order to find what should be executed first
++    // 60 time bits, 4 priority bits
++    private static long getBucketKey(long time, TickPriority priority) {
++        //using priority.ordinal() as is not negative instead of priority.index
++        return (time << 4L) | (priority.ordinal() & 15);
+     }
+ 
++    private void updateNextTickQueue(boolean checkEmpty) {
++        if (checkEmpty && this.nextTickQueue != null && this.nextTickQueue.isEmpty()) {
++            OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority.remove(this.tickQueuesByTimeAndPriority.firstLongKey());
++            if (removed != this.nextTickQueue) {
++                throw new IllegalStateException("Next tick queue doesn't have the lowest key!");
++            }
++        }
++        if (this.tickQueuesByTimeAndPriority.isEmpty()) {
++            this.nextTickQueue = null;
++            return;
++        }
++        long firstKey = this.tickQueuesByTimeAndPriority.firstLongKey();
++        this.nextTickQueue = this.tickQueuesByTimeAndPriority.get(firstKey);
++    }
++
++    private void queueTick(ScheduledTick<T> orderedTick) {
++        OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new OrderedTickQueue<>());
++        if (tickQueue.isEmpty()) {
++            this.updateNextTickQueue(false);
++        }
++        tickQueue.offer(orderedTick);
++
++        if (this.onTickAdded != null) {
++            //noinspection unchecked
++            this.onTickAdded.accept((LevelChunkTicks<T>) (Object) this, orderedTick);
++        }
++    }
++    // Fusion end
++
+     private void scheduleUnchecked(ScheduledTick<T> orderedTick) {
+         this.tickQueue.add(orderedTick);
+         if (this.onTickAdded != null) {
+@@ -87,33 +228,74 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+ 
+     }
+ 
++    // Fusion start - Lithium: World TickScheduler
++    /**
++     * @author 2No2Name
++     * @reason use faster collections
++     */
+     @Override
+     public boolean hasScheduledTick(BlockPos pos, T type) {
+-        return this.ticksPerPosition.contains(ScheduledTick.probe(type, pos));
++        return com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? this.allpendingTicks.contains(tickToInt(pos, type)) : this.ticksPerPosition.contains(ScheduledTick.probe(type, pos));
+     }
+ 
+     public void removeIf(Predicate<ScheduledTick<T>> predicate) {
+-        Iterator<ScheduledTick<T>> iterator = this.tickQueue.iterator();
++        if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            Iterator<ScheduledTick<T>> iterator = this.tickQueue.iterator();
+ 
+-        while(iterator.hasNext()) {
+-            ScheduledTick<T> scheduledTick = iterator.next();
+-            if (predicate.test(scheduledTick)) {
+-                iterator.remove(); this.dirty = true; // Paper - add dirty flag
+-                this.ticksPerPosition.remove(scheduledTick);
++            while(iterator.hasNext()) {
++                ScheduledTick<T> scheduledTick = iterator.next();
++                if (predicate.test(scheduledTick)) {
++                    iterator.remove(); this.dirty = true; // Paper - add dirty flag
++                    this.ticksPerPosition.remove(scheduledTick);
++                }
+             }
++        } else {
++            for (ObjectIterator<OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values().iterator(); tickQueueIterator.hasNext(); ) {
++                OrderedTickQueue<T> nextTickQueue = tickQueueIterator.next();
++                nextTickQueue.sort();
++                boolean removed = false;
++                for (int i = 0; i < nextTickQueue.size(); i++) {
++                    ScheduledTick<T> nextTick = nextTickQueue.getTickAtIndex(i);
++                    if (predicate.test(nextTick)) {
++                        nextTickQueue.setTickAtIndex(i, null);
++                        this.dirty = true; // Paper - add dirty flag
++                        this.allpendingTicks.remove(tickToInt(nextTick.pos(), nextTick.type()));
++                        removed = true;
++                    }
++                }
++                if (removed) {
++                    nextTickQueue.removeNullsAndConsumed();
++                }
++                if (nextTickQueue.isEmpty()) {
++                    tickQueueIterator.remove();
++                }
++            }
++            this.updateNextTickQueue(false);
+         }
+ 
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason use faster collections
++     */
+     public Stream<ScheduledTick<T>> getAll() {
+-        return this.tickQueue.stream();
++        return com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? this.tickQueuesByTimeAndPriority.values().stream().flatMap(Collection::stream) : this.tickQueue.stream();
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason not use unused field
++     */
+     @Override
+     public int count() {
+-        return this.tickQueue.size() + (this.pendingTicks != null ? this.pendingTicks.size() : 0);
++        return com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? this.allpendingTicks.size() : this.tickQueue.size() + (this.pendingTicks != null ? this.pendingTicks.size() : 0);
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason not use unused field
++     */
+     @Override
+     public ListTag save(long l, Function<T, String> function) {
+         this.lastSaved = l; // Paper - add dirty system to level ticks
+@@ -123,30 +305,56 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+                 listTag.add(savedTick.save(function));
+             }
+         }
+-
+-        for(ScheduledTick<T> scheduledTick : this.tickQueue) {
+-            listTag.add(SavedTick.saveTick(scheduledTick, function, l));
++        if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++            for(ScheduledTick<T> scheduledTick : this.tickQueue) {
++                listTag.add(SavedTick.saveTick(scheduledTick, function, l));
++            }
++        } else {
++            for (OrderedTickQueue<T> nextTickQueue : this.tickQueuesByTimeAndPriority.values()) {
++                for (ScheduledTick<T> orderedTick : nextTickQueue) {
++                    listTag.add(SavedTick.saveTick(orderedTick, function, l));
++                }
++            }
+         }
+ 
+         return listTag;
+     }
+ 
++    /**
++     * @author 2No2Name
++     * @reason use our datastructures
++     */
+     public void unpack(long time) {
+         if (this.pendingTicks != null) {
+-            // Paper start - add dirty system to level chunk ticks
+-            if (this.tickQueue.isEmpty()) {
+-                this.lastSaved = time;
++            if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++                // Paper start - add dirty system to level chunk ticks
++                if (this.tickQueue.isEmpty()) {
++                    this.lastSaved = time;
++                }
++                // Paper end - add dirty system to level chunk ticks
++            } else {
++                // Paper start - add dirty system to level chunk ticks
++                if (this.nextTickQueue == null || this.nextTickQueue.isEmpty()) {
++                    this.lastSaved = time;
++                }
++                // Paper end - add dirty system to level chunk ticks
+             }
+-            // Paper end - add dirty system to level chunk ticks
+             int i = -this.pendingTicks.size();
+-
+-            for(SavedTick<T> savedTick : this.pendingTicks) {
+-                this.scheduleUnchecked(savedTick.unpack(time, (long)(i++)));
++            if (!com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler) {
++                for (SavedTick<T> savedTick : this.pendingTicks) {
++                    this.scheduleUnchecked(savedTick.unpack(time, (long) (i++)));
++                }
++            } else {
++                for (SavedTick<T> tick : this.pendingTicks) {
++                    this.queueTick(tick.unpack(time, i++));
++                }
+             }
+         }
+ 
+         this.pendingTicks = null;
++
+     }
++    // Fusion end
+ 
+     public static <T> LevelChunkTicks<T> load(ListTag tickQueue, Function<String, Optional<T>> nameToTypeFunction, ChunkPos pos) {
+         ImmutableList.Builder<SavedTick<T>> builder = ImmutableList.builder();

@@ -1,0 +1,179 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 11 Jan 2023 00:22:03 +0900
+Subject: [PATCH] MC-DEV-FIX
+
+
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index 5ef58831a857fd8aa4ac30147762dc17d773a53e..e1e71725fd44204fbd34dc6601da93aab427bbd3 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -26,7 +26,7 @@ import java.net.URL;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.nio.file.spi.FileSystemProvider;
+-import java.security.AccessController;
++//import java.security.AccessController; // Fusion - Decompile Fix
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.time.Duration;
+diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
+index 7f642c033497ef007db66675168a5a1069d18375..663e278df704ef15f6195339d76642914e7e15e1 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/Brain.java
++++ b/src/main/java/net/minecraft/world/entity/ai/Brain.java
+@@ -72,15 +72,15 @@ public class Brain<E extends LivingEntity> {
+             }
+ 
+             public <T> DataResult<Brain<E>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
+-                MutableObject<DataResult<ImmutableList.Builder<Brain.MemoryValue<?>>>> mutableObject = new MutableObject<>(DataResult.success(ImmutableList.builder()));
++                MutableObject<DataResult<ImmutableList.Builder<Brain.MemoryValue<?>>>> mutableObject2 = new MutableObject<>(DataResult.success(ImmutableList.builder())); // Fusion - Decompile Fix
+                 mapLike.entries().forEach((pair) -> {
+                     DataResult<MemoryModuleType<?>> dataResult = BuiltInRegistries.MEMORY_MODULE_TYPE.byNameCodec().parse(dynamicOps, pair.getFirst());
+                     DataResult<? extends Brain.MemoryValue<?>> dataResult2 = dataResult.flatMap((memoryType) -> {
+                         return this.captureRead(memoryType, dynamicOps, (T)pair.getSecond());
+                     });
+-                    mutableObject.setValue(mutableObject.getValue().apply2(ImmutableList.Builder::add, dataResult2));
++                    mutableObject2.setValue(mutableObject2.getValue().apply2(ImmutableList.Builder::add, dataResult2)); // Fusion - Decompile Fix
+                 });
+-                ImmutableList<Brain.MemoryValue<?>> immutableList = mutableObject.getValue().resultOrPartial(Brain.LOGGER::error).map(ImmutableList.Builder::build).orElseGet(ImmutableList::of);
++                ImmutableList<Brain.MemoryValue<?>> immutableList = mutableObject2.getValue().resultOrPartial(Brain.LOGGER::error).map(ImmutableList.Builder::build).orElseGet(ImmutableList::of); // Fusion - Decompile Fix
+                 return DataResult.success(new Brain<>(memoryModules, sensors, immutableList, mutableObject::getValue));
+             }
+ 
+@@ -173,14 +173,14 @@ public class Brain<E extends LivingEntity> {
+         if (optional == null) {
+             throw new IllegalStateException("Unregistered memory fetched: " + type);
+         } else {
+-            return optional.map(ExpirableValue::getValue);
++            return (Optional)optional.map(ExpirableValue::getValue); // Fusion - Decompile Fix
+         }
+     }
+ 
+     @Nullable
+     public <U> Optional<U> getMemoryInternal(MemoryModuleType<U> type) {
+         Optional<? extends ExpirableValue<?>> optional = this.memories.get(type);
+-        return optional == null ? null : optional.map(ExpirableValue::getValue);
++        return optional == null ? null : (Optional)optional.map(ExpirableValue::getValue); // Fusion - Decompile Fix
+     }
+ 
+     public <U> long getTimeUntilExpiry(MemoryModuleType<U> type) {
+@@ -475,7 +475,7 @@ public class Brain<E extends LivingEntity> {
+         private final Optional<? extends ExpirableValue<U>> value;
+ 
+         static <U> Brain.MemoryValue<U> createUnchecked(MemoryModuleType<U> type, Optional<? extends ExpirableValue<?>> data) {
+-            return new Brain.MemoryValue<>(type, data);
++            return new Brain.MemoryValue<>(type, (Optional)data);
+         }
+ 
+         MemoryValue(MemoryModuleType<U> type, Optional<? extends ExpirableValue<U>> data) {
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java b/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
+index daee1072171769d89783a7d7ef9e5692cb9fbc20..e20960e6b87df9426193039cdd4d14a2e6def139 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/SurfaceRules.java
+@@ -176,10 +176,10 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) { // Fusion - Decompile Fix
+             class BiomeCondition extends SurfaceRules.LazyYCondition {
+                 BiomeCondition() {
+-                    super(context);
++                    super(surfaceRulesContext); // Fusion - Decompile Fix
+                 }
+ 
+                 @Override
+@@ -494,12 +494,12 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
+-            final NormalNoise normalNoise = context.randomState.getOrCreateNoise(this.noise);
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) { // Fusion - Decompile Fix
++            final NormalNoise normalNoise = surfaceRulesContext.randomState.getOrCreateNoise(this.noise); // Fusion - Decompile Fix
+ 
+             class NoiseThresholdCondition extends SurfaceRules.LazyXZCondition {
+                 NoiseThresholdCondition() {
+-                    super(context);
++                    super(surfaceRulesContext); // Fusion - Decompile Fix
+                 }
+ 
+                 @Override
+@@ -622,12 +622,12 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) { // Fusion - Decompile Fix
+             final boolean bl = this.surfaceType == CaveSurface.CEILING;
+ 
+             class StoneDepthCondition extends SurfaceRules.LazyYCondition {
+                 StoneDepthCondition() {
+-                    super(context);
++                    super(surfaceRulesContext); // Fusion - Decompile Fix
+                 }
+ 
+                 @Override
+@@ -699,26 +699,26 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
+-            final int i = this.trueAtAndBelow().resolveY(context.context);
+-            final int j = this.falseAtAndAbove().resolveY(context.context);
+-            final PositionalRandomFactory positionalRandomFactory = context.randomState.getOrCreateRandomFactory(this.randomName());
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) { // Fusion - Decompile Fix
++            final int i = this.trueAtAndBelow().resolveY(surfaceRulesContext.context); // Fusion - Decompile Fix
++            final int j = this.falseAtAndAbove().resolveY(surfaceRulesContext.context); // Fusion - Decompile Fix
++            final PositionalRandomFactory positionalRandomFactory = surfaceRulesContext.randomState.getOrCreateRandomFactory(this.randomName()); // Fusion - Decompile Fix
+ 
+             class VerticalGradientCondition extends SurfaceRules.LazyYCondition {
+                 VerticalGradientCondition() {
+-                    super(context);
++                    super(surfaceRulesContext); // Fusion - Decompile Fix
+                 }
+ 
+                 @Override
+                 protected boolean compute() {
+-                    int i = this.context.blockY;
+-                    if (i <= i) {
++                    int ix = this.context.blockY; // Fusion - Decompile Fix
++                    if (ix <= i) { // Fusion - Decompile Fix
+                         return true;
+-                    } else if (i >= j) {
++                    } else if (ix >= j) { // Fusion - Decompile Fix
+                         return false;
+                     } else {
+-                        double d = Mth.map((double)i, (double)i, (double)j, 1.0D, 0.0D);
+-                        RandomSource randomSource = positionalRandomFactory.at(this.context.blockX, i, this.context.blockZ);
++                        double d = Mth.map((double)ix, (double)i, (double)j, 1.0D, 0.0D); // Fusion - Decompile Fix
++                        RandomSource randomSource = positionalRandomFactory.at(this.context.blockX, ix, this.context.blockZ); // Fusion - Decompile Fix
+                         return (double)randomSource.nextFloat() < d;
+                     }
+                 }
+@@ -739,10 +739,10 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) { // Fusion - Decompile Fix
+             class WaterCondition extends SurfaceRules.LazyYCondition {
+                 WaterCondition() {
+-                    super(context);
++                    super(surfaceRulesContext); // Fusion - Decompile Fix
+                 }
+ 
+                 @Override
+@@ -766,10 +766,10 @@ public class SurfaceRules {
+         }
+ 
+         @Override
+-        public SurfaceRules.Condition apply(final SurfaceRules.Context context) {
++        public SurfaceRules.Condition apply(final SurfaceRules.Context surfaceRulesContext) {
+             class YCondition extends SurfaceRules.LazyYCondition {
+                 YCondition() {
+-                    super(context);
++                    super(surfaceRulesContext);
+                 }
+ 
+                 @Override

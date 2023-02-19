@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:43:52 +0900
+Subject: [PATCH] C2ME-ConcurrentFlagMatrix
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/ConcurrentFlagMatrix.java b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/ConcurrentFlagMatrix.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..69b3ba9e44cd365d1df410da6cf5669e0486c765
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/ConcurrentFlagMatrix.java
+@@ -0,0 +1,62 @@
++package com.ishland.c2me.fixes.worldgen.threading_issues.common;
++
++import net.minecraft.world.level.levelgen.structure.structures.WoodlandMansionPieces;
++
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++
++public class ConcurrentFlagMatrix extends WoodlandMansionPieces.SimpleGrid {
++
++    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
++
++    public ConcurrentFlagMatrix(int n, int m, int fallback) {
++        super(n, m, fallback);
++    }
++
++    @Override
++    public void set(int i, int j, int value) {
++        rwLock.writeLock().lock();
++        try {
++            super.set(i, j, value);
++        } finally {
++            rwLock.writeLock().unlock();
++        }
++    }
++
++    @Override
++    public void set(int i0, int j0, int i1, int j1, int value) {
++        rwLock.writeLock().lock();
++        try {
++            super.set(i0, j0, i1, j1, value);
++        } finally {
++            rwLock.writeLock().unlock();
++        }
++    }
++
++    @Override
++    public int get(int i, int j) {
++        rwLock.readLock().lock();
++        try {
++            return super.get(i, j);
++        } finally {
++            rwLock.readLock().unlock();
++        }
++    }
++
++    @Override
++    public void setif(int i, int j, int expected, int newValue) {
++        // semi-VanillaCopy
++        if (this.get(i, j) == expected) {
++            this.set(i, j, newValue);
++        }
++    }
++
++    @Override
++    public boolean edgesTo(int i, int j, int value) {
++        rwLock.readLock().lock();
++        try {
++            return super.edgesTo(i, j, value);
++        } finally {
++            rwLock.readLock().unlock();
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces.java b/src/main/java/net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces.java
+index c1f5fe832139e9e8577de52a2e73cc7b474b7557..c19061d8b0e6ef77e8924ddd96c4d76309cf1d93 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces.java
+@@ -947,7 +947,7 @@ public class WoodlandMansionPieces {
+         }
+     }
+ 
+-    static class SimpleGrid {
++    public static class SimpleGrid { // Fusion - C2ME: ConcurrentFlagMatrix
+         private final int[][] grid;
+         final int width;
+         final int height;

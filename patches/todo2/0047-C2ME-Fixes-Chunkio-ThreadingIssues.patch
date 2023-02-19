@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sat, 4 Feb 2023 21:57:08 +0900
+Subject: [PATCH] C2ME-Fixes-Chunkio-ThreadingIssues
+
+
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/structure/pools/StructurePoolElement.java b/src/main/java/net/minecraft/world/level/levelgen/structure/pools/StructurePoolElement.java
+index 88a9888abcc3d53fdbc61fb6df48580c3606bfbd..59211ce297d28c2889da9505ebcd0c366b732b78 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/structure/pools/StructurePoolElement.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/structure/pools/StructurePoolElement.java
+@@ -25,7 +25,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
+ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+ 
+ public abstract class StructurePoolElement {
+-    public static final Codec<StructurePoolElement> CODEC = BuiltInRegistries.STRUCTURE_POOL_ELEMENT.byNameCodec().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
++    public static final Codec<StructurePoolElement> CODEC = com.github.ipecter.fusion.FusionConfig.c2meEnable ? new com.ishland.c2me.fixes.chunkio.threading_issues.common.SynchronizedCodec<>(BuiltInRegistries.STRUCTURE_POOL_ELEMENT.byNameCodec().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec)) : BuiltInRegistries.STRUCTURE_POOL_ELEMENT.byNameCodec().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec); // Fusion - C2ME: Fixes Chunkio ThreadingIssues
+     private static final Holder<StructureProcessorList> EMPTY = Holder.direct(new StructureProcessorList(List.of()));
+     @Nullable
+     private volatile StructureTemplatePool.Projection projection;

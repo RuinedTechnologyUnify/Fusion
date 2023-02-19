@@ -8,7 +8,7 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index b06f9cf296375f760dc23a0699282366be5d3211..b2751d590a814e1d0605ff92639565c2c336d903 100644
+index 44a190b3fb0171a465b7ec14614b5505aae8c4da..5a00ac85193707784f327771b3995745e1aecc70 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -226,6 +226,7 @@ public class FusionConfig {
@@ -18,8 +18,8 @@ index b06f9cf296375f760dc23a0699282366be5d3211..b2751d590a814e1d0605ff92639565c2
 +    public static boolean lithiumCollectionsEntityByType = true;
  
      private static void lithiumConfig() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -237,6 +238,7 @@ public class FusionConfig {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -235,6 +236,7 @@ public class FusionConfig {
          lithiumCollectionsGameRules = getBoolean("lithium.collections.gamerules", lithiumCollectionsGameRules) && lithiumEnable;
          lithiumShapesPrecomputeShapeArrays = getBoolean("lithium.shapes.precompute-shape-arrays", lithiumShapesPrecomputeShapeArrays) && lithiumEnable;
          lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;

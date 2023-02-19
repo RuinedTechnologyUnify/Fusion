@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 16:00:03 +0900
+Subject: [PATCH] C2ME-CFUtil
+
+
+diff --git a/src/main/java/com/ishland/c2me/base/common/util/CFUtil.java b/src/main/java/com/ishland/c2me/base/common/util/CFUtil.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7b7f401a1e067db4e903271b3fd762d6d7d3dcb0
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/base/common/util/CFUtil.java
+@@ -0,0 +1,15 @@
++package com.ishland.c2me.base.common.util;
++
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.locks.LockSupport;
++
++public class CFUtil {
++
++    public static <T> T join(CompletableFuture<T> future) {
++        while (!future.isDone()) {
++            LockSupport.parkNanos("Waiting for future", 100000L);
++        }
++        return future.join();
++    }
++
++}
+\ No newline at end of file

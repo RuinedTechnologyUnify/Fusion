@@ -8,7 +8,7 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 58cf70e7a427a5a81f68b279d29d91c3c2a4397b..b06f9cf296375f760dc23a0699282366be5d3211 100644
+index 40071ae0f7d0f5a53f93a773f405e86b92da8588..44a190b3fb0171a465b7ec14614b5505aae8c4da 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -225,6 +225,7 @@ public class FusionConfig {
@@ -18,8 +18,8 @@ index 58cf70e7a427a5a81f68b279d29d91c3c2a4397b..b06f9cf296375f760dc23a0699282366
 +    public static boolean lithiumCollectionsAttributes = true;
  
      private static void lithiumConfig() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -235,6 +236,7 @@ public class FusionConfig {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -233,6 +234,7 @@ public class FusionConfig {
          lithiumCollectionsGoals = getBoolean("lithium.collections.goals", lithiumCollectionsGoals) && lithiumEnable;
          lithiumCollectionsGameRules = getBoolean("lithium.collections.gamerules", lithiumCollectionsGameRules) && lithiumEnable;
          lithiumShapesPrecomputeShapeArrays = getBoolean("lithium.shapes.precompute-shape-arrays", lithiumShapesPrecomputeShapeArrays) && lithiumEnable;
@@ -27,28 +27,8 @@ index 58cf70e7a427a5a81f68b279d29d91c3c2a4397b..b06f9cf296375f760dc23a0699282366
      }
  
      private static void lithiumConfigSetup() {
-diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 24140bd78be47d987ffaa55f9f118f861d5b996d..d0da18734cbad828768ad2ed4fed4fc5a783e4e8 100644
---- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-+++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -135,6 +135,7 @@ public class FusionWorldConfig {
-     public boolean lithiumEntityFastElytraCheck = true;
-     public boolean lithiumEntityFastHandSwing = true;
-     public boolean lithiumEntityFastPowderSnowCheck = true;
-+    public boolean lithiumCollectionsAttributes = true;
- 
-     private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -142,6 +143,7 @@ public class FusionWorldConfig {
-         lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
-         lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
-         lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
-+        lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
-     }
- 
-     private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 210a0bee1227e4671909dd553ab22027cfc868fb..d4ba9d553a137a79c2188ca5edf7a797ff387d52 100644
+index 210a0bee1227e4671909dd553ab22027cfc868fb..0fb31c8cd4c22c4f261d4d230f1c83d149cffb42 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 @@ -20,8 +20,8 @@ import org.slf4j.Logger;
@@ -62,18 +42,13 @@ index 210a0bee1227e4671909dd553ab22027cfc868fb..d4ba9d553a137a79c2188ca5edf7a797
      private final AttributeSupplier supplier;
      private final java.util.function.Function<Attribute, AttributeInstance> createInstance; // Pufferfish
      private final net.minecraft.world.entity.LivingEntity entity; // Purpur
-@@ -33,6 +33,15 @@ public class AttributeMap {
+@@ -33,6 +33,10 @@ public class AttributeMap {
      public AttributeMap(AttributeSupplier defaultAttributes, net.minecraft.world.entity.LivingEntity entity) {
          this.entity = entity;
          // Purpur end
 +        // Fusion start - Lithium: Collections EntityAttributes
-+        if (this.entity != null){
-+            this.attributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
-+            this.dirtyAttributes = this.entity.level.fusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
-+        } else {
-+            this.attributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
-+            this.dirtyAttributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
-+        }
++        this.attributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0) : Maps.newHashMap();
++        this.dirtyAttributes = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsAttributes ? new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0) : Sets.newHashSet();
 +        // Fusion end
          this.supplier = defaultAttributes;
          this.createInstance = attribute -> this.supplier.createInstance(this::onAttributeModified, attribute); // Pufferfish

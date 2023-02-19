@@ -5,7 +5,7 @@ Subject: [PATCH] Fusion-Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index d5b7458f6b79addf1a12eb82443ba5bdbe2ea5d3..c3ba837f8d8f3a1507fd43b2622c3657201f8adf 100644
+index f25c0557cf984b97e0ab361f579eccbf46f82170..a1e1ec132df33741e0aa67bf1f66387d1597f8fa 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,7 +7,7 @@ plugins {
@@ -17,7 +17,7 @@ index d5b7458f6b79addf1a12eb82443ba5bdbe2ea5d3..c3ba837f8d8f3a1507fd43b2622c3657
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.19.3-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -83,7 +83,7 @@ tasks.jar {
+@@ -84,7 +84,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -141,10 +141,10 @@ index cea4447aad2d64db56a76e4ba180dc7326d2e13b..d09184b8be320048c66aeab5ad94f3ee
                  this.getRunningThread().stop();
                  try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b69634a5cf57e4086e644819f68638d6a2ab897c..e7e6e2ecc80b5b488657624ec35a1ca6935e3289 100644
+index 076d6733c87d040b9da33c6845c63194f3b93ef4..51a28c0c3485a8d4435dbbc7f7b8f0f80a9ada69 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -262,7 +262,7 @@ import javax.annotation.Nullable; // Paper
+@@ -261,7 +261,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -154,10 +154,10 @@ index b69634a5cf57e4086e644819f68638d6a2ab897c..e7e6e2ecc80b5b488657624ec35a1ca6
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index ddec0b7470e5a925ad6247970269f3654792ab25..4427db9a2563ccd094de61b91d8e3b0e6f2e8ef5 100644
+index 78ac748859e21a61140e9bff67e4527a8d35b4b6..60cd5c1815385856864b9237d306faa15398633f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -877,7 +877,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -883,7 +883,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
              return EntityCategory.WATER;
          }
  

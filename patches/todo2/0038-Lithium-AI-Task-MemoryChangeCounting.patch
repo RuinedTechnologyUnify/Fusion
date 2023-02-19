@@ -1,0 +1,178 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Mon, 9 Jan 2023 11:08:28 +0900
+Subject: [PATCH] Lithium-AI-Task-MemoryChangeCounting
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 856de79ce2e636d90c3bea21d6f31de20f58aade..92489752cf2881f749d1388a9368776df570a4c9 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -231,6 +231,7 @@ public class FusionConfig {
+     public static boolean lithiumChunkSerialization = true;
+     public static boolean lithiumWorldTickScheduler = true;
+     public static boolean lithiumCollectionsBrain = true;
++    public static boolean lithiumAITaskMemoryChangeCounting = true;
+
+     private static void lithiumConfig() {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -244,6 +245,7 @@ public class FusionConfig {
+         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
+         lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
+         lithiumCollectionsBrain = getBoolean("lithium.collections.brain", lithiumCollectionsBrain) && lithiumEnable;
++        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
+     }
+
+     private static void lithiumConfigSetup() {
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index c55d419463dfc2d01b7f836f2bcb4e8c02fdcc75..1de41333a1438d1330f3799f91810de3a006bee1 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -141,6 +141,7 @@ public class FusionWorldConfig {
+     public boolean lithiumGenChunkRegion = true;
+     public boolean lithiumAISensorSecondaryPoi = true;
+     public boolean lithiumEntityCollisionsSuffocation = true;
++    public boolean lithiumAITaskMemoryChangeCounting = true;
+
+     private void lithiumConfig() {
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+@@ -157,5 +158,6 @@ public class FusionWorldConfig {
+
+     private void lithiumConfigSetup() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
+index e400a306f7250dede5cf87f8b413605d7a51f985..a8e7929a64e353af97020e1bf756963d05f8b12a 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/Brain.java
++++ b/src/main/java/net/minecraft/world/entity/ai/Brain.java
+@@ -132,6 +132,14 @@ public class Brain<E extends LivingEntity> {
+ 
+     }
+ 
++    // Fusion start - Lithium: AI Task MemoryChangeCounting
++    private long memoryModCount = 1;
++
++    public long getModCount() {
++        return memoryModCount;
++    }
++    // Fusion end
++
+     public <T> DataResult<T> serializeStart(DynamicOps<T> ops) {
+         return this.codec.get().encodeStart(ops, this);
+     }
+@@ -167,7 +175,12 @@ public class Brain<E extends LivingEntity> {
+             if (memory.isPresent() && this.isEmptyCollection(memory.get().getValue())) {
+                 this.eraseMemory(type);
+             } else {
+-                this.memories.put(type, memory);
++                // Fusion start - Lithium: AI Task MemoryChangeCounting
++                Object oldValue = this.memories.put(type, memory);
++                if (oldValue == null || ((Optional<?>) oldValue).isPresent() != ((Optional<?>) memory).isPresent()) {
++                    this.memoryModCount++;
++                }
++                // Fusion end
+             }
+         }
+ 
+@@ -376,7 +389,7 @@ public class Brain<E extends LivingEntity> {
+                 brain.memories.put(memoryModuleType, entry.getValue());
+             }
+         }
+-
++        brain.memoryModCount = this.memoryModCount + 1; // Fusion - Lithium: AI Task MemoryChangeCounting
+         return brain;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+index 651c156dc8a5aad04d461add02e22147af657d07..8693af61db7d6b5c65752693912dd9a76c500ec9 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+@@ -5,6 +5,12 @@ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ import net.minecraft.world.entity.ai.memory.MemoryStatus;
++// Fusion start
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
++import net.minecraft.world.entity.ai.Brain;
++// Fusion end
+ 
+ public abstract class Behavior<E extends LivingEntity> implements BehaviorControl<E> {
+     public static final int DEFAULT_DURATION = 60;
+@@ -17,6 +23,10 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+     private final String configKey;
+     private final co.aikar.timings.Timing timing;
+     // Paper end
++    // Fusion start - Lithium: AI Task MemoryChangeCounting
++    private long cachedMemoryModCount = -1;
++    private boolean cachedHasRequiredMemoryState;
++    // Fusion end
+ 
+     public Behavior(Map<MemoryModuleType<?>, MemoryStatus> requiredMemoryState) {
+         this(requiredMemoryState, 60);
+@@ -29,7 +39,7 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+     public Behavior(Map<MemoryModuleType<?>, MemoryStatus> requiredMemoryState, int minRunTime, int maxRunTime) {
+         this.minDuration = minRunTime;
+         this.maxDuration = maxRunTime;
+-        this.entryCondition = requiredMemoryState;
++        this.entryCondition = com.github.ipecter.fusion.FusionConfig.lithiumAITaskMemoryChangeCounting ? new Reference2ObjectOpenHashMap<>(requiredMemoryState) : requiredMemoryState; // Fusion - Lithium: AI Task MemoryChangeCounting
+         // Paper start - configurable behavior tick rate and timings
+         String key = io.papermc.paper.util.ObfHelper.INSTANCE.deobfClassName(this.getClass().getName());
+         int lastSeparator = key.lastIndexOf('.');
+@@ -111,17 +121,42 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+         return this.getClass().getSimpleName();
+     }
+ 
++    // Fusion start - Lithium: AI Task MemoryChangeCounting
++    /**
++     * @reason Use cached required memory state test result if memory state is unchanged
++     * @author 2No2Name
++     */
+     protected boolean hasRequiredMemories(E entity) {
+-        for(Map.Entry<MemoryModuleType<?>, MemoryStatus> entry : this.entryCondition.entrySet()) {
+-            MemoryModuleType<?> memoryModuleType = entry.getKey();
+-            MemoryStatus memoryStatus = entry.getValue();
+-            if (!entity.getBrain().checkMemory(memoryModuleType, memoryStatus)) {
+-                return false;
++        if (entity.level.fusionConfig.lithiumAITaskMemoryChangeCounting) {
++            Brain<?> brain = entity.getBrain();
++            long modCount = brain.getModCount();
++            if (this.cachedMemoryModCount == modCount) {
++                return this.cachedHasRequiredMemoryState;
++            }
++            this.cachedMemoryModCount = modCount;
++
++            ObjectIterator<Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus>> fastIterator = ((Reference2ObjectOpenHashMap<MemoryModuleType<?>, MemoryStatus>) this.entryCondition).reference2ObjectEntrySet().fastIterator();
++            while (fastIterator.hasNext()) {
++                Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus> entry = fastIterator.next();
++                if (!brain.checkMemory(entry.getKey(), entry.getValue())) {
++                    return this.cachedHasRequiredMemoryState = false;
++                }
+             }
+-        }
+ 
+-        return true;
++            return this.cachedHasRequiredMemoryState = true;
++        } else {
++            for(Map.Entry<MemoryModuleType<?>, MemoryStatus> entry : this.entryCondition.entrySet()) {
++                MemoryModuleType<?> memoryModuleType = entry.getKey();
++                MemoryStatus memoryStatus = entry.getValue();
++                if (!entity.getBrain().checkMemory(memoryModuleType, memoryStatus)) {
++                    return false;
++                }
++            }
++
++            return true;
++        }
+     }
++    // Fusion end
+ 
+     public static enum Status {
+         STOPPED,

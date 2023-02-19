@@ -103,10 +103,10 @@ index 6e0a3086da142f1c42007a16bbec7edbab17da04..46409ef273bc8d2c2b20ed76b4cd91b6
          }
      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 4675524988ea2ef346726677f9767382f1e154ab..1a706fbd5b58049d31d7350a2eb500f92a31c743 100644
+index b0ed34d6bcdeb3c6fd724a78547b4869aeafcd1b..cff911e146d84237f338cfebc0874c5082345fde 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -679,9 +679,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -685,9 +685,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          return this.getProperties().networkCompressionThreshold;
      }
  
@@ -124,7 +124,7 @@ index 4675524988ea2ef346726677f9767382f1e154ab..1a706fbd5b58049d31d7350a2eb500f9
  
      protected boolean convertOldUsers() {
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a8e205af936efe0909c94575e3b7f8ca50cead2f..118a1acdd79e21a4337376da3bba6d0b255177ee 100644
+index 04652735fad2d2ef5bd4d08d85ac2df10be7e75d..e3774cffbc938014a81517784426e65234c8abf8 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2229,12 +2229,35 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic

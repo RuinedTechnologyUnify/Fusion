@@ -7,18 +7,18 @@ Lithium - CaffeineMC  - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 5ee7f34c3f3f9f5d5c5184db30d075510a22560e..0961183186cc1e947de60e62c7ee977bb9af82b8 100644
+index e7371b42872e69e05bfb8fca14d1f2a9302d7e04..111d5e350ec5b13b7ade1c451c518d0814f5d67e 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -139,6 +139,7 @@ public class FusionWorldConfig {
+@@ -138,6 +138,7 @@ public class FusionWorldConfig {
      public boolean lithiumAIRaid = true;
      public boolean lithiumBlockMovingBlockShapes = true;
      public boolean lithiumGenChunkRegion = true;
 +    public boolean lithiumAISensorSecondaryPoi = true;
  
      private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -150,6 +151,7 @@ public class FusionWorldConfig {
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+@@ -147,6 +148,7 @@ public class FusionWorldConfig {
          lithiumAIRaid = getBoolean("lithium.ai.raid", lithiumAIRaid) && lithiumEnable;
          lithiumBlockMovingBlockShapes = getBoolean("lithium.block.moving-block-shapes", lithiumBlockMovingBlockShapes) && lithiumEnable;
          lithiumGenChunkRegion = getBoolean("lithium.gen.chunk-region", lithiumGenChunkRegion) && lithiumEnable;

@@ -7,7 +7,7 @@ Lithium - CaffeineMC  - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index ba3c3bb5e53443c1b0f8ce850020706b97101755..6529508d8b7c6559382af763f2f78e283e3d55ec 100644
+index 7ab0fd98a9ae25aa6cb0c81b279a9fe931e2b19b..4c495bb6b6a567fec364c09bf8606b59419991fb 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -229,6 +229,7 @@ public class FusionConfig {
@@ -17,31 +17,21 @@ index ba3c3bb5e53443c1b0f8ce850020706b97101755..6529508d8b7c6559382af763f2f78e28
 +    public static boolean lithiumWorldTickScheduler = true;
  
      private static void lithiumConfig() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -246,5 +247,6 @@ public class FusionConfig {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -241,6 +242,7 @@ public class FusionConfig {
+         lithiumCollectionsEntityByType = getBoolean("lithium.collections.entity-by-type", lithiumCollectionsEntityByType) && lithiumEnable;
+         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
+         lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
++        lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
      }
  
      private static void lithiumConfigSetup() {
-+        lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
-     }
- }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java b/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
-index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd7a0932e8 100644
+index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..7442a4063948104ab17477cd6e2f9df58a2dc26e 100644
 --- a/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
 +++ b/src/main/java/net/minecraft/world/ticks/LevelChunkTicks.java
-@@ -16,21 +16,43 @@ import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.nbt.ListTag;
+@@ -18,19 +18,33 @@ import net.minecraft.nbt.ListTag;
  import net.minecraft.world.level.ChunkPos;
-+// Fusion start
-+import java.util.Collection;
-+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-+import it.unimi.dsi.fastutil.longs.Long2ReferenceAVLTreeMap;
-+import it.unimi.dsi.fastutil.objects.ObjectIterator;
-+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-+import me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue;
-+// Fusion end
  
  public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickContainerAccess<T> {
 -    private final Queue<ScheduledTick<T>> tickQueue = new PriorityQueue<>(ScheduledTick.DRAIN_ORDER);
@@ -55,16 +45,16 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
      @Nullable
      private BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>> onTickAdded;
 +    // Fusion start - Lithium: World TickScheduler
-+    private static volatile Reference2IntOpenHashMap<Object> TYPE_2_INDEX;
++    private static volatile it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<Object> TYPE_2_INDEX;
 +
 +    static {
-+        TYPE_2_INDEX = new Reference2IntOpenHashMap<>();
++        TYPE_2_INDEX = new it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<>();
 +        TYPE_2_INDEX.defaultReturnValue(-1);
 +     }
 +
-+    private final Long2ReferenceAVLTreeMap<OrderedTickQueue<T>> tickQueuesByTimeAndPriority = new Long2ReferenceAVLTreeMap<>();
++    private final it.unimi.dsi.fastutil.longs.Long2ReferenceAVLTreeMap<me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T>> tickQueuesByTimeAndPriority = new it.unimi.dsi.fastutil.longs.Long2ReferenceAVLTreeMap<>();
 +    private me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> nextTickQueue;
-+    private final IntOpenHashSet allpendingTicks = new IntOpenHashSet();
++    private final it.unimi.dsi.fastutil.ints.IntOpenHashSet allpendingTicks = new it.unimi.dsi.fastutil.ints.IntOpenHashSet();
 +    // Fusion end
  
      // Paper start - add dirty flag
@@ -77,7 +67,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
      }
  
      public void clearDirty() {
-@@ -43,42 +65,161 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+@@ -43,42 +57,161 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
  
      public LevelChunkTicks(List<SavedTick<T>> ticks) {
          this.pendingTicks = ticks;
@@ -129,7 +119,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
 +        //check again, other thread might have replaced the collection
 +        int typeIndex = TYPE_2_INDEX.getInt(type);
 +        if (typeIndex == -1) {
-+            Reference2IntOpenHashMap<Object> clonedType2Index = TYPE_2_INDEX.clone();
++            it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<Object> clonedType2Index = TYPE_2_INDEX.clone();
 +            clonedType2Index.put(type, typeIndex = clonedType2Index.size());
 +            TYPE_2_INDEX = clonedType2Index;
 +            if (typeIndex >= 4096) {
@@ -222,7 +212,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
  
 +    private void updateNextTickQueue(boolean checkEmpty) {
 +        if (checkEmpty && this.nextTickQueue != null && this.nextTickQueue.isEmpty()) {
-+            OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority.remove(this.tickQueuesByTimeAndPriority.firstLongKey());
++            me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority.remove(this.tickQueuesByTimeAndPriority.firstLongKey());
 +            if (removed != this.nextTickQueue) {
 +                throw new IllegalStateException("Next tick queue doesn't have the lowest key!");
 +            }
@@ -236,7 +226,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
 +    }
 +
 +    private void queueTick(ScheduledTick<T> orderedTick) {
-+        OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new OrderedTickQueue<>());
++        me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<>());
 +        if (tickQueue.isEmpty()) {
 +            this.updateNextTickQueue(false);
 +        }
@@ -252,7 +242,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
      private void scheduleUnchecked(ScheduledTick<T> orderedTick) {
          this.tickQueue.add(orderedTick);
          if (this.onTickAdded != null) {
-@@ -87,33 +228,74 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+@@ -87,33 +220,74 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
  
      }
  
@@ -285,8 +275,8 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
 +                }
              }
 +        } else {
-+            for (ObjectIterator<OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values().iterator(); tickQueueIterator.hasNext(); ) {
-+                OrderedTickQueue<T> nextTickQueue = tickQueueIterator.next();
++            for (it.unimi.dsi.fastutil.objects.ObjectIterator<me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values().iterator(); tickQueueIterator.hasNext(); ) {
++                me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> nextTickQueue = tickQueueIterator.next();
 +                nextTickQueue.sort();
 +                boolean removed = false;
 +                for (int i = 0; i < nextTickQueue.size(); i++) {
@@ -316,7 +306,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
 +     */
      public Stream<ScheduledTick<T>> getAll() {
 -        return this.tickQueue.stream();
-+        return com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? this.tickQueuesByTimeAndPriority.values().stream().flatMap(Collection::stream) : this.tickQueue.stream();
++        return com.github.ipecter.fusion.FusionConfig.lithiumWorldTickScheduler ? this.tickQueuesByTimeAndPriority.values().stream().flatMap(java.util.Collection::stream) : this.tickQueue.stream();
      }
  
 +    /**
@@ -336,7 +326,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
      @Override
      public ListTag save(long l, Function<T, String> function) {
          this.lastSaved = l; // Paper - add dirty system to level ticks
-@@ -123,30 +305,56 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
+@@ -123,30 +297,56 @@ public class LevelChunkTicks<T> implements SerializableTickContainer<T>, TickCon
                  listTag.add(savedTick.save(function));
              }
          }
@@ -348,7 +338,7 @@ index ac807277a6b26d140ea9873d17c7aa4fb5fe37b2..1a84a41c02e893893e2f2ac2bbcaa7dd
 +                listTag.add(SavedTick.saveTick(scheduledTick, function, l));
 +            }
 +        } else {
-+            for (OrderedTickQueue<T> nextTickQueue : this.tickQueuesByTimeAndPriority.values()) {
++            for (me.jellysquid.mods.lithium.common.world.scheduler.OrderedTickQueue<T> nextTickQueue : this.tickQueuesByTimeAndPriority.values()) {
 +                for (ScheduledTick<T> orderedTick : nextTickQueue) {
 +                    listTag.add(SavedTick.saveTick(orderedTick, function, l));
 +                }

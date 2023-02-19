@@ -153,10 +153,10 @@ index edaa6ef28c1f9a2239439698708897008fea2f7e..41d93390e16e7eb1edc3cf416dab8a22
                          }
                      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index c036dfc118da454f6ae543d393674d38c7478530..4675524988ea2ef346726677f9767382f1e154ab 100644
+index 04457e58f6c6106f556e22a2d8a2167db637ec6e..b0ed34d6bcdeb3c6fd724a78547b4869aeafcd1b 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -434,7 +434,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -440,7 +440,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          BufferedWriter bufferedwriter = Files.newBufferedWriter(file);
  
          try {
@@ -218,7 +218,7 @@ index 1e5fb707b034da7afa74ba64e53de81e7e7bdf79..98ff8cdace73d4fb8c575adf06b43a5e
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 4cd080a0db99a5c36394bcf54526b96fe22a206a..330fd9021b907728a726645857a913181d02ca73 100644
+index c0c4742027217d5ae27843989ad18be93608496a..d33f2b09cb509e02a54e0fbce34ef7be45a52412 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -422,7 +422,7 @@ public class PurpurWorldConfig {
@@ -230,7 +230,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..330fd9021b907728a726645857a91318
      public boolean teleportOnNetherCeilingDamage = false;
      public boolean totemOfUndyingWorksInInventory = false;
      public boolean playerFixStuckPortal = false;
-@@ -2770,7 +2770,7 @@ public class PurpurWorldConfig {
+@@ -2782,7 +2782,7 @@ public class PurpurWorldConfig {
      public boolean villagerLobotomizeEnabled = false;
      public int villagerLobotomizeCheckInterval = 100;
      public boolean villagerDisplayTradeItem = true;

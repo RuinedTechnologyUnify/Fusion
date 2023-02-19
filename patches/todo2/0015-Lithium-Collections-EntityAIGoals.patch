@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 21 Dec 2022 16:01:17 +0900
+Subject: [PATCH] Lithium-Collections-EntityAIGoals
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 8fdd30002696e968af8529bcb30e81364572332d..84f2eb31ec1c58dbc1f8894996db0748591e642c 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -222,6 +222,7 @@ public class FusionConfig {
+     public static boolean lithiumMathFastUtil = true;
+     public static boolean lithiumMathSineLUT = true;
+     public static boolean lithiumEntityFastRetrieval = true;
++    public static boolean lithiumCollectionsGoals = true;
+ 
+     private static void lithiumConfig() {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -229,6 +230,7 @@ public class FusionConfig {
+         lithiumEntityFastRetrieval = getBoolean("lithium.entity.fast-retrieval", lithiumEntityFastRetrieval) && lithiumEnable;
++        lithiumCollectionsGoals = getBoolean("lithium.collections.goals", lithiumCollectionsGoals) && lithiumEnable;
+     }
+ 
+     private static void lithiumConfigSetup() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java b/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
+index 02978315bc2b828cc603ce7478408f3f82c249c2..0e6220ea6c4248e73cb00d24261bc948a866b52e 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
+@@ -28,7 +28,7 @@ public class GoalSelector {
+         }
+     };
+     private final Map<Goal.Flag, WrappedGoal> lockedFlags = new EnumMap<>(Goal.Flag.class);
+-    private final Set<WrappedGoal> availableGoals = Sets.newLinkedHashSet();
++    private final Set<WrappedGoal> availableGoals; // Lithium - Collections EntityAIGoals
+     private final Supplier<ProfilerFiller> profiler;
+     private final EnumSet<Goal.Flag> disabledFlags = EnumSet.noneOf(Goal.Flag.class); // Paper unused, but dummy to prevent plugins from crashing as hard. Theyll need to support paper in a special case if this is super important, but really doesn't seem like it would be.
+     private final com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<net.minecraft.world.entity.ai.goal.Goal.Flag> goalTypes = new com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<>(Goal.Flag.class); // Paper - remove streams from pathfindergoalselector
+@@ -39,6 +39,7 @@ public class GoalSelector {
+ 
+     public GoalSelector(Supplier<ProfilerFiller> profiler) {
+         this.profiler = profiler;
++        availableGoals = com.github.ipecter.fusion.FusionConfig.lithiumCollectionsGoals ? new it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet<>() : Sets.newLinkedHashSet(); // Lithium - Collections EntityAIGoal - Replace the goal set with an optimized collection type which performs better for iteration.
+     }
+ 
+     public void addGoal(int priority, Goal goal) {

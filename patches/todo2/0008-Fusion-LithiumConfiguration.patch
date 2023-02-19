@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Thu, 20 Oct 2022 18:30:51 +0900
+Subject: [PATCH] Fusion-LithiumConfiguration
+
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index 4b83507afdccf4850bc282290b7927ba232a690b..9ad27576afacba774f07991ac2c31f1f53da70f7 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -217,4 +217,14 @@ public class FusionConfig {
+ 
+     private static void noChatReportsConfigSetup() {
+     }
++
++    public static boolean lithiumEnable = true;
++
++    private static void lithiumConfig() {
++    }
++
++    private static void lithiumConfigSetup() {
++        setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
++        lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index fde38b20fae3050f18f11a5098ad482aff0587c1..5d7f7008c42b3976ce57f704861788f39bd329ad 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -129,4 +129,13 @@ public class FusionWorldConfig {
+         final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
++
++    public boolean lithiumEnable = true;
++
++    private void lithiumConfig() {
++    }
++
++    private void lithiumConfigSetup() {
++        lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
++    }
+ }
+\ No newline at end of file

@@ -8,18 +8,16 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index b6e759df57b6ab9392765546e0443dde9e12d4bc..70d9cae563e58549a8561bbb0d7a9dc0c3da3806 100644
+index 8479318557bea483313cb42e8c487600bf8d67a6..f92aed18e64f7d2d8a1a9d7cb0b2d1dd79714964 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -220,11 +220,13 @@ public class FusionConfig {
+@@ -220,9 +220,11 @@ public class FusionConfig {
  
      public static boolean lithiumEnable = true;
      public static boolean lithiumMathFastUtil = true;
 +    public static boolean lithiumMathSineLUT = true;
  
      private static void lithiumConfig() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
 +        lithiumMathSineLUT = getBoolean("lithium.math.sine-lut", lithiumMathSineLUT) && lithiumEnable;
      }

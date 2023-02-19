@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:50:56 +0900
+Subject: [PATCH] C2ME-INetherFortressGeneratorPieceData
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/INetherFortressGeneratorPieceData.java b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/INetherFortressGeneratorPieceData.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7ac0210dc1dfdfb1155b7a26387c9283b6532986
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/INetherFortressGeneratorPieceData.java
+@@ -0,0 +1,9 @@
++package com.ishland.c2me.fixes.worldgen.threading_issues.common;
++
++import java.util.concurrent.atomic.AtomicInteger;
++
++public interface INetherFortressGeneratorPieceData {
++
++    AtomicInteger getGeneratedCountAtomic();
++
++}
+\ No newline at end of file

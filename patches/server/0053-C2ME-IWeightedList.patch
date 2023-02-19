@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:58:35 +0900
+Subject: [PATCH] C2ME-IWeightedList
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IWeightedList.java b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IWeightedList.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..67fbce913843976330e4fe8e44b314241b952d61
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/IWeightedList.java
+@@ -0,0 +1,9 @@
++package com.ishland.c2me.fixes.worldgen.threading_issues.common;
++
++import net.minecraft.world.entity.ai.behavior.ShufflingList;
++
++public interface IWeightedList<U> {
++
++    public ShufflingList<U> shuffleVanilla();
++
++}
+\ No newline at end of file

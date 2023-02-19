@@ -7,7 +7,7 @@ Lithium - CaffeineMC  - GPL 3.0
 JettPack - Titaniumtown - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 1d7d5369745b1fa196d18ebf82b01b8bc57d7703..44f23b240c26600a7fe3c8b12f3e5d631304ad17 100644
+index 52e6be0c7cc8955b224006dd2d95e21eff02664d..887056a9e1c6260520e74ababf3f1bd59f9349f7 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 @@ -231,6 +231,7 @@ public class FusionConfig {
@@ -17,35 +17,35 @@ index 1d7d5369745b1fa196d18ebf82b01b8bc57d7703..44f23b240c26600a7fe3c8b12f3e5d63
 +    public static boolean lithiumAITaskMemoryChangeCounting = true;
  
      private static void lithiumConfig() {
-         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
-@@ -246,6 +247,7 @@ public class FusionConfig {
-         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -245,6 +246,7 @@ public class FusionConfig {
          lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
+         lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
          lithiumCollectionsBrain = getBoolean("lithium.collections.brain", lithiumCollectionsBrain) && lithiumEnable;
 +        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
      }
  
      private static void lithiumConfigSetup() {
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index e2cec470613d5f8558a281889859d9f03d403baf..a9e2d9beb66ba0c340aaca424a5b986a6b73011f 100644
+index e6414c129eeb285b9fc8d6f044b1a4074a89c8ed..de9b22a20d1c85e10da6844a461b7fa99c3b6957 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -141,6 +141,7 @@ public class FusionWorldConfig {
+@@ -140,6 +140,7 @@ public class FusionWorldConfig {
      public boolean lithiumGenChunkRegion = true;
      public boolean lithiumAISensorSecondaryPoi = true;
      public boolean lithiumEntityCollisionsSuffocation = true;
 +    public boolean lithiumAITaskMemoryChangeCounting = true;
  
      private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -157,5 +158,6 @@ public class FusionWorldConfig {
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+@@ -151,6 +152,7 @@ public class FusionWorldConfig {
+         lithiumGenChunkRegion = getBoolean("lithium.gen.chunk-region", lithiumGenChunkRegion) && lithiumEnable;
+         lithiumAISensorSecondaryPoi = getBoolean("lithium.ai.sensor.secondary-poi", lithiumAISensorSecondaryPoi) && lithiumEnable;
+         lithiumEntityCollisionsSuffocation = getBoolean("lithium.entity.collisions.suffocation", lithiumEntityCollisionsSuffocation) && lithiumEnable;
++        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
      }
  
      private void lithiumConfigSetup() {
-+        lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
-     }
- }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/ai/Brain.java b/src/main/java/net/minecraft/world/entity/ai/Brain.java
 index e400a306f7250dede5cf87f8b413605d7a51f985..a8e7929a64e353af97020e1bf756963d05f8b12a 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/Brain.java
@@ -89,23 +89,10 @@ index e400a306f7250dede5cf87f8b413605d7a51f985..a8e7929a64e353af97020e1bf756963d
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-index 651c156dc8a5aad04d461add02e22147af657d07..8693af61db7d6b5c65752693912dd9a76c500ec9 100644
+index 651c156dc8a5aad04d461add02e22147af657d07..868721a06ac254eb3fa5f8b61c305eef02dfd821 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-@@ -5,6 +5,12 @@ import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
-+// Fusion start
-+import it.unimi.dsi.fastutil.objects.ObjectIterator;
-+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-+import net.minecraft.world.entity.ai.Brain;
-+// Fusion end
- 
- public abstract class Behavior<E extends LivingEntity> implements BehaviorControl<E> {
-     public static final int DEFAULT_DURATION = 60;
-@@ -17,6 +23,10 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+@@ -17,6 +17,10 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
      private final String configKey;
      private final co.aikar.timings.Timing timing;
      // Paper end
@@ -116,16 +103,16 @@ index 651c156dc8a5aad04d461add02e22147af657d07..8693af61db7d6b5c65752693912dd9a7
  
      public Behavior(Map<MemoryModuleType<?>, MemoryStatus> requiredMemoryState) {
          this(requiredMemoryState, 60);
-@@ -29,7 +39,7 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+@@ -29,7 +33,7 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
      public Behavior(Map<MemoryModuleType<?>, MemoryStatus> requiredMemoryState, int minRunTime, int maxRunTime) {
          this.minDuration = minRunTime;
          this.maxDuration = maxRunTime;
 -        this.entryCondition = requiredMemoryState;
-+        this.entryCondition = com.github.ipecter.fusion.FusionConfig.lithiumAITaskMemoryChangeCounting ? new Reference2ObjectOpenHashMap<>(requiredMemoryState) : requiredMemoryState; // Fusion - Lithium: AI Task MemoryChangeCounting
++        this.entryCondition = com.github.ipecter.fusion.FusionConfig.lithiumAITaskMemoryChangeCounting ? new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>(requiredMemoryState) : requiredMemoryState; // Fusion - Lithium: AI Task MemoryChangeCounting
          // Paper start - configurable behavior tick rate and timings
          String key = io.papermc.paper.util.ObfHelper.INSTANCE.deobfClassName(this.getClass().getName());
          int lastSeparator = key.lastIndexOf('.');
-@@ -111,17 +121,42 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+@@ -111,17 +115,42 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
          return this.getClass().getSimpleName();
      }
  
@@ -141,16 +128,16 @@ index 651c156dc8a5aad04d461add02e22147af657d07..8693af61db7d6b5c65752693912dd9a7
 -            if (!entity.getBrain().checkMemory(memoryModuleType, memoryStatus)) {
 -                return false;
 +        if (entity.level.fusionConfig.lithiumAITaskMemoryChangeCounting) {
-+            Brain<?> brain = entity.getBrain();
++            net.minecraft.world.entity.ai.Brain<?> brain = entity.getBrain();
 +            long modCount = brain.getModCount();
 +            if (this.cachedMemoryModCount == modCount) {
 +                return this.cachedHasRequiredMemoryState;
 +            }
 +            this.cachedMemoryModCount = modCount;
 +
-+            ObjectIterator<Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus>> fastIterator = ((Reference2ObjectOpenHashMap<MemoryModuleType<?>, MemoryStatus>) this.entryCondition).reference2ObjectEntrySet().fastIterator();
++            it.unimi.dsi.fastutil.objects.ObjectIterator<it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus>> fastIterator = ((it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<MemoryModuleType<?>, MemoryStatus>) this.entryCondition).reference2ObjectEntrySet().fastIterator();
 +            while (fastIterator.hasNext()) {
-+                Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus> entry = fastIterator.next();
++                it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<MemoryModuleType<?>, MemoryStatus> entry = fastIterator.next();
 +                if (!brain.checkMemory(entry.getKey(), entry.getValue())) {
 +                    return this.cachedHasRequiredMemoryState = false;
 +                }

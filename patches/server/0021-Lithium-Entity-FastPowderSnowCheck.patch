@@ -8,17 +8,16 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 753c02d6caff6cef4248f4260134e2f35cc838f8..24140bd78be47d987ffaa55f9f118f861d5b996d 100644
+index d7c08d7b90c80fdc5362fa94b5d0068efb2bff67..591fefc48b4cfc419ad2f8184fd8b8a407352348 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -134,12 +134,14 @@ public class FusionWorldConfig {
+@@ -134,11 +134,13 @@ public class FusionWorldConfig {
      public boolean lithiumCollectionsBlockEntityTickers = true;
      public boolean lithiumEntityFastElytraCheck = true;
      public boolean lithiumEntityFastHandSwing = true;
 +    public boolean lithiumEntityFastPowderSnowCheck = true;
  
      private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
          lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
          lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
          lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
@@ -27,7 +26,7 @@ index 753c02d6caff6cef4248f4260134e2f35cc838f8..24140bd78be47d987ffaa55f9f118f86
  
      private void lithiumConfigSetup() {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 7cccbb1ec810452d84e140093a028faf69ffa411..f1c7fa15c62052f7eee8fd8680faa0d2b5192f55 100644
+index aea85f5ec6ea87f273c47bd25504f736f851f429..2a44c8173637dfc5c40165a61cc3dbc02633c908 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -577,11 +577,11 @@ public abstract class LivingEntity extends Entity {

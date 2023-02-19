@@ -8,20 +8,20 @@ JettPack - Titaniumtown - GPL 3.0
 Mirai - etil2jz - GPL 3.0
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 04aa079ecf35d5f27d087e94bdec4fb33b97074b..d142bce10e98f233c3cc424a63305ac280b84750 100644
+index 472e74e79d667cc71e2aff3c96e34885b23ecbb8..366ff3477cc0d368d4eeace452bccc9435d92f63 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -137,6 +137,7 @@ public class FusionWorldConfig {
+@@ -136,6 +136,7 @@ public class FusionWorldConfig {
+     public boolean lithiumEntityFastHandSwing = true;
      public boolean lithiumEntityFastPowderSnowCheck = true;
-     public boolean lithiumCollectionsAttributes = true;
      public boolean lithiumAIRaid = true;
 +    public boolean lithiumBlockMovingBlockShapes = true;
  
      private void lithiumConfig() {
-         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
-@@ -146,6 +147,7 @@ public class FusionWorldConfig {
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+@@ -143,6 +144,7 @@ public class FusionWorldConfig {
+         lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
          lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
-         lithiumCollectionsAttributes = getBoolean("lithium.collections.attributes", lithiumCollectionsAttributes) && lithiumEnable;
          lithiumAIRaid = getBoolean("lithium.ai.raid", lithiumAIRaid) && lithiumEnable;
 +        lithiumBlockMovingBlockShapes = getBoolean("lithium.block.moving-block-shapes", lithiumBlockMovingBlockShapes) && lithiumEnable;
      }

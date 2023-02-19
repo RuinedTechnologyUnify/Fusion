@@ -1,45 +1,45 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: IPECTER <ipectert@gmail.com>
-Date: Wed, 11 Jan 2023 10:03:06 +0900
-Subject: [PATCH] Fusion-C2MEConfiguration
+Date: Sun, 19 Feb 2023 18:53:43 +0900
+Subject: [PATCH] 1
 
 
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-index 7a52b7edc7b959c893dfd4c61f1915237d9213c6..152af075e76245f5fd452b5beac3c727ea2ee72c 100644
+index db64047fd306a66d14c134bf230efb2272be18b7..53eb9ec4460dbccc9d8e810bc2b5246887060a0d 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
-@@ -255,4 +255,14 @@ public class FusionConfig {
-         lithiumWorldTickScheduler = getBoolean("lithium.world.tick-scheduler", lithiumWorldTickScheduler) && lithiumEnable;
-         lithiumAINearbyEntityTracking = getBoolean("lithium.ai.nearby-entity-tracking.enable", lithiumAINearbyEntityTracking) && lithiumEnable;
+@@ -257,4 +257,14 @@ public class FusionConfig {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
      }
 +
 +    public static boolean c2meEnable = true;
 +
 +    private static void c2meConfig() {
-+        setComment("c2me", "[ C2ME ] Chunk Performance Improve Mod");
-+        c2meEnable = getBoolean("c2me.enable", c2meEnable);
 +    }
 +
 +    private static void c2meConfigSetup() {
++        setComment("c2me", "[ C2ME ] Chunk Performance Improve Mod");
++        c2meEnable = getBoolean("c2me.enable", c2meEnable);
 +    }
  }
 \ No newline at end of file
 diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-index 0917f78627858130ca45ff35606eb086fe67d235..a5220447a0227e3c6a59ff59861c321e328325c9 100644
+index de9b22a20d1c85e10da6844a461b7fa99c3b6957..140aa7c9ee141c914f084cad1fab6172f13173b4 100644
 --- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
 +++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
-@@ -162,4 +162,13 @@ public class FusionWorldConfig {
+@@ -158,4 +158,13 @@ public class FusionWorldConfig {
      private void lithiumConfigSetup() {
-         lithiumAITaskMemoryChangeCounting = getBoolean("lithium.ai.task.memory-change-counting", lithiumAITaskMemoryChangeCounting) && lithiumEnable;
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
      }
 +
 +    public boolean c2meEnable = true;
 +
 +    private void c2meConfig() {
-+        c2meEnable = getBoolean("c2me.enable", c2meEnable);
 +    }
 +
 +    private void c2meConfigSetup() {
++        c2meEnable = getBoolean("c2me.enable", c2meEnable);
 +    }
  }
 \ No newline at end of file

@@ -1,0 +1,330 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 28 Dec 2022 16:21:03 +0900
+Subject: [PATCH] Lithium-Chunk-Serialization
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionConfig.java b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+index de11a220f194ceaf226dcfa6cdfc4d2449340a51..ba3c3bb5e53443c1b0f8ce850020706b97101755 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionConfig.java
+@@ -228,6 +228,7 @@ public class FusionConfig {
+     public static boolean lithiumCollectionsAttributes = true;
+     public static boolean lithiumCollectionsEntityByType = true;
+     public static boolean lithiumCollectionsEntityFiltering = true;
++    public static boolean lithiumChunkSerialization = true;
+ 
+     private static void lithiumConfig() {
+         lithiumMathFastUtil = getBoolean("lithium.math.fast-util", lithiumMathFastUtil) && lithiumEnable;
+@@ -241,6 +242,7 @@ public class FusionConfig {
+         lithiumCollectionsEntityFiltering = getBoolean("lithium.collections.entity-filtering", lithiumCollectionsEntityFiltering) && lithiumEnable;
++        lithiumChunkSerialization = getBoolean("lithium.chunk.serialization", lithiumChunkSerialization) && lithiumEnable;
+     }
+ 
+     private static void lithiumConfigSetup() {
+         setComment("lithium", "[ Lithium ] General-Purpose Optimization Mod");
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+diff --git a/src/main/java/net/minecraft/util/BitStorage.java b/src/main/java/net/minecraft/util/BitStorage.java
+index 106610ccc74b70b557b01c61262d56c4f1147acf..7a964b653bcba9c53595bd1536f27c3d1add46d7 100644
+--- a/src/main/java/net/minecraft/util/BitStorage.java
++++ b/src/main/java/net/minecraft/util/BitStorage.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.util;
+ 
+ import java.util.function.IntConsumer;
++import net.minecraft.world.level.chunk.Palette; // Fusion
+ 
+ public interface BitStorage {
+     int getAndSet(int index, int value);
+@@ -31,4 +32,6 @@ public interface BitStorage {
+ 
+     }
+     // Paper end
++
++    <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out); // Fusion - Lithium: Chunk Serialization
+ }
+diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
+index 36e33923bf48e56c743ed043bcbc66bc32f0422f..07302475d76c8514787dd0566e251cd3d856437a 100644
+--- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
++++ b/src/main/java/net/minecraft/util/SimpleBitStorage.java
+@@ -2,6 +2,7 @@ package net.minecraft.util;
+ 
+ import java.util.function.IntConsumer;
+ import javax.annotation.Nullable;
++import net.minecraft.world.level.chunk.Palette; // Fusion
+ import org.apache.commons.lang3.Validate;
+ 
+ public class SimpleBitStorage implements BitStorage {
+@@ -196,6 +197,46 @@ public class SimpleBitStorage implements BitStorage {
+         return new SimpleBitStorage(this.bits, this.size, (long[])this.data.clone());
+     }
+ 
++    // Fusion start - Lithium: Chunk Serialization
++    @Override
++    public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
++        if (this.size >= Short.MAX_VALUE) {
++            throw new IllegalStateException("Array too large");
++        }
++
++        if (this.size != out.length) {
++            throw new IllegalStateException("Array size mismatch");
++        }
++
++        short[] mappings = new short[(int) (this.mask + 1)];
++
++        int idx = 0;
++
++        for (long word : this.data) {
++            long bits = word;
++
++            for (int elementIdx = 0; elementIdx < this.valuesPerLong; ++elementIdx) {
++                int value = (int) (bits & this.mask);
++                int remappedId = mappings[value];
++
++                if (remappedId == 0) {
++                    remappedId = dstPalette.idFor(srcPalette.valueFor(value)) + 1;
++                    mappings[value] = (short) remappedId;
++                }
++
++                out[idx] = (short) (remappedId - 1);
++                bits >>= this.bits;
++
++                ++idx;
++
++                if (idx >= this.size) {
++                    return;
++                }
++            }
++        }
++    }
++    // Fusion end
++
+     public static class InitializationException extends RuntimeException {
+         InitializationException(String message) {
+             super(message);
+diff --git a/src/main/java/net/minecraft/util/ZeroBitStorage.java b/src/main/java/net/minecraft/util/ZeroBitStorage.java
+index 5d8e9bdf5538b19681f21949368d862fab8a89ad..41432b47e99f6ec951eab8b1791b9d2c52e0dc56 100644
+--- a/src/main/java/net/minecraft/util/ZeroBitStorage.java
++++ b/src/main/java/net/minecraft/util/ZeroBitStorage.java
+@@ -2,6 +2,7 @@ package net.minecraft.util;
+ 
+ import java.util.Arrays;
+ import java.util.function.IntConsumer;
++import net.minecraft.world.level.chunk.Palette; // Fusion
+ import org.apache.commons.lang3.Validate;
+ 
+ public class ZeroBitStorage implements BitStorage {
+@@ -72,4 +73,6 @@ public class ZeroBitStorage implements BitStorage {
+     public BitStorage copy() {
+         return this;
+     }
++
++    @Override public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {} // Fusion - Lithium: Chunk Serialization
+ }
+diff --git a/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java b/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java
+index acae3eb30e0689048937f479dc3070f0688abdad..0c595fc1e26d9fa8c36c90bf8d72791c3f67838d 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java
++++ b/src/main/java/net/minecraft/world/level/chunk/PaletteResize.java
+@@ -1,5 +1,5 @@
+ package net.minecraft.world.level.chunk;
+ 
+-interface PaletteResize<T> {
++public interface PaletteResize<T> { // Fusion - JettPack: Make Public
+     int onResize(int newBits, T object);
+ }
+diff --git a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
+index 3c7ef1e8e338a84eee34f39ce73e64876632ea87..560a23d1cdecfb7d376905a153189aff72d07570 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
++++ b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
+@@ -24,6 +24,20 @@ import net.minecraft.util.ThreadingDetector;
+ import net.minecraft.util.ZeroBitStorage;
+ 
+ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainerRO<T> {
++    // Fusion start - Lithium: World Chunk Serialization
++    private static final ThreadLocal<short[]> CACHED_ARRAY_4096 = ThreadLocal.withInitial(() -> new short[4096]);
++    private static final ThreadLocal<short[]> CACHED_ARRAY_64 = ThreadLocal.withInitial(() -> new short[64]);
++    private Optional<LongStream> asOptional(long[] data) {
++        return Optional.of(Arrays.stream(data));
++    }
++    private short[] getOrCreate(int size) {
++        return switch (size) {
++            case 64 -> CACHED_ARRAY_64.get();
++            case 4096 -> CACHED_ARRAY_4096.get();
++            default -> new short[size];
++        };
++    }
++    //Fusion end
+     private static final int MIN_PALETTE_BITS = 0;
+     private final PaletteResize<T> dummyPaletteResize = (newSize, added) -> {
+         return 0;
+@@ -295,35 +309,96 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+         return DataResult.success(new PalettedContainer<>(idList, paletteProvider, configuration, bitStorage, list, defaultValue, presetValues)); // Paper - Anti-Xray - Add preset values
+     }
+ 
++    // Fusion start - Lithium: Chunk Serialization
++    /**
++     * This patch incorporates a number of changes to significantly reduce the time needed to serialize.
++     * - If a palette only contains one entry, do not attempt to repack it
++     * - The packed integer array is iterated over using a specialized consumer instead of a naive for-loop.
++     * - A temporary fixed array is used to cache palette lookups and remaps while compacting a data array.
++     * - If the palette didn't change after compaction, avoid the step of re-packing the integer array and instead do
++     * a simple memory copy.
++     *
++     * @reason Optimize serialization
++     * @author JellySquid
++     */
+     @Override
+     public synchronized PalettedContainerRO.PackedData<T> pack(IdMap<T> idList, PalettedContainer.Strategy paletteProvider) { // Paper - synchronize
+         this.acquire();
+ 
+-        PalettedContainerRO.PackedData var12;
+-        try {
+-            HashMapPalette<T> hashMapPalette = new HashMapPalette<>(idList, this.data.storage.getBits(), this.dummyPaletteResize);
+-            int i = paletteProvider.size();
+-            int[] is = new int[i];
+-            this.data.storage.unpack(is);
+-            swapPalette(is, (id) -> {
+-                return hashMapPalette.idFor(this.data.palette.valueFor(id));
+-            });
+-            int j = paletteProvider.calculateBitsForSerialization(idList, hashMapPalette.getSize());
+-            Optional<LongStream> optional;
+-            if (j != 0) {
+-                SimpleBitStorage simpleBitStorage = new SimpleBitStorage(j, i, is);
+-                optional = Optional.of(Arrays.stream(simpleBitStorage.getRaw()));
+-            } else {
+-                optional = Optional.empty();
++        if (com.github.ipecter.fusion.FusionConfig.lithiumChunkSerialization) {
++            Optional<LongStream> data = Optional.empty();
++            List<T> elements = null;
++            try {
++                // The palette that will be serialized
++                me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette<T> hashPalette = null;
++
++                final Palette<T> palette = this.data.palette();
++                final BitStorage storage = this.data.storage();
++                if (storage instanceof ZeroBitStorage || palette.getSize() == 1) {
++                    // If the palette only contains one entry, don't attempt to repack it.
++                    elements = List.of(palette.valueFor(0));
++                } else if (palette instanceof me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette<T> lithiumHashPalette) {
++                    hashPalette = lithiumHashPalette;
++                }
++
++                if (elements == null) {
++                    me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette<T> compactedPalette = new me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette<>(idList, storage.getBits(), this.dummyPaletteResize);
++                    short[] array = this.getOrCreate(paletteProvider.size());
++
++                    storage.compact(this.data.palette(), compactedPalette, array);
++
++                    // If the palette didn't change during compaction, do a simple copy of the data array
++                    if (hashPalette != null && hashPalette.getSize() == compactedPalette.getSize() && storage.getBits() == paletteProvider.calculateBitsForSerialization(idList, hashPalette.getSize())) { // paletteSize can de-sync from palette - see https://github.com/CaffeineMC/lithium-fabric/issues/279
++                        data = this.asOptional(storage.getRaw().clone());
++                        elements = hashPalette.getElements();
++                    } else {
++                        int bits = paletteProvider.calculateBitsForSerialization(idList, compactedPalette.getSize());
++                        if (bits != 0) {
++                            // Re-pack the integer array as the palette has changed size
++                            SimpleBitStorage copy = new SimpleBitStorage(bits, array.length);
++                            for (int i = 0; i < array.length; ++i) {
++                                copy.set(i, array[i]);
++                            }
++
++                            // We don't need to clone the data array as we are the sole owner of it
++                            data = this.asOptional(copy.getRaw());
++                        }
++
++                        elements = compactedPalette.getElements();
++                    }
++                }
++            } finally {
++                this.release();
+             }
++            return new PalettedContainerRO.PackedData<>(elements, data);
++        } else {
++            PalettedContainerRO.PackedData var12;
++            try {
++                HashMapPalette<T> hashMapPalette = new HashMapPalette<>(idList, this.data.storage.getBits(), this.dummyPaletteResize);
++                int i = paletteProvider.size();
++                int[] is = new int[i];
++                this.data.storage.unpack(is);
++                swapPalette(is, (id) -> {
++                    return hashMapPalette.idFor(this.data.palette.valueFor(id));
++                });
++                int j = paletteProvider.calculateBitsForSerialization(idList, hashMapPalette.getSize());
++                Optional<LongStream> optional;
++                if (j != 0) {
++                    SimpleBitStorage simpleBitStorage = new SimpleBitStorage(j, i, is);
++                    optional = Optional.of(Arrays.stream(simpleBitStorage.getRaw()));
++                } else {
++                    optional = Optional.empty();
++                }
+ 
+-            var12 = new PalettedContainerRO.PackedData<>(hashMapPalette.getEntries(), optional);
+-        } finally {
+-            this.release();
+-        }
++                var12 = new PalettedContainerRO.PackedData<>(hashMapPalette.getEntries(), optional);
++            } finally {
++                this.release();
++            }
+ 
+-        return var12;
++            return var12;
++        }
+     }
++    // Fusion end
+ 
+     private static <T> void swapPalette(int[] is, IntUnaryOperator applier) {
+         int i = -1;
+@@ -360,8 +435,41 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+         return new PalettedContainer<>(this.registry, this.data.palette.valueFor(0), this.strategy, this.presetValues); // Paper - Anti-Xray - Add preset values
+     }
+ 
++    // Fusion start - Lithium: Chunk Serialization
++    /**
++     * If we know the palette will contain a fixed number of elements, we can make a significant optimization by counting
++     * blocks with a simple array instead of a integer map. Since palettes make no guarantee that they are bounded,
++     * we have to try and determine for each implementation type how many elements there are.
++     *
++     * @author JellySquid
++     */
+     @Override
+     public void count(PalettedContainer.CountConsumer<T> counter) {
++        if (com.github.ipecter.fusion.FusionConfig.lithiumChunkSerialization) {
++            int len = this.data.palette().getSize();
++
++            // Do not allocate huge arrays if we're using a large palette
++            if (len > 4096) {
++                this.countVanilla(counter);
++            }
++
++            short[] counts = new short[len];
++
++            this.data.storage().getAll(i -> counts[i]++);
++
++            for (int i = 0; i < counts.length; i++) {
++                T obj = this.data.palette().valueFor(i);
++
++                if (obj != null) {
++                    counter.accept(obj, counts[i]);
++                }
++            }
++        } else {
++            this.countVanilla(counter);
++        }
++    }
++
++    private void countVanilla(PalettedContainer.CountConsumer<T> counter) {
+         if (this.data.palette.getSize() == 1) {
+             counter.accept(this.data.palette.valueFor(0), this.data.storage.getSize());
+         } else {
+@@ -374,6 +482,7 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+             });
+         }
+     }
++    // Fusion end
+ 
+     static record Configuration<T>(Palette.Factory factory, int bits) {
+         public PalettedContainer.Data<T> createData(IdMap<T> idList, PaletteResize<T> listener, int size) {

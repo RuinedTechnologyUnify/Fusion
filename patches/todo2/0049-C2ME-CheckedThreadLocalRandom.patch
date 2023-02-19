@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Sun, 5 Feb 2023 15:36:37 +0900
+Subject: [PATCH] C2ME-CheckedThreadLocalRandom
+
+
+diff --git a/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/CheckedThreadLocalRandom.java b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/CheckedThreadLocalRandom.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..dcbba6ca4c9192fd215da66cffef9d0a2bba9bb0
+--- /dev/null
++++ b/src/main/java/com/ishland/c2me/fixes/worldgen/threading_issues/common/CheckedThreadLocalRandom.java
+@@ -0,0 +1,35 @@
++package com.ishland.c2me.fixes.worldgen.threading_issues.common;
++
++import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
++
++import java.util.ConcurrentModificationException;
++import java.util.Objects;
++import java.util.function.Supplier;
++
++public class CheckedThreadLocalRandom extends SingleThreadedRandomSource {
++
++    private static final String MESSAGE = "ThreadLocalRandom accessed from a different thread (owner: %s, current: %s)";
++
++    private final Supplier<Thread> owner;
++
++    public CheckedThreadLocalRandom(long seed, Supplier<Thread> owner) {
++        super(seed);
++        this.owner = Objects.requireNonNull(owner);
++    }
++
++    @Override
++    public void setSeed(long seed) {
++        Thread owner = this.owner != null ? this.owner.get() : null;
++        if (owner != null && Thread.currentThread() != owner)
++            throw new ConcurrentModificationException(MESSAGE.formatted(owner, Thread.currentThread()));
++        super.setSeed(seed);
++    }
++
++    @Override
++    public int next(int bits) {
++        Thread owner = this.owner != null ? this.owner.get() : null;
++        if (owner != null && Thread.currentThread() != owner)
++            throw new ConcurrentModificationException(MESSAGE.formatted(owner, Thread.currentThread()));
++        return super.next(bits);
++    }
++}
+\ No newline at end of file

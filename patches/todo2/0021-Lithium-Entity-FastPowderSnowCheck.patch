@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: IPECTER <ipectert@gmail.com>
+Date: Wed, 28 Dec 2022 15:19:49 +0900
+Subject: [PATCH] Lithium-Entity-FastPowderSnowCheck
+
+Lithium - CaffeineMC  - GPL 3.0
+JettPack - Titaniumtown - GPL 3.0
+Mirai - etil2jz - GPL 3.0
+
+diff --git a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+index 753c02d6caff6cef4248f4260134e2f35cc838f8..24140bd78be47d987ffaa55f9f118f861d5b996d 100644
+--- a/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
++++ b/src/main/java/com/github/ipecter/fusion/FusionWorldConfig.java
+@@ -134,12 +134,14 @@ public class FusionWorldConfig {
+     public boolean lithiumCollectionsBlockEntityTickers = true;
+     public boolean lithiumEntityFastElytraCheck = true;
+     public boolean lithiumEntityFastHandSwing = true;
++    public boolean lithiumEntityFastPowderSnowCheck = true;
+ 
+     private void lithiumConfig() {
+         lithiumCollectionsBlockEntityTickers = getBoolean("lithium.collections.block-entity-tickers", lithiumCollectionsBlockEntityTickers) && lithiumEnable;
+         lithiumEntityFastElytraCheck = getBoolean("lithium.entity.fast-elytra-check", lithiumEntityFastElytraCheck) && lithiumEnable;
+         lithiumEntityFastHandSwing = getBoolean("lithium.entity.fast-hand-swing", lithiumEntityFastHandSwing) && lithiumEnable;
++        lithiumEntityFastPowderSnowCheck = getBoolean("lithium.entity.fast-powder-snow-check", lithiumEntityFastPowderSnowCheck) && lithiumEnable;
+     }
+ 
+     private void lithiumConfigSetup() {
+         lithiumEnable = getBoolean("lithium.enable", lithiumEnable);
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 7cccbb1ec810452d84e140093a028faf69ffa411..f1c7fa15c62052f7eee8fd8680faa0d2b5192f55 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -577,11 +577,11 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     protected void tryAddFrost() {
+-        if (!this.getBlockStateOnLegacy().isAir()) {
++        if (this.level.fusionConfig.lithiumEntityFastPowderSnowCheck || !this.getBlockStateOnLegacy().isAir()) { // Fusion - Lithium: Entity FastPowderSnowCheck
+             int i = this.getTicksFrozen();
+ 
+             if (i > 0) {
+-                AttributeInstance attributemodifiable = this.getAttribute(Attributes.MOVEMENT_SPEED);
++                AttributeInstance attributemodifiable = this.level.fusionConfig.lithiumEntityFastPowderSnowCheck && this.getBlockStateOnLegacy().isAir() ? null : this.getAttribute(Attributes.MOVEMENT_SPEED); // Fusion - Lithium: Entity FastPowderSnowCheck
+ 
+                 if (attributemodifiable == null) {
+                     return;
