@@ -1,3 +1,4 @@
+import io.papermc.paperweight.util.constants.PAPERCLIP_CONFIG
 import io.papermc.paperweight.util.*
 import java.nio.charset.StandardCharsets
 
