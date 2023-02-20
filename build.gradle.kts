@@ -1,10 +1,10 @@
-import io.papermc.paperweight.util.constants.PAPERCLIP_CONFIG
+import io.papermc.paperweight.util.*
 import java.nio.charset.StandardCharsets
 
 plugins {
     java
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
-    id("io.papermc.paperweight.patcher") version "1.4.1-SNAPSHOT"
+    id("io.papermc.paperweight.patcher") version "1.5.1"
 }
 
 repositories {
@@ -21,6 +21,12 @@ dependencies {
 }
 
 subprojects {
+    
+    tasks.withType<Test> {
+        minHeapSize = "2g"
+        maxHeapSize = "2g"
+    }
+
     apply(plugin = "java")
 
     java {
@@ -34,6 +40,15 @@ subprojects {
         options.release.set(17)
     }
 
+     
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
+    
     repositories {
         mavenLocal()
         mavenCentral()
@@ -66,6 +81,38 @@ paperweight {
 
             apiOutputDir.set(layout.projectDirectory.dir("Fusion-API"))
             serverOutputDir.set(layout.projectDirectory.dir("Fusion-Server"))
+        }
+    }
+}
+
+tasks.register("purpurRefLatest") {
+        // Update the purpurRef in gradle.properties to be the latest commit.
+        val tempDir = layout.cacheDir("purpurRefLatest");
+        val file = "gradle.properties";
+
+        doFirst {
+            data class GithubCommit(
+                    val sha: String
+            )
+
+            val purpurLatestCommitJson = layout.cache.resolve("purpurLatestCommit.json");
+            download.get().download("https://api.github.com/repos/PurpurMC/Purpur/commits/ver/1.19.3", purpurLatestCommitJson);
+            val purpurLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(purpurLatestCommitJson)["sha"].asString;
+
+            copy {
+                from(file)
+                into(tempDir)
+                filter { line: String ->
+                    line.replace("purpurRef = .*".toRegex(), "purpurRef = $purpurLatestCommit")
+                }
+            }
+        }
+
+        doLast {
+            copy {
+                from(tempDir.file("gradle.properties"))
+                into(project.file(file).parent)
+            }
         }
     }
 }
