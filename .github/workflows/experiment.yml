@@ -2,6 +2,7 @@ name: Build Fusion (Experimemt Ver)
 on:
   workflow_dispatch:
   push:
+    branches: ['ver/1.19.3-Rework']
 
 env:
   version: '1.19.3'
