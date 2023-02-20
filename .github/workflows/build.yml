@@ -1,6 +1,8 @@
 name: Build Fusion
 on:
   workflow_dispatch:
+  push:
+    branches: ['ver/1.19.3']
 
 env:
   version: '1.19.3'
