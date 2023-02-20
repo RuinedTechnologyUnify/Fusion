@@ -62,7 +62,6 @@ jobs:
           path: build/libs
 
       - name: Release Artifacts
-        if: github.ref_name == env.branch
         uses: marvinpinto/action-automatic-releases@latest
         with:
           title: "Experiment #${{ env.workflow }}"
