@@ -1,6 +1,7 @@
 name: Build Fusion (Experimemt Ver)
 on:
   workflow_dispatch:
+  push:
 
 env:
   version: '1.19.3'
