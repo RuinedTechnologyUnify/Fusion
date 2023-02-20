@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@master
+        uses: gradle/wrapper-validation-action@main
 
       - name: Set up JDK ${{ matrix.java }} ${{ matrix.jdk }}
         uses: graalvm/setup-graalvm@v1
