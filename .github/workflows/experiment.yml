@@ -1,10 +1,13 @@
 name: Build Fusion (Experimemt Ver)
 on:
   workflow_dispatch:
+  push:
+    branches: 
+      - "ver/1.19.3-Rework"
 
 env:
-  version: '1.19.2'
-  branch: ver/1.19.2-Experiment
+  version: '1.19.3'
+  branch: ver/1.19.3-Rework
   debug: 'false'
 
 jobs:
@@ -22,7 +25,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@master
+        uses: gradle/wrapper-validation-action@main
 
       - name: Set up JDK ${{ matrix.java }} ${{ matrix.jdk }}
         uses: graalvm/setup-graalvm@v1
