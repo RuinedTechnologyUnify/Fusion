@@ -86,33 +86,32 @@ paperweight {
 }
 
 tasks.register("purpurRefLatest") {
-        // Update the purpurRef in gradle.properties to be the latest commit.
-        val tempDir = layout.cacheDir("purpurRefLatest");
-        val file = "gradle.properties";
+    // Update the purpurRef in gradle.properties to be the latest commit.
+    val tempDir = layout.cacheDir("purpurRefLatest");
+    val file = "gradle.properties";
 
-        doFirst {
-            data class GithubCommit(
-                    val sha: String
-            )
+    doFirst {
+        data class GithubCommit(
+                 val sha: String
+        )
 
-            val purpurLatestCommitJson = layout.cache.resolve("purpurLatestCommit.json");
-            download.get().download("https://api.github.com/repos/PurpurMC/Purpur/commits/ver/1.19.3", purpurLatestCommitJson);
-            val purpurLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(purpurLatestCommitJson)["sha"].asString;
+        val purpurLatestCommitJson = layout.cache.resolve("purpurLatestCommit.json");
+        download.get().download("https://api.github.com/repos/PurpurMC/Purpur/commits/ver/1.19.3", purpurLatestCommitJson);
+        val purpurLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(purpurLatestCommitJson)["sha"].asString;
 
-            copy {
-                from(file)
-                into(tempDir)
-                filter { line: String ->
-                    line.replace("purpurRef = .*".toRegex(), "purpurRef = $purpurLatestCommit")
-                }
+        copy {
+            from(file)
+            into(tempDir)
+            filter { line: String ->
+                line.replace("purpurRef = .*".toRegex(), "purpurRef = $purpurLatestCommit")
             }
         }
+    }
 
-        doLast {
-            copy {
-                from(tempDir.file("gradle.properties"))
-                into(project.file(file).parent)
-            }
+    doLast {
+        copy {
+            from(tempDir.file("gradle.properties"))
+            into(project.file(file).parent)
         }
     }
 }
