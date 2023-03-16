@@ -31,7 +31,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: ${{ matrix.jdk }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}
           version: 'latest'
           cache: 'gradle'
 
@@ -64,7 +64,7 @@ jobs:
         with:
           title: "Build #${{ env.workflow }}"
           automatic_release_tag: build-${{ env.workflow }}
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.GH_PAT }}"
           files: build/libs/*.jar
           prerelease: false
           
@@ -74,6 +74,6 @@ jobs:
         with:
           title: "Build #${{ env.workflow }}"
           automatic_release_tag: latest-${{ env.version }}
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.GH_PAT }}"
           files: build/libs/Fusion-paperclip-1.19.3-R0.1-SNAPSHOT-reobf.jar
           prerelease: false
