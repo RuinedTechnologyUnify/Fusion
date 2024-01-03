@@ -13,7 +13,7 @@
 </div>
 
 ## 🌠 We're moving!
-Fusion was moved to [PlazmaMC/Plazma](https://github.com/PlazmaMC/Plazma)!
+Fusion was moved to [PlazmaMC/Plazma](https://github.com/PlazmaMC/PlazmaBukkit)!
 I think Fusion dev is too crazy!
 
 ## About Fusion...
