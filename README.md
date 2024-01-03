@@ -13,7 +13,8 @@
 </div>
 
 ## 🌠 We're moving!
-Fusion will be moved to [PlazmaMC/Plazma](https://github.com/PlazmaMC/Plazma) soon. Currently in the development stage, but we're going to provide more functionality and optimization soon. Stay tuned!
+Fusion was moved to [PlazmaMC/Plazma](https://github.com/PlazmaMC/Plazma)!
+I think Fusion dev is too crazy!
 
 ## About Fusion...
 - Fusion began as a small personal project.
